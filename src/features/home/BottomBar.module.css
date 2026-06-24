@@ -10,11 +10,7 @@
   pointer-events: auto;
   z-index: var(--z-floating);
   transform: translateZ(0);
-  background: linear-gradient(
-    to bottom,
-    var(--color-surface-fade-0) 0%,
-    var(--color-surface-fade-100) 55%
-  );
+  background: transparent;
 }
 .toggleWrap {
   flex-shrink: 0;
@@ -78,4 +74,14 @@
 .actionBtn {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 640px) {
+  .bar {
+    background: linear-gradient(
+      to bottom,
+      var(--color-surface-fade-0) 0%,
+      var(--color-surface-fade-100) 55%
+    );
+  }
 }
