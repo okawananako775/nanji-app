@@ -1,0 +1,76 @@
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  pointer-events: auto;
+  z-index: var(--z-floating);
+  transform: translateZ(0);
+}
+.toggleWrap {
+  flex-shrink: 0;
+}
+.toggle {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 4px; border-radius: var(--radius-control);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-control-tag);
+}
+.indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  border-radius: var(--radius-control);
+  background: var(--color-surface-segment-active);
+  transition:
+    transform var(--duration-base) var(--easing-standard),
+    width var(--duration-base) var(--easing-standard);
+  pointer-events: none;
+}
+.seg {
+  position: relative;
+  z-index: 1;
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: var(--radius-control);
+  font-size: 14px; font-weight: 600; color: var(--color-text-muted);
+  background: transparent;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--duration-base) var(--easing-standard);
+}
+.segOffLeft {
+  padding: 8px 0 8px 16px;
+}
+.segOffRight {
+  padding: 8px 16px 8px 0;
+}
+.seg svg {
+  flex-shrink: 0;
+  color: var(--color-icon-default);
+  transition: color var(--duration-base) var(--easing-standard);
+}
+.segActive {
+  padding: 8px 16px;
+  color: var(--color-text-segment-active);
+}
+.segActive svg {
+  color: var(--color-icon-segment-active);
+}
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+.actionBtn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}

@@ -1,0 +1,147 @@
+:root {
+  color-scheme: light;
+  --color-surface-default: #fdffff;
+  --color-surface-elevated: #ffffff;
+  --color-surface-inverse: #2a2c31;
+  --color-surface-cityheading-home: var(--color-surface-inverse);
+  --color-surface-cityheading-other: var(--color-surface-elevated);
+  --color-border-cityheading-other: transparent;
+  --color-surface-subtle: #ffffff26;
+  --color-surface-fade-100: #fdffff;
+  --color-surface-fade-0: #fdffff00;
+  --color-surface-control-tag: #f6f8fd;
+  --color-surface-control-action: #ffffff;
+  --color-surface-control-primary: #2a2c31;
+  --color-text-on-primary: #f6f8fd;
+  --color-icon-on-primary: #ffffff;
+  --color-surface-segment-active: #2a2c31;
+  --color-text-segment-active: #f6f8fd;
+  --color-icon-segment-active: #ffffff;
+  --color-surface-switch-off: #e9ebf0;
+  --color-surface-switch-on: #2a2c31;
+  --color-surface-switch-knob-active: #ffffff;
+  --color-timeslot-business-active: #eff0a4;
+  --color-timeslot-business-inactive: #d8dfe9;
+  --color-timeslot-business-offhour: #374069;
+  --color-text-primary: #101217;
+  --color-text-inverse: #f6f8fd;
+  --color-text-muted: #909297;
+  --color-text-cityheadingtime: #36383d;
+  --neutral-40: #ffffff;
+  --neutral-150: #e9ebf0;
+  --neutral-200: #dcdee3;
+  --neutral-600: #5d5f64;
+  --color-border-default: #e9ebf0;
+  --color-border-strong: #5d5f64;
+  --color-border-subtle: #f6f8fd;
+  --color-border-timeslot: rgba(255, 255, 255, 0.15);
+  --color-border-timeslot-business: rgba(0, 0, 0, 0.06);
+  --color-timeline-fade-solid: #fdffff;
+  --color-timeline-fade-transparent: #fdffff00;
+  --color-timeline-slot-text: #101217;
+  --color-icon-default: #83858a;
+  --color-icon-inverse: #ffffff;
+  --color-accent-current-time: #e2483d;
+  --space-page-edge: 16px;
+  --space-column-gap: 8px;
+  --space-inset-sm: 8px;
+  --space-inset-md: 16px;
+  --radius-card: 16px;
+  --radius-button: 16px;
+  --radius-modal: 24px;
+  --radius-control: 999px;
+  --radius-date-badge: 8px;
+  --shadow-card: 0 8px 16px 0 #c3c5ca;
+  --shadow-floating: 0 4px 4px 0 #cfd1d6;
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-floating: 150;
+  --z-popover: calc(var(--z-floating) + 20);
+  --z-toast: 9999;
+  --duration-base: 200ms;
+  --duration-slow: 350ms;
+  --duration-modal: 240ms;
+  --duration-liquid-squish: 130ms;
+  --duration-liquid-expand: 260ms;
+  --duration-liquid: 420ms;
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-modal: cubic-bezier(0.33, 1, 0.68, 1);
+  --easing-liquid-squish: cubic-bezier(0.55, 0, 0.85, 0.45);
+  --easing-liquid-expand: cubic-bezier(0.22, 1, 0.36, 1);
+  --column-width: 176px;
+  --time-slot-height: 42px;
+  --time-slots-per-day: 24;
+  --time-cycle-height: 1008px; /* 24 × 42px */
+  --city-heading-height: 118px;
+  --city-heading-overlap: 16px;
+  --navbar-height: 97px;
+  --tagbar-height: 85px;
+  --bottom-bar-height: 122px; /* toggle/actions + 8px padding × 2 */
+  --shadow-card-bleed: 24px; /* 0 8px 16px shadow offset + blur */
+  --font-ui: "Hanken Grotesk", system-ui, sans-serif;
+  --font-display: "Newsreader", Georgia, serif;
+  --start-hour: 0;
+  /* 1スロット = 100% / 24 ≈ 4.1667%。各時刻の中央 = (hour + 0.5) × 4.1667% */
+  --gradient-time-of-day: linear-gradient(
+    to bottom,
+    #1c2a4c 0%,
+    #1c2a4c 2.083%,
+    #20294b 6.25%,
+    #2f385e 10.417%,
+    #374069 14.583%,
+    #626187 18.75%,
+    #8c82a5 22.917%,
+    #f5c8c3 27.083%,
+    #ffd7af 31.25%,
+    #f5ebd2 35.417%,
+    #f0f2da 39.583%,
+    #ebf8e1 43.75%,
+    #e6f8dc 47.917%,
+    #ffe478 52.083%,
+    #ffd66c 56.25%,
+    #ffc85f 60.417%,
+    #ffbc58 64.583%,
+    #ffaf50 68.75%,
+    #ff9646 72.917%,
+    #ff6e46 77.083%,
+    #eb504b 81.25%,
+    #be4655 85.417%,
+    #9a3d51 89.583%,
+    #562c4a 93.75%,
+    #322346 97.917%,
+    #322346 100%
+  );
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-surface-default: #101217;
+  --color-surface-elevated: #1c1e24;
+  --color-surface-control-tag: #2f323a;
+  --color-surface-control-action: #2a2c31;
+  --color-surface-control-primary: #e9ebf0;
+  --color-text-on-primary: #101217;
+  --color-icon-on-primary: #101217;
+  --color-surface-segment-active: #e9ebf0;
+  --color-text-segment-active: #101217;
+  --color-icon-segment-active: #36383d;
+  --color-surface-switch-off: #5d5f64;
+  --color-surface-switch-on: #e9ebf0;
+  --color-surface-switch-knob-active: #101217;
+  --color-text-primary: #f6f8fd;
+  --color-text-cityheadingtime: #dcdee3;
+  --color-text-muted: #b0b2b8;
+  --color-border-default: #5d5f64;
+  --color-border-strong: #b0b2b8;
+  --color-border-subtle: #2f323a;
+  --color-icon-default: #b0b2b8;
+  --neutral-600: #909297;
+  --color-surface-fade-100: #101217;
+  --color-surface-fade-0: #10121700;
+  --shadow-card: 0 8px 16px rgba(0, 0, 0, 0.45);
+  --shadow-floating: 0 4px 4px rgba(0, 0, 0, 0.35);
+  --color-surface-cityheading-home: #3d424d;
+  --color-surface-cityheading-other: #171a21;
+  --color-border-cityheading-other: #2a2e38;
+}

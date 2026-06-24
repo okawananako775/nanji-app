@@ -1,0 +1,30 @@
+/* Button_Primary / Button_Secondary — Text label=False */
+.base {
+  width: 49px;
+  height: 49px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: var(--radius-button);
+}
+
+.primary {
+  composes: base;
+  background: var(--color-surface-control-primary);
+  color: var(--color-icon-on-primary);
+  border: none;
+  box-shadow: var(--shadow-floating);
+}
+
+.primary svg {
+  color: var(--color-icon-on-primary);
+}
+
+.secondary {
+  composes: base;
+  background: var(--color-surface-control-action);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-icon-default);
+}

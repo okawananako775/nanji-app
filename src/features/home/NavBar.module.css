@@ -1,0 +1,121 @@
+.nav {
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-page-edge);
+  margin-top: var(--space-inset-sm);
+  margin-bottom: var(--space-inset-sm);
+  flex-shrink: 0;
+  position: relative;
+  z-index: calc(var(--z-sticky) + 1);
+  background: var(--color-surface-default);
+}
+.left { display: flex; align-items: center; gap: 24px; }
+.logo {
+  display: block;
+  width: auto;
+  height: 32px;
+  flex-shrink: 0;
+}
+.groupArea { position: relative; }
+.groupBtn {
+  display: flex; align-items: center; gap: 6px;
+  height: 45px; padding: 0 14px;
+  background: var(--color-surface-control-action);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-button);
+  color: var(--color-text-primary);
+  font-size: 16px; font-weight: 600;
+}
+.groupBtn svg { color: var(--color-icon-default); }
+.groupMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 200px;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-button);
+  box-shadow: var(--shadow-card);
+  padding: 6px;
+  z-index: 1;
+}
+.groupMenuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: left;
+}
+.groupMenuItem:hover {
+  background: var(--color-surface-control-tag);
+}
+.groupMenuItemActive {
+  background: var(--color-surface-control-tag);
+}
+.homeMenuLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.homeMenuLabel svg {
+  flex-shrink: 0;
+  color: var(--color-icon-default);
+}
+.defaultBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.textBtn {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  padding: 8px 12px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border-default);
+  background: var(--color-surface-control-action);
+}
+
+@media (max-width: 640px) {
+  .nav {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  .left {
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .logo {
+    height: 24px;
+  }
+
+  .groupBtn {
+    height: 49px;
+    padding: 0 10px;
+    font-size: 14px;
+    max-width: min(180px, 42vw);
+  }
+
+  .groupBtn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

@@ -1,0 +1,43 @@
+.dialog {
+  width: min(560px, 100%);
+}
+
+.block {
+  margin-bottom: var(--space-inset-md);
+}
+
+.block:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.preview {
+  padding: var(--space-inset-md);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-button);
+  background: var(--color-surface-control-action);
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: var(--font-ui);
+  color: var(--color-text-primary);
+  max-height: min(200px, 30dvh);
+  overflow-y: auto;
+  margin-bottom: var(--space-inset-sm);
+}
+
+.copyBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-surface-control-primary);
+  color: var(--color-text-on-primary);
+  border-radius: var(--radius-button);
+  font-size: 16px;
+  font-weight: 600;
+}

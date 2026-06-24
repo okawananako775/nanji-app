@@ -1,0 +1,23 @@
+.snackbar,
+.snackbarInline {
+  background: var(--color-surface-inverse);
+  color: var(--color-text-inverse);
+  padding: 10px 20px;
+  border-radius: var(--radius-button);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.snackbar {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-toast);
+}
+
+.snackbarInline {
+  position: static;
+  margin-top: var(--space-inset-md);
+  text-align: center;
+}
