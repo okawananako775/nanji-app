@@ -125,7 +125,7 @@
   "onboarding.allowLocation": "Allow",
   "onboarding.skipLocation": "Not now",
   "onboarding.locationRequesting": "Getting location…",
-  "onboarding.locationRequestingHint": "This may take up to 90 seconds depending on your device and network. Please wait.",
+  "onboarding.locationRequestingHint": "This may take up to 60 seconds depending on your device and network. Please wait.",
   "onboarding.locationInsecure": "Location access requires HTTPS or localhost. On a phone, opening http://192.168.x.x will not show the browser permission dialog. On a PC, use http://localhost:5173 instead.",
   "onboarding.locationDenied": "Location access was denied. Allow location for this site in your browser settings.",
   "onboarding.locationDeniedHint": "Location was previously blocked for this site. Change the permission in browser settings, then try again.",

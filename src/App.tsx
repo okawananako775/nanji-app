@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { StoreProvider, useStore } from "./store/StoreContext";
 import { HomePage } from "./features/home/HomePage";
 import { OnboardingPage } from "./features/onboarding/OnboardingPage";
+import "./styles/appShell.css";
 
 function AppRoutes() {
   const { state } = useStore();
@@ -28,7 +29,9 @@ export default function App() {
   return (
     <StoreProvider>
       <BrowserRouter>
-        <AppRoutes />
+        <div className="appShell">
+          <AppRoutes />
+        </div>
       </BrowserRouter>
     </StoreProvider>
   );

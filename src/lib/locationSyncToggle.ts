@@ -85,6 +85,6 @@ export function toggleLocationSync(
       dispatch({ type: "UPDATE_SETTINGS", payload: { locationSyncEnabled: false } });
       callbacks?.onError?.(reason);
     },
-    { overallTimeoutMs: 120_000 },
+    { overallTimeoutMs: 60_000 },
   );
 }

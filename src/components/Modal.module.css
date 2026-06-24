@@ -1,6 +1,9 @@
 .overlay {
   position: fixed;
-  inset: 0;
+  top: var(--app-offset-top);
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(16, 18, 23, 0);
   z-index: calc(var(--z-floating) + 10);
   display: flex;

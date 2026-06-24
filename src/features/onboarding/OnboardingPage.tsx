@@ -85,7 +85,7 @@ export function OnboardingPage() {
         dispatch({ type: "UPDATE_SETTINGS", payload: { locationSyncEnabled: false } });
         void queryGeolocationPermission().then(setPermissionHint);
       },
-      { overallTimeoutMs: 120_000 },
+      { overallTimeoutMs: 60_000 },
     );
   };
 

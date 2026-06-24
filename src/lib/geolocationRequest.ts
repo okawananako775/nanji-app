@@ -21,9 +21,11 @@ type GeolocationListener = {
 };
 
 let inflightListeners: GeolocationListener[] | null = null;
+let currentRequestIsCacheOnly = false;
+let inflightCleanup: (() => void) | null = null;
 let attemptSerial = 0;
 
-const DEFAULT_OVERALL_MS = 120_000;
+const DEFAULT_OVERALL_MS = 60_000;
 const CACHE_ONLY_OVERALL_MS = 20_000;
 
 export function checkGeolocationSupport(): GeolocationErrorReason | null {
@@ -42,8 +44,14 @@ function toReason(err: GeolocationPositionError): GeolocationErrorReason {
   return "unavailable";
 }
 
-function deliverSuccess(listeners: GeolocationListener[], pos: GeolocationPosition): void {
+function resetInflightMeta() {
   inflightListeners = null;
+  currentRequestIsCacheOnly = false;
+  inflightCleanup = null;
+}
+
+function deliverSuccess(listeners: GeolocationListener[], pos: GeolocationPosition): void {
+  resetInflightMeta();
   listeners.forEach((listener) => {
     if (listener.settled) return;
     listener.settled = true;
@@ -52,7 +60,27 @@ function deliverSuccess(listeners: GeolocationListener[], pos: GeolocationPositi
 }
 
 function deliverError(listeners: GeolocationListener[], reason: GeolocationErrorReason): void {
+  resetInflightMeta();
+  listeners.forEach((listener) => {
+    if (listener.settled) return;
+    listener.settled = true;
+    listener.onError(reason);
+  });
+}
+
+function cancelInflightRequest(reason: GeolocationErrorReason): void {
+  if (!inflightListeners) return;
+
+  if (inflightCleanup) {
+    inflightCleanup();
+    inflightCleanup = null;
+  }
+
+  attemptSerial++;
+  const listeners = inflightListeners;
   inflightListeners = null;
+  currentRequestIsCacheOnly = false;
+
   listeners.forEach((listener) => {
     if (listener.settled) return;
     listener.settled = true;
@@ -72,17 +100,23 @@ export function requestGeolocationPosition(
   }
 
   const listener: GeolocationListener = { onSuccess, onError, settled: false };
+  const newIsCacheOnly = options?.cacheOnly ?? false;
 
   if (inflightListeners) {
-    inflightListeners.push(listener);
-    return;
+    if (currentRequestIsCacheOnly && !newIsCacheOnly) {
+      cancelInflightRequest("timeout");
+    } else {
+      inflightListeners.push(listener);
+      return;
+    }
   }
 
   inflightListeners = [listener];
   const listeners = inflightListeners;
   const attempt = ++attemptSerial;
 
-  const cacheOnly = options?.cacheOnly ?? false;
+  const cacheOnly = newIsCacheOnly;
+  currentRequestIsCacheOnly = cacheOnly;
   const overallMs = options?.overallTimeoutMs ?? (cacheOnly ? CACHE_ONLY_OVERALL_MS : DEFAULT_OVERALL_MS);
   const maximumAge = options?.maximumAge ?? 600_000;
 
@@ -100,7 +134,12 @@ export function requestGeolocationPosition(
       navigator.geolocation.clearWatch(watchId);
       watchId = null;
     }
+    if (inflightCleanup === cleanup) {
+      inflightCleanup = null;
+    }
   };
+
+  inflightCleanup = cleanup;
 
   const finishSuccess = (pos: GeolocationPosition) => {
     if (finished || attempt !== attemptSerial || !inflightListeners) return;
@@ -159,7 +198,7 @@ export function requestGeolocationPosition(
       navigator.geolocation.getCurrentPosition(finishSuccess, onFail, {
         enableHighAccuracy: false,
         maximumAge,
-        timeout: Math.min(20_000, overallMs),
+        timeout: Math.min(10_000, overallMs),
       });
       return;
     }
@@ -168,7 +207,7 @@ export function requestGeolocationPosition(
       navigator.geolocation.getCurrentPosition(finishSuccess, onFail, {
         enableHighAccuracy: false,
         maximumAge: Number.POSITIVE_INFINITY,
-        timeout: Math.min(60_000, overallMs),
+        timeout: Math.min(20_000, overallMs),
       });
       return;
     }
@@ -177,7 +216,7 @@ export function requestGeolocationPosition(
       navigator.geolocation.getCurrentPosition(finishSuccess, onFail, {
         enableHighAccuracy: true,
         maximumAge: 300_000,
-        timeout: Math.min(45_000, overallMs),
+        timeout: Math.min(20_000, overallMs),
       });
       return;
     }
@@ -187,9 +226,7 @@ export function requestGeolocationPosition(
         finishSuccess,
         (watchErr) => {
           if (finished || attempt !== attemptSerial || !inflightListeners) return;
-          if (toReason(watchErr) === "denied") {
-            finishError("denied");
-          }
+          finishError(toReason(watchErr));
         },
         {
           enableHighAccuracy: false,

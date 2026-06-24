@@ -23,7 +23,7 @@
   width: calc(100% + var(--space-page-edge));
   padding-left: var(--space-page-edge);
   padding-right: var(--space-inset-md);
-  /* 影（0 8px 16px）の描画領域を確保 */
+  /* 上・下シャドウと画面下端までの 16px 余白 */
   padding-top: var(--space-inset-md);
   padding-bottom: var(--space-inset-md);
   box-sizing: border-box;
@@ -359,6 +359,10 @@
 @media (max-width: 640px) {
   .wrap {
     --city-heading-height: 114px;
+  }
+
+  .frameScroll {
+    scroll-padding-bottom: var(--bottom-bar-height);
   }
 
   .timeLarge {
