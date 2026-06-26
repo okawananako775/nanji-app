@@ -75,6 +75,15 @@ export function formatDateHeading(date: Date, timezone: string, lang: "ja" | "en
   return formatInTimeZone(date, timezone, "EEE, MMM d");
 }
 
+export function formatDateTag(date: Date, timezone: string, lang: "ja" | "en"): string {
+  if (lang === "ja") {
+    const z = toZonedTime(date, timezone);
+    const w = ["日", "月", "火", "水", "木", "金", "土"][z.getDay()];
+    return `${z.getMonth() + 1}/${z.getDate()}（${w}）`;
+  }
+  return formatInTimeZone(date, timezone, "EEE, MMM d");
+}
+
 export function cityLocalHourAtUtcInstant(utc: Date, timezone: string): number {
   return getZonedParts(utc, timezone).hour;
 }

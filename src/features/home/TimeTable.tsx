@@ -16,6 +16,7 @@ import {
   formatClockTime,
   formatClockTimeParts,
   formatDateHeading,
+  formatDateTag,
   formatHour,
   homeSlotToUtc,
   getZonedParts,
@@ -309,7 +310,7 @@ function CityColumn({
                     aria-label={`${cityName} ${formatHour(displayHour, timeFormat)}`}
                   >
                     {showDateTag && (
-                      <span className={styles.dateTag}>{formatDateHeading(utc, city.timezone, lang)}</span>
+                      <span className={styles.dateTag}>{formatDateTag(utc, city.timezone, lang)}</span>
                     )}
                     <span className={styles.slotTime}>{formatHour(displayHour, timeFormat)}</span>
                   </button>
