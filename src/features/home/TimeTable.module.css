@@ -308,9 +308,6 @@
 .dateTag {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: var(--date-tag-width);
-  box-sizing: border-box;
   height: 20px;
   padding: 0 8px;
   background: var(--color-surface-subtle);
