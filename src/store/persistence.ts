@@ -29,7 +29,7 @@ function normalizeLoadedState(parsed: AppState): AppState {
   const settings = {
     ...createInitialState().settings,
     ...parsed.settings,
-    language: "en" as const,
+    language: (parsed.settings?.language === "ja" ? "ja" : "en") as "ja" | "en",
     onboardingCompleted: parsed.settings?.onboardingCompleted ?? true,
     tourCompleted: parsed.settings?.tourCompleted ?? true,
     replayTour: false,
@@ -43,12 +43,53 @@ function normalizeLoadedState(parsed: AppState): AppState {
   };
 }
 
+function assertLoadedStateShape(parsed: unknown): asserts parsed is AppState {
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new Error("invalid");
+  }
+  const record = parsed as Record<string, unknown>;
+  const cities = record.cities;
+  if (typeof cities !== "object" || cities === null || Array.isArray(cities)) {
+    throw new Error("invalid");
+  }
+  const citiesRecord = cities as Record<string, unknown>;
+  if (
+    typeof citiesRecord.byId !== "object" ||
+    citiesRecord.byId === null ||
+    Array.isArray(citiesRecord.byId)
+  ) {
+    throw new Error("invalid");
+  }
+  if (!Array.isArray(citiesRecord.allIds)) {
+    throw new Error("invalid");
+  }
+  if (
+    typeof record.settings !== "object" ||
+    record.settings === null ||
+    Array.isArray(record.settings)
+  ) {
+    throw new Error("invalid");
+  }
+  if (record.groups !== undefined) {
+    if (typeof record.groups !== "object" || record.groups === null || Array.isArray(record.groups)) {
+      throw new Error("invalid");
+    }
+    const groups = record.groups as Record<string, unknown>;
+    if (typeof groups.byId !== "object" || groups.byId === null || Array.isArray(groups.byId)) {
+      throw new Error("invalid");
+    }
+    if (!Array.isArray(groups.allIds)) {
+      throw new Error("invalid");
+    }
+  }
+}
+
 export function loadState(): { state: AppState; reset: boolean } {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { state: createInitialState(), reset: false };
-    const parsed = JSON.parse(raw) as AppState;
-    if (!parsed.cities?.byId || !parsed.settings) throw new Error("invalid");
+    const parsed: unknown = JSON.parse(raw);
+    assertLoadedStateShape(parsed);
     return { state: normalizeLoadedState(parsed), reset: false };
   } catch {
     localStorage.removeItem(STORAGE_KEY);

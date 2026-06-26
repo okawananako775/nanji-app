@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CITY_CATALOG, POPULAR_CITY_IDS, searchCities, suggestSameOffsetCities } from "../../lib/cities";
+import { CITY_CATALOG, getCityDisplayName, POPULAR_CITY_IDS, searchCities, suggestSameOffsetCities } from "../../lib/cities";
 import { getUtcOffsetLabel } from "../../lib/timezone";
 import { useStore } from "../../store/StoreContext";
 import { canAddDisplayCity } from "../../store/reducer";
@@ -42,7 +42,8 @@ export function CitySearchPanel({ mode, takenIds, onSelect }: CitySearchPanelPro
   const visibleSuggestions =
     mode === "add" ? suggestions.filter((city) => city.id !== home?.id) : suggestions;
 
-  const cityName = (entry: (typeof CITY_CATALOG)[number]) => entry.name;
+  const lang = state.settings.language;
+  const cityName = (entry: (typeof CITY_CATALOG)[number]) => getCityDisplayName(entry, lang);
 
   const isUnavailable = (cityId: string) => taken.has(cityId) || (atMax && mode === "add" && !taken.has(cityId));
 

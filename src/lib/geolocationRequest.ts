@@ -147,8 +147,8 @@ export function requestGeolocationPosition(
     cleanup();
     if (import.meta.env.DEV) {
       console.log("[locationSync] geolocation success", {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
+        lat: Math.round(pos.coords.latitude * 10) / 10,
+        lng: Math.round(pos.coords.longitude * 10) / 10,
         accuracy: pos.coords.accuracy,
         cacheOnly,
       });

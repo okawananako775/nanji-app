@@ -10,6 +10,7 @@ import {
   timelineRowIndex,
   timelineSlotFromRowIndex,
 } from "../../lib/timeGrid";
+import { getCityDisplayName } from "../../lib/cities";
 import {
   cityHourFromHomeSlot,
   formatClockTime,
@@ -198,14 +199,31 @@ function CityColumn({
   isMaster: boolean;
 }) {
   const isHome = city.isHome;
+  const cityName = getCityDisplayName(city, lang);
+  const frameElRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (!isMaster && frameElRef.current) {
+      frameElRef.current.scrollTop = 0;
+    }
+  }, [isMaster]);
+
+  const setFrameScrollRef = (el: HTMLDivElement | null) => {
+    frameElRef.current = el;
+    frameScrollRef(el);
+  };
+
+  const setSlotsRef = (el: HTMLDivElement | null) => {
+    slotsRef?.(el);
+  };
 
   return (
     <div className={styles.column}>
       <div className={`${styles.heading} ${isHome ? styles.headingHome : styles.headingOther}`}>
         <div className={styles.headingTop}>
           {isHome && <IconHome />}
-          <span>
-            {city.countryFlag} {city.name}
+          <span className={styles.headingCityName} title={`${city.countryFlag} ${cityName}`}>
+            {city.countryFlag} {cityName}
           </span>
         </div>
         <div className={styles.timeLarge}>
@@ -218,19 +236,20 @@ function CityColumn({
           <div className={styles.fadeTop} />
           <div className={styles.fadeBottom} />
           <div
-            ref={frameScrollRef}
+            ref={setFrameScrollRef}
             className={`${styles.frameScroll} ${isMaster ? "" : styles.frameScrollFollower}`}
             onScroll={isMaster ? onMasterScroll : undefined}
           >
             <div
-              ref={slotsRef}
+              ref={slotsRef ? setSlotsRef : undefined}
               className={`${styles.slots} ${isMaster ? "" : styles.slotsFollower}`}
               style={{ height: totalSize }}
             >
               {virtualItems.map((virtualRow) => {
                 const { dayOffset, hour } = timelineSlotFromRowIndex(virtualRow.index);
                 const utc = homeSlotToUtc(homeTz, dayOffset, hour);
-                const localHour = getZonedParts(utc, city.timezone).hour;
+                const rawLocalHour = getZonedParts(utc, city.timezone).hour;
+                const localHour = Number.isFinite(rawLocalHour) ? rawLocalHour : hour;
                 const displayHour = cityHourFromHomeSlot(homeTz, city.timezone, dayOffset, hour);
 
                 let showDateTag = false;
@@ -287,7 +306,7 @@ function CityColumn({
                         : {}),
                     }}
                     onClick={() => onCellClick({ dayOffset, hour, utc })}
-                    aria-label={`${city.name} ${formatHour(displayHour, timeFormat)}`}
+                    aria-label={`${cityName} ${formatHour(displayHour, timeFormat)}`}
                   >
                     {showDateTag && (
                       <span className={styles.dateTag}>{formatDateHeading(utc, city.timezone, lang)}</span>
@@ -321,6 +340,7 @@ export function TimeTable({
   const frameScrollTopRef = useRef(0);
   const scrollTopRafRef = useRef<number | null>(null);
   const didInitialScroll = useRef(false);
+  const lastHomeScrollKeyRef = useRef<string | null>(null);
   const [now, setNow] = useState(() => new Date());
   const [frameScrollTop, setFrameScrollTop] = useState(0);
   const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null);
@@ -341,8 +361,11 @@ export function TimeTable({
     overscan: 12,
   });
 
+  const { measure: measureRows } = rowVirtualizer;
   const virtualItems = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
+
+  const homeScrollKey = home ? `${home.id}:${home.timezone}` : "";
 
   const cityIdsKey = cities.map((c) => c.id).join(",");
 
@@ -381,12 +404,16 @@ export function TimeTable({
     [getMasterScrollEl, scheduleScrollTopStateUpdate],
   );
 
+  const syncAllFollowers = useCallback(() => {
+    const top = frameScrollRefs.current[0]?.scrollTop ?? frameScrollTopRef.current;
+    syncFollowerTransforms(followerSlotsRefs.current, top);
+  }, []);
+
   useLayoutEffect(() => {
     frameScrollRefs.current.length = cities.length;
     followerSlotsRefs.current.length = cities.length;
-    const top = frameScrollRefs.current[0]?.scrollTop ?? frameScrollTopRef.current;
-    syncFollowerTransforms(followerSlotsRefs.current, top);
-  }, [cityIdsKey, cities.length]);
+    syncAllFollowers();
+  }, [cityIdsKey, cities.length, syncAllFollowers, virtualItems.length]);
 
   useEffect(() => {
     const master = getMasterScrollEl();
@@ -516,25 +543,47 @@ export function TimeTable({
   }, [getMasterScrollEl, syncMasterScrollPosition]);
 
   useLayoutEffect(() => {
+    if (homeScrollKey && lastHomeScrollKeyRef.current !== homeScrollKey) {
+      if (lastHomeScrollKeyRef.current !== null) {
+        didInitialScroll.current = false;
+        frameScrollTopRef.current = 0;
+        setFrameScrollTop(0);
+        const master = frameScrollRefs.current[0];
+        if (master) {
+          master.scrollTop = 0;
+          syncFollowerTransforms(followerSlotsRefs.current, 0);
+        }
+        syncAllFollowers();
+      }
+      lastHomeScrollKeyRef.current = homeScrollKey;
+    }
+    if (!homeScrollKey) {
+      lastHomeScrollKeyRef.current = null;
+    }
+  }, [homeScrollKey, syncAllFollowers]);
+
+  useLayoutEffect(() => {
+    if (!scrollElement) return;
+    measureRows();
+    syncAllFollowers();
+  }, [scrollElement, homeScrollKey, measureRows, syncAllFollowers, virtualItems.length]);
+
+  useLayoutEffect(() => {
     if (!home || didInitialScroll.current || !scrollElement) return;
-    const run = () => {
-      const scrollEl = getMasterScrollEl();
-      if (!scrollEl || didInitialScroll.current) return;
-      const parts = getZonedParts(new Date(), home.timezone);
-      scrollToRow(
-        scrollEl,
-        followerSlotsRefs.current,
-        0,
-        parts.hour,
-        parts.minute / 60,
-        "auto",
-        scheduleScrollTopStateUpdate,
-        commitScrollPosition,
-      );
-      didInitialScroll.current = true;
-    };
-    requestAnimationFrame(() => requestAnimationFrame(run));
-  }, [home?.id, home?.timezone, cities.length, getMasterScrollEl, scrollElement, scheduleScrollTopStateUpdate, commitScrollPosition]);
+    const parts = getZonedParts(new Date(), home.timezone);
+    scrollToRow(
+      scrollElement,
+      followerSlotsRefs.current,
+      0,
+      parts.hour,
+      parts.minute / 60,
+      "auto",
+      scheduleScrollTopStateUpdate,
+      commitScrollPosition,
+    );
+    didInitialScroll.current = true;
+    syncAllFollowers();
+  }, [homeScrollKey, scrollElement, scheduleScrollTopStateUpdate, commitScrollPosition, home, syncAllFollowers]);
 
   useEffect(() => {
     if (!scrollToNowToken || !home) return;
@@ -601,12 +650,12 @@ export function TimeTable({
         <div className={styles.columns}>
           {cities.map((city, index) => (
             <CityColumn
-              key={city.id}
+              key={`${city.id}:${index === 0 ? "master" : "follower"}`}
               city={city}
               homeTz={homeTz}
               business={state.settings.businessHoursEnabled}
               timeFormat={state.settings.timeFormat}
-              lang="en"
+              lang={state.settings.language}
               now={now}
               highlight={{ day: state.ui.highlightDay, hour: state.ui.highlightHour }}
               rangeStart={rangeStart}
@@ -618,8 +667,10 @@ export function TimeTable({
               onMasterScroll={index === 0 ? onMasterScroll : undefined}
               frameScrollRef={(el) => {
                 frameScrollRefs.current[index] = el;
-                if (index === 0) {
+                if (index === 0 && el) {
                   setScrollElement(el);
+                } else if (el) {
+                  el.scrollTop = 0;
                 }
               }}
               slotsRef={

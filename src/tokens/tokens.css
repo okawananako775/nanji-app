@@ -79,8 +79,9 @@
   --tagbar-height: 85px;
   --bottom-bar-height: 122px; /* toggle/actions + 8px padding × 2 */
   --shadow-card-bleed: 24px; /* 0 8px 16px shadow offset + blur */
-  --font-ui: "Hanken Grotesk", system-ui, sans-serif;
-  --font-display: "Newsreader", Georgia, serif;
+  --font-ui: "Hanken Grotesk", "Source Han Sans JP", system-ui, sans-serif;
+  --font-display: "Newsreader", "Source Han Sans JP", Georgia, serif;
+  --font-city-heading-time: "Newsreader", "Source Han Sans JP", Georgia, serif;
   --start-hour: 0;
   /* 1スロット = 100% / 24 ≈ 4.1667%。各時刻の中央 = (hour + 0.5) × 4.1667% */
   --gradient-time-of-day: linear-gradient(
@@ -144,4 +145,9 @@
   --color-surface-cityheading-home: #3d424d;
   --color-surface-cityheading-other: #171a21;
   --color-border-cityheading-other: #2a2e38;
+}
+
+html[lang="ja"] {
+  --font-ui: "Hanken Grotesk", "Source Han Sans JP", system-ui, sans-serif;
+  --font-display: "Hanken Grotesk", "Shippori Mincho", Georgia, serif;
 }

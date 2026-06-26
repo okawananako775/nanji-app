@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal } from "../../components/Modal";
-import { CITY_CATALOG, searchCities, suggestSameOffsetCities } from "../../lib/cities";
+import { CITY_CATALOG, getCityDisplayName, searchCities, suggestSameOffsetCities } from "../../lib/cities";
 import { setHomeCityFromCatalog, toggleLocationSync } from "../../lib/locationSyncToggle";
 import { geolocationErrorMessage } from "../../lib/geolocationMessages";
 import { getUtcOffsetLabel } from "../../lib/timezone";
@@ -26,6 +26,7 @@ export function HomeCityModal({ open, onClose, onHomeChanged }: HomeCityModalPro
   const [syncMessage, setSyncMessage] = useState("");
 
   const locSyncEnabled = state.settings.locationSyncEnabled;
+  const lang = state.settings.language;
 
   useEffect(() => {
     if (!open) return;
@@ -62,7 +63,7 @@ export function HomeCityModal({ open, onClose, onHomeChanged }: HomeCityModalPro
     if (!entry) return;
     const ok = setHomeCityFromCatalog(dispatch, state, cityId);
     if (!ok) return;
-    onHomeChanged?.(entry.name);
+    onHomeChanged?.(getCityDisplayName(entry, lang));
     onClose();
   };
 
@@ -105,7 +106,7 @@ export function HomeCityModal({ open, onClose, onHomeChanged }: HomeCityModalPro
             {home.countryFlag}
           </span>
           <div>
-            <div>{home.name}</div>
+            <div>{getCityDisplayName(home, lang)}</div>
             <div className={styles.currentHomeMeta}>{getUtcOffsetLabel(home.timezone)}</div>
           </div>
           {locSyncEnabled && <span className={styles.syncBadge}>{t("settings.autoSyncBadge")}</span>}
@@ -143,7 +144,7 @@ export function HomeCityModal({ open, onClose, onHomeChanged }: HomeCityModalPro
           ) : (
             results.map((entry) => {
               const isCurrent = entry.id === home.id;
-              const name = entry.name;
+              const name = getCityDisplayName(entry, lang);
               return (
                 <button
                   key={entry.id}
@@ -175,7 +176,7 @@ export function HomeCityModal({ open, onClose, onHomeChanged }: HomeCityModalPro
             <div className={styles.sectionTitle}>{t("search.sameOffsetSuggest")}</div>
             <div className={styles.resultList}>
               {suggestions.map((entry) => {
-                const name = entry.name;
+                const name = getCityDisplayName(entry, lang);
                 return (
                   <button
                     key={entry.id}

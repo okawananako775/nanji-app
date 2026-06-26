@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { Modal } from "../../components/Modal";
 import { IconArrow } from "../../components/icons/Icons";
-import { toggleLocationSync } from "../../lib/locationSyncToggle";
+import { getCityDisplayName } from "../../lib/cities";
 import { geolocationErrorMessage } from "../../lib/geolocationMessages";
+import { toggleLocationSync } from "../../lib/locationSyncToggle";
 import { useStore } from "../../store/StoreContext";
 import { selectHomeCity } from "../../store/selectors";
 import styles from "./SettingsModal.module.css";
@@ -34,12 +35,33 @@ export function SettingsModal({ open, onClose, onOpenHomeCity }: SettingsModalPr
     onClose();
   };
 
-  const homeLabel = home ? `${home.countryFlag} ${home.name}` : "—";
+  const homeLabel = home ? `${home.countryFlag} ${getCityDisplayName(home, s.language)}` : "—";
 
   return (
-    <Modal open={open} title={t("settings.title")} onClose={onClose}>
+    <Modal
+      open={open}
+      title={t("settings.title")}
+      onClose={onClose}
+      dialogClassName={styles.settingsDialog}
+    >
       <section className={styles.section}>
         <div className={styles.sectionTitle}>{t("settings.general")}</div>
+        <div className={styles.row}>
+          <span className={styles.rowLabel}>{t("settings.language")}</span>
+          <select
+            className={styles.select}
+            value={s.language}
+            onChange={(e) =>
+              dispatch({
+                type: "UPDATE_SETTINGS",
+                payload: { language: e.target.value as "ja" | "en" },
+              })
+            }
+          >
+            <option value="ja">{t("settings.langJa")}</option>
+            <option value="en">{t("settings.langEn")}</option>
+          </select>
+        </div>
         <div className={styles.row}>
           <span className={styles.rowLabel}>{t("settings.timeFormat")}</span>
           <select

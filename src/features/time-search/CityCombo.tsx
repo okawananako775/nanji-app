@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { catalogToCity, CITY_CATALOG, searchCities } from "../../lib/cities";
+import { catalogToCity, CITY_CATALOG, formatCityLabel, searchCities } from "../../lib/cities";
 import { getUtcOffsetLabel } from "../../lib/timezone";
 import { useStore } from "../../store/StoreContext";
 import { selectDisplayCities } from "../../store/selectors";
@@ -16,13 +16,10 @@ interface CityComboProps {
   placeholder?: string;
 }
 
-function formatCityLabel(city: Pick<City, "countryFlag" | "name">): string {
-  return `${city.countryFlag} ${city.name}`;
-}
-
 export function CityCombo({ selectedId, onSelect, excludeIds, disabled, resetAfterSelect, placeholder }: CityComboProps) {
   const { t } = useTranslation();
   const { state } = useStore();
+  const lang = state.settings.language;
   const activeCities = selectDisplayCities(state);
   const homeId = activeCities.find((city) => city.isHome)?.id;
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -40,24 +37,24 @@ export function CityCombo({ selectedId, onSelect, excludeIds, disabled, resetAft
 
   useEffect(() => {
     if (selected && !open) {
-      setQuery(formatCityLabel(selected));
+      setQuery(formatCityLabel(selected, lang));
     }
-  }, [selected, open]);
+  }, [selected, open, lang]);
 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       if (!wrapRef.current?.contains(e.target as Node)) {
         setOpen(false);
-        if (selected) setQuery(formatCityLabel(selected));
+        if (selected) setQuery(formatCityLabel(selected, lang));
       }
     };
     document.addEventListener("click", onDocClick);
     return () => document.removeEventListener("click", onDocClick);
-  }, [selected]);
+  }, [selected, lang]);
 
   const pool = useMemo(() => {
     const trimmed = query.trim();
-    const showingSelected = selected && trimmed === formatCityLabel(selected);
+    const showingSelected = selected && trimmed === formatCityLabel(selected, lang);
     let items: CityCatalogEntry[];
     if (!trimmed || showingSelected) {
       const activeIds = new Set(activeCities.map((city) => city.id));
@@ -73,13 +70,13 @@ export function CityCombo({ selectedId, onSelect, excludeIds, disabled, resetAft
       items = items.filter((entry) => !excludeIds.has(entry.id));
     }
     return items;
-  }, [query, activeCities, excludeIds, selected]);
+  }, [query, activeCities, excludeIds, selected, lang]);
 
   const pick = (entry: CityCatalogEntry) => {
     const active = activeCities.find((city) => city.id === entry.id);
     const city = active ?? catalogToCity(entry, entry.id === homeId);
     onSelect(city);
-    setQuery(resetAfterSelect ? "" : formatCityLabel(city));
+    setQuery(resetAfterSelect ? "" : formatCityLabel(city, lang));
     setOpen(false);
   };
 
@@ -111,7 +108,7 @@ export function CityCombo({ selectedId, onSelect, excludeIds, disabled, resetAft
                 onClick={() => pick(entry)}
               >
                 <span>
-                  {entry.countryFlag} {entry.name}
+                  {formatCityLabel(entry, lang)}
                 </span>
                 <span className={styles.comboMeta}>{getUtcOffsetLabel(entry.timezone)}</span>
               </button>

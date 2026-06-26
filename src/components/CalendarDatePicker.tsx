@@ -12,7 +12,7 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns";
-import { enUS } from "date-fns/locale";
+import { enUS, ja as jaLocale } from "date-fns/locale";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -52,7 +52,7 @@ export function CalendarDatePicker({
   className,
   compact = false,
 }: CalendarDatePickerProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const listboxId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -62,7 +62,10 @@ export function CalendarDatePicker({
   const selectedDate = useMemo(() => parseDateValue(value), [value]);
   const [viewMonth, setViewMonth] = useState(() => startOfMonth(selectedDate));
 
-  const locale = enUS;
+  const locale = i18n.language === "ja" ? jaLocale : enUS;
+
+  const dateDisplayPattern = i18n.language === "ja" ? "yyyy年M月d日" : "MMM d, yyyy";
+  const monthDisplayPattern = i18n.language === "ja" ? "yyyy年M月" : "MMMM yyyy";
 
   useEffect(() => {
     if (open) setViewMonth(startOfMonth(selectedDate));
@@ -128,9 +131,9 @@ export function CalendarDatePicker({
     );
   }, [locale]);
 
-  const displayValue = format(selectedDate, "MMM d, yyyy", { locale });
+  const displayValue = format(selectedDate, dateDisplayPattern, { locale });
 
-  const monthLabel = format(viewMonth, "MMMM yyyy", { locale });
+  const monthLabel = format(viewMonth, monthDisplayPattern, { locale });
 
   const canGoPrev =
     !min || toDateValue(endOfMonth(subMonths(viewMonth, 1))) >= min;

@@ -1,9 +1,24 @@
 import { formatInTimeZone } from "date-fns-tz";
 import catalog from "../data/citiesCatalog.json";
 import type { City, CityCatalogEntry } from "../store/types";
+import type { AppLanguage } from "./appLanguage";
 import { getUtcOffsetLabel } from "./timezone";
 
 export const CITY_CATALOG = catalog as CityCatalogEntry[];
+
+export function getCityDisplayName(
+  city: Pick<CityCatalogEntry, "name" | "nameJa">,
+  lang: AppLanguage,
+): string {
+  return lang === "ja" ? city.nameJa : city.name;
+}
+
+export function formatCityLabel(
+  city: Pick<CityCatalogEntry, "countryFlag" | "name" | "nameJa">,
+  lang: AppLanguage,
+): string {
+  return `${city.countryFlag} ${getCityDisplayName(city, lang)}`;
+}
 
 export function searchCities(query: string): CityCatalogEntry[] {
   const q = query.trim().toLowerCase();

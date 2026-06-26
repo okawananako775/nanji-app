@@ -1,3 +1,4 @@
+import { getInitialLanguage } from "../lib/appLanguage";
 import type { AppState, City } from "./types";
 import catalog from "../data/citiesCatalog.json";
 import type { CityCatalogEntry } from "./types";
@@ -23,7 +24,7 @@ export function createInitialState(): AppState {
       lastTimeSearchTab: "single",
     },
     settings: {
-      language: "en",
+      language: getInitialLanguage(),
       timeFormat: "24h",
       colorMode: "system",
       locationSyncEnabled: false,

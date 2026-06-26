@@ -1,9 +1,8 @@
 import { addDays } from "date-fns";
 import { useTranslation } from "react-i18next";
-import { catalogToCity, CITY_CATALOG } from "../../lib/cities";
+import { catalogToCity, CITY_CATALOG, getCityDisplayName } from "../../lib/cities";
 import { generateId } from "../../lib/id";
 import {
-  buildDefaultTargets,
   buildMultiCandidateResults,
   createDateCandidate,
   type DateCandidate,
@@ -11,7 +10,7 @@ import {
 } from "../../lib/multiCandidateSearch";
 import { safeFormatInTimeZone } from "../../lib/timezone";
 import { useStore } from "../../store/StoreContext";
-import { selectDisplayCities, selectHomeCity } from "../../store/selectors";
+import { selectDisplayCities, selectHomeCity, selectVisibleCities } from "../../store/selectors";
 import type { City } from "../../store/types";
 import { CityCombo } from "./CityCombo";
 import { CalendarDatePicker } from "../../components/CalendarDatePicker";
@@ -31,8 +30,8 @@ interface MultiCandidatePanelProps {
   onSearch: (results: MultiCandidateBlock[]) => void;
 }
 
-function cityDisplayName(city: City): string {
-  return city.name;
+function cityDisplayName(city: City, lang: "ja" | "en"): string {
+  return getCityDisplayName(city, lang);
 }
 
 export function MultiCandidatePanel({
@@ -46,8 +45,10 @@ export function MultiCandidatePanel({
 }: MultiCandidatePanelProps) {
   const { t } = useTranslation();
   const { state } = useStore();
+  const lang = state.settings.language;
   const home = selectHomeCity(state);
   const activeCities = selectDisplayCities(state);
+  const visibleCities = selectVisibleCities(state);
   const groups = state.groups.allIds.map((id) => state.groups.byId[id]).filter(Boolean);
   const atMaxTargets = targetCities.length >= MAX_TARGETS;
 
@@ -67,9 +68,7 @@ export function MultiCandidatePanel({
 
   const handleBaseChange = (city: City) => {
     onBaseCityChange(city);
-    if (home) {
-      onTargetCitiesChange(buildDefaultTargets(home, city));
-    }
+    onTargetCitiesChange(targetCities.filter((entry) => entry.id !== city.id));
   };
 
   const updateCandidate = (index: number, patch: Partial<DateCandidate>) => {
@@ -98,6 +97,15 @@ export function MultiCandidatePanel({
     onTargetCitiesChange(targetCities.filter((city) => city.id !== cityId));
   };
 
+  const toggleTarget = (city: City) => {
+    if (city.id === baseCityId) return;
+    if (targetCities.some((entry) => entry.id === city.id)) {
+      removeTarget(city.id);
+      return;
+    }
+    addTarget(city);
+  };
+
   const addGroupTargets = (groupId: string) => {
     const group = state.groups.byId[groupId];
     if (!group || atMaxTargets) return;
@@ -124,7 +132,7 @@ export function MultiCandidatePanel({
   };
 
   const renderTargetLabel = (city: City) => {
-    const name = cityDisplayName(city);
+    const name = cityDisplayName(city, lang);
     const parts: string[] = [];
     if (city.isHome) parts.push("🏠");
     parts.push(city.countryFlag);
@@ -136,6 +144,26 @@ export function MultiCandidatePanel({
     <>
       <div className={styles.field}>
         <div className={styles.label}>{t("timeSearch.multiBase")}</div>
+        <p className={styles.fieldHint}>{t("timeSearch.multiBaseHint")}</p>
+        {visibleCities.length > 0 && (
+          <div className={styles.displayCityTags}>
+            {visibleCities.map((city) => {
+              const selected = baseCityId === city.id;
+              return (
+                <button
+                  key={city.id}
+                  type="button"
+                  className={`${styles.displayCityTag} ${selected ? styles.displayCityTagSelected : ""} ${city.isHome ? styles.displayCityTagHome : ""}`}
+                  aria-pressed={selected}
+                  onClick={() => handleBaseChange(city)}
+                >
+                  {city.isHome && "🏠 "}
+                  {city.countryFlag} {cityDisplayName(city, lang)}
+                </button>
+              );
+            })}
+          </div>
+        )}
         <CityCombo selectedId={baseCityId} onSelect={handleBaseChange} />
       </div>
 
@@ -232,9 +260,35 @@ export function MultiCandidatePanel({
 
       <div className={styles.field}>
         <div className={styles.label}>{t("timeSearch.multiTargets")}</div>
+        <p className={styles.fieldHint}>{t("timeSearch.multiTargetsHint")}</p>
+
+        {visibleCities.filter((city) => city.id !== baseCityId).length > 0 && (
+          <div className={styles.displayCityTags}>
+            {visibleCities
+              .filter((city) => city.id !== baseCityId)
+              .map((city) => {
+                const selected = targetCities.some((entry) => entry.id === city.id);
+                const disabled = !selected && atMaxTargets;
+                return (
+                  <button
+                    key={city.id}
+                    type="button"
+                    className={`${styles.displayCityTag} ${selected ? styles.displayCityTagSelected : ""} ${city.isHome ? styles.displayCityTagHome : ""}`}
+                    aria-pressed={selected}
+                    disabled={disabled}
+                    onClick={() => toggleTarget(city)}
+                  >
+                    {city.isHome && "🏠 "}
+                    {city.countryFlag} {cityDisplayName(city, lang)}
+                  </button>
+                );
+              })}
+          </div>
+        )}
 
         {groups.length > 0 && (
           <div className={styles.targetGroupSection}>
+            <div className={styles.subLabel}>{t("timeSearch.multiTargetsGroupHint")}</div>
             <div className={styles.groupTags}>
               {groups.map((group) => {
                 const added = isGroupAdded(group.id);

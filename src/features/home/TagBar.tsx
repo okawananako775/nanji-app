@@ -1,5 +1,6 @@
 import { type KeyboardEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getCityDisplayName } from "../../lib/cities";
 import { useStore } from "../../store/StoreContext";
 import { canAddDisplayCity } from "../../store/reducer";
 import {
@@ -36,6 +37,7 @@ export function TagBar({
 }) {
   const { t } = useTranslation();
   const { state, dispatch } = useStore();
+  const lang = state.settings.language;
   const cities = selectDisplayCities(state);
   const atMaxCities = !canAddDisplayCity(state);
   const activeGroupId = state.ui.activeGroupId;
@@ -124,7 +126,11 @@ export function TagBar({
                   <IconClear />
                 </button>
               )}
-              <span>{city.isHome ? city.name : `${city.countryFlag} ${city.name}`}</span>
+              <span>
+                {city.isHome
+                  ? getCityDisplayName(city, lang)
+                  : `${city.countryFlag} ${getCityDisplayName(city, lang)}`}
+              </span>
               {!city.isHome && canToggleVisibility && (
                 <button
                   type="button"

@@ -19,7 +19,7 @@ interface MultiCandidateResultsProps {
 export function MultiCandidateResults({ results, onBack, onCopied }: MultiCandidateResultsProps) {
   const { t } = useTranslation();
   const { state } = useStore();
-  const lang = "en";
+  const lang = state.settings.language;
   const timeFormat = state.settings.timeFormat;
   const label = t("timeSearch.candidateLabel");
 

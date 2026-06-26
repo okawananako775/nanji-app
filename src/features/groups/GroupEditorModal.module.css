@@ -3,9 +3,11 @@
 }
 
 .label {
+  display: block;
   font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.3;
   color: var(--color-text-muted);
   margin-bottom: var(--space-inset-sm);
 }

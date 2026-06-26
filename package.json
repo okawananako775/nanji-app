@@ -11,6 +11,7 @@
   "dependencies": {
     "@fontsource/hanken-grotesk": "^5.2.5",
     "@fontsource/newsreader": "^5.2.6",
+    "@fontsource/shippori-mincho": "^5.2.8",
     "@tanstack/react-virtual": "^3.14.3",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",

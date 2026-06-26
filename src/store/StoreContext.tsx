@@ -10,6 +10,7 @@ import {
 import { reducer, type Action } from "./reducer";
 import { createInitialState } from "./initialState";
 import { applyColorMode } from "../lib/colorMode";
+import { applyAppLanguage } from "../lib/syncAppLanguage";
 import { loadState, saveState } from "./persistence";
 import type { AppState } from "./types";
 
@@ -30,6 +31,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     saveState(state);
   }, [state]);
+
+  useEffect(() => {
+    applyAppLanguage(state.settings.language);
+  }, [state.settings.language]);
 
   useEffect(() => {
     applyColorMode(state.settings.colorMode);

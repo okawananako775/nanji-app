@@ -39,9 +39,15 @@ export function normalizeCandidateTimes(candidate: DateCandidate): DateCandidate
   };
 }
 
-export function buildDefaultTargets(home: City, base: City): City[] {
-  if (home.id === base.id) return [home];
-  return [home, base];
+export function buildDefaultTargets(
+  visibleCities: City[],
+  baseCityId: string,
+  maxTargets = 10,
+): City[] {
+  return visibleCities
+    .filter((city) => city.id !== baseCityId)
+    .slice(0, maxTargets)
+    .map((city) => ({ ...city }));
 }
 
 export function buildMultiCandidateResults(

@@ -1,4 +1,4 @@
-import { catalogToCity, CITY_CATALOG } from "./cities";
+import { catalogToCity, CITY_CATALOG, getCityDisplayName } from "./cities";
 import { checkGeolocationSupport, requestGeolocationPosition, type GeolocationErrorReason } from "./geolocationRequest";
 import { applyHomeCityFromPosition } from "./applyHomeCityFromPosition";
 import type { LocationSyncCallbacks } from "./locationSync";
@@ -70,7 +70,7 @@ export function toggleLocationSync(
         return;
       }
       resolved = true;
-      callbacks?.onDetected?.(entry.name);
+      callbacks?.onDetected?.(getCityDisplayName(entry, state.settings.language));
     },
     (reason) => {
       if (resolved) {

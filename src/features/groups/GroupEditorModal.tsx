@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal } from "../../components/Modal";
 import { CitySearchModal } from "../city-search/CitySearchModal";
+import { getCityDisplayName } from "../../lib/cities";
 import { generateId } from "../../lib/id";
 import { useStore } from "../../store/StoreContext";
 import { MAX_CITIES, MAX_GROUPS } from "../../store/reducer";
@@ -19,6 +20,7 @@ interface GroupEditorModalProps {
 export function GroupEditorModal({ open, editId = null, onClose }: GroupEditorModalProps) {
   const { t } = useTranslation();
   const { state, dispatch } = useStore();
+  const lang = state.settings.language;
   const home = selectHomeCity(state);
   const existing = editId ? state.groups.byId[editId] : undefined;
 
@@ -120,7 +122,11 @@ export function GroupEditorModal({ open, editId = null, onClose }: GroupEditorMo
             {cities.map((city) => (
               <div key={city.id} className={`${styles.tag} ${city.isHome ? styles.tagHome : ""}`}>
                 {city.isHome && <IconHome width={14} height={14} />}
-                <span>{city.isHome ? city.name : `${city.countryFlag} ${city.name}`}</span>
+                <span>
+                  {city.isHome
+                    ? getCityDisplayName(city, lang)
+                    : `${city.countryFlag} ${getCityDisplayName(city, lang)}`}
+                </span>
                 {!city.isHome && (
                   <button type="button" className={styles.remove} aria-label="Remove" onClick={() => removeCity(city.id)}>
                     <IconClear width={14} height={14} />

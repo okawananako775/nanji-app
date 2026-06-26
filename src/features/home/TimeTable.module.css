@@ -93,6 +93,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
   font-size: 16px;
   font-weight: 600;
 }
@@ -105,13 +106,22 @@
   color: var(--color-text-primary);
 }
 
-.headingTop span {
+.headingTop svg {
+  flex-shrink: 0;
+}
+
+.headingCityName {
+  flex: 1;
+  min-width: 0;
   height: 20px;
-  line-height: 100%;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .timeLarge {
-  font-family: var(--font-display);
+  font-family: var(--font-city-heading-time);
   font-size: 40px;
   font-weight: 500;
   height: 34px;

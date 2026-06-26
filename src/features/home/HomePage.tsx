@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CopySheet } from "../../components/CopySheet";
 import { Snackbar } from "../../components/Snackbar";
+import { getCityDisplayName } from "../../lib/cities";
 import { formatCopyLinesRange } from "../../lib/copyFormat";
 import { applyLocationSync } from "../../lib/locationSync";
 import { timelineRowIndex } from "../../lib/timeGrid";
@@ -133,7 +134,7 @@ export function HomePage() {
         t("copy.rangeHeading", {
           start: formatHour(startHour, state.settings.timeFormat),
           end: formatHour(endHour, state.settings.timeFormat),
-          city: currentHome.name,
+          city: getCityDisplayName(currentHome, state.settings.language),
         }),
       );
       setCopyJa(

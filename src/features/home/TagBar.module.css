@@ -7,7 +7,47 @@
 }
 
 .toolbar {
-  display: none;
+  display: flex;
+  align-items: center;
+  padding: 6px var(--space-page-edge);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.collapseToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--radius-control);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-surface-control-tag);
+  border: 1px solid var(--color-border-default);
+}
+
+.collapseToggle svg {
+  color: var(--color-icon-default);
+  flex-shrink: 0;
+}
+
+.chevronUp {
+  transform: rotate(180deg);
+}
+
+.cityCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-control);
+  background: var(--color-surface-control-primary);
+  color: var(--color-text-on-primary);
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .bar {
@@ -16,7 +56,11 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 8px var(--space-page-edge);
+  padding: 6px var(--space-page-edge);
+}
+
+.barCollapsed {
+  display: none;
 }
 
 .right {
@@ -130,10 +174,12 @@
 
 .addBtn {
   border: 1px dashed var(--color-border-default);
+  font-weight: 500;
 }
 
 .clearBtn {
   border: 1px solid var(--color-border-default);
+  font-weight: 500;
 }
 
 .addBtnBlink {
@@ -164,59 +210,4 @@
 
 .home .iconBtn {
   color: var(--color-icon-on-primary);
-}
-
-@media (max-width: 640px) {
-  .toolbar {
-    display: flex;
-    align-items: center;
-    padding: 6px var(--space-page-edge);
-    border-bottom: 1px solid var(--color-border-subtle);
-  }
-
-  .collapseToggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 32px;
-    padding: 0 10px;
-    border-radius: var(--radius-control);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    background: var(--color-surface-control-tag);
-    border: 1px solid var(--color-border-default);
-  }
-
-  .collapseToggle svg {
-    color: var(--color-icon-default);
-    flex-shrink: 0;
-  }
-
-  .chevronUp {
-    transform: rotate(180deg);
-  }
-
-  .cityCount {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    border-radius: var(--radius-control);
-    background: var(--color-surface-control-primary);
-    color: var(--color-text-on-primary);
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  .barCollapsed {
-    display: none;
-  }
-
-  .bar {
-    padding-top: 6px;
-    padding-bottom: 6px;
-  }
 }

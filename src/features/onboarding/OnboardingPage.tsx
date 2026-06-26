@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getCityDisplayName } from "../../lib/cities";
 import { applyHomeCityFromPosition } from "../../lib/applyHomeCityFromPosition";
 import {
   queryGeolocationPermission,
@@ -59,7 +60,7 @@ export function OnboardingPage() {
       return;
     }
 
-    const label = entry.name;
+    const label = getCityDisplayName(entry, state.settings.language);
     setLocationDetected(label);
     dispatch({ type: "UPDATE_SETTINGS", payload: { locationSyncEnabled: true } });
     setLocationRequesting(false);

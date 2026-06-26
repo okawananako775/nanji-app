@@ -295,7 +295,13 @@ export function reducer(state: AppState, action: Action): AppState {
       let next = upsertHomeCityInStore(state, action.payload.city);
       next = syncHomeFlags(next, homeId);
       next = moveHomeCityToFront(next, homeId);
-      return ensureHomeVisibleInGroupView(next, homeId, action.payload.city);
+      next = ensureHomeVisibleInGroupView(next, homeId, action.payload.city);
+      if (next.ui.hiddenCityIds[homeId]) {
+        const hiddenCityIds = { ...next.ui.hiddenCityIds };
+        delete hiddenCityIds[homeId];
+        next = { ...next, ui: { ...next.ui, hiddenCityIds } };
+      }
+      return next;
     }
 
     case "CLEAR_ALL_CITIES": {

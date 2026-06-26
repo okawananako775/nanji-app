@@ -7,7 +7,7 @@
   background: rgba(16, 18, 23, 0);
   z-index: calc(var(--z-floating) + 10);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: var(--space-page-edge);
   opacity: 0;
