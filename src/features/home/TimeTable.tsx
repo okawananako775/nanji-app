@@ -31,6 +31,20 @@ import styles from "./TimeTable.module.css";
 
 const HEADING_H = 118;
 const HEADING_OVERLAP = 16;
+const TAP_MOVE_THRESHOLD_PX = 10;
+const LONG_PRESS_MS = 400;
+
+interface SlotGestureState {
+  pointerId: number;
+  pointerType: string;
+  startX: number;
+  startY: number;
+  anchor: { dayOffset: number; hour: number };
+  cancelled: boolean;
+  selectionActive: boolean;
+  longPressTimer: ReturnType<typeof setTimeout> | null;
+  captureTarget: HTMLButtonElement | null;
+}
 
 function HeadingClockTime({
   date,
@@ -289,7 +303,7 @@ function CityColumn({
                       width: "100%",
                       height: `${virtualRow.size}px`,
                       transform: `translateY(${virtualRow.start}px)`,
-                      touchAction: isSelecting ? "none" : undefined,
+                      touchAction: isSelecting ? "none" : "pan-y",
                       ...(!business
                         ? ({ "--slot-local-hour": localHour } as CSSProperties)
                         : {}),
@@ -331,6 +345,7 @@ export function TimeTable({
   const dragAnchorRef = useRef<{ dayOffset: number; hour: number } | null>(null);
   const dragRangeRef = useRef<SlotRange | null>(null);
   const selectingRef = useRef(false);
+  const gestureRef = useRef<SlotGestureState | null>(null);
   const [now, setNow] = useState(() => new Date());
   const [frameScrollTop, setFrameScrollTop] = useState(0);
   const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null);
@@ -355,6 +370,44 @@ export function TimeTable({
     if (range) onSlotRangeSelect(range);
   }, [onSlotRangeSelect, updateDragRange]);
 
+  const clearGesture = useCallback(
+    (releaseCapture = true) => {
+      const gesture = gestureRef.current;
+      if (gesture?.longPressTimer) clearTimeout(gesture.longPressTimer);
+      if (releaseCapture && gesture?.captureTarget?.hasPointerCapture(gesture.pointerId)) {
+        gesture.captureTarget.releasePointerCapture(gesture.pointerId);
+      }
+      gestureRef.current = null;
+    },
+    [],
+  );
+
+  const activateSlotSelection = useCallback(
+    (anchor: { dayOffset: number; hour: number }) => {
+      const gesture = gestureRef.current;
+      if (!gesture || gesture.cancelled || gesture.selectionActive) return;
+
+      gesture.selectionActive = true;
+      selectingRef.current = true;
+      dragAnchorRef.current = anchor;
+      updateDragRange(
+        normalizeSlotRange(
+          { dayOffset: anchor.dayOffset, hour: anchor.hour },
+          { dayOffset: anchor.dayOffset, hour: anchor.hour },
+        ),
+      );
+
+      if (gesture.captureTarget) {
+        try {
+          gesture.captureTarget.setPointerCapture(gesture.pointerId);
+        } catch {
+          // Ignore if capture fails on unsupported browsers.
+        }
+      }
+    },
+    [updateDragRange],
+  );
+
   const onSlotPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLButtonElement>, slot: SlotSelection) => {
       if (event.button !== 0) return;
@@ -362,41 +415,103 @@ export function TimeTable({
       const scrollEl = frameScrollRefs.current[0];
       if (!scrollEl) return;
 
-      event.preventDefault();
-      selectingRef.current = true;
-      dragAnchorRef.current = { dayOffset: slot.dayOffset, hour: slot.hour };
-      updateDragRange(
-        normalizeSlotRange(
-          { dayOffset: slot.dayOffset, hour: slot.hour },
-          { dayOffset: slot.dayOffset, hour: slot.hour },
-        ),
-      );
+      clearGesture();
 
-      const pointerId = event.pointerId;
+      const anchor = { dayOffset: slot.dayOffset, hour: slot.hour };
+      const gesture: SlotGestureState = {
+        pointerId: event.pointerId,
+        pointerType: event.pointerType,
+        startX: event.clientX,
+        startY: event.clientY,
+        anchor,
+        cancelled: false,
+        selectionActive: false,
+        longPressTimer: null,
+        captureTarget: event.currentTarget,
+      };
+      gestureRef.current = gesture;
+
+      if (event.pointerType === "touch") {
+        gesture.longPressTimer = window.setTimeout(() => {
+          activateSlotSelection(anchor);
+        }, LONG_PRESS_MS);
+      }
 
       const onMove = (moveEvent: PointerEvent) => {
-        if (moveEvent.pointerId !== pointerId || !selectingRef.current) return;
+        const activeGesture = gestureRef.current;
+        if (!activeGesture || activeGesture.cancelled || moveEvent.pointerId !== activeGesture.pointerId) {
+          return;
+        }
+
+        const deltaX = moveEvent.clientX - activeGesture.startX;
+        const deltaY = moveEvent.clientY - activeGesture.startY;
+        const distance = Math.hypot(deltaX, deltaY);
+
+        if (!activeGesture.selectionActive) {
+          if (distance <= TAP_MOVE_THRESHOLD_PX) return;
+
+          if (activeGesture.longPressTimer) {
+            clearTimeout(activeGesture.longPressTimer);
+            activeGesture.longPressTimer = null;
+          }
+
+          if (activeGesture.pointerType === "touch") {
+            activeGesture.cancelled = true;
+            updateDragRange(null);
+            return;
+          }
+
+          activateSlotSelection(activeGesture.anchor);
+        }
+
+        if (!gestureRef.current?.selectionActive) return;
+
+        moveEvent.preventDefault();
         const activeScrollEl = frameScrollRefs.current[0];
         if (!activeScrollEl) return;
         const slotAt = slotFromPointerY(activeScrollEl, moveEvent.clientY);
-        const anchor = dragAnchorRef.current;
-        if (!slotAt || !anchor) return;
-        updateDragRange(normalizeSlotRange(anchor, slotAt));
+        const dragAnchor = dragAnchorRef.current;
+        if (!slotAt || !dragAnchor) return;
+        updateDragRange(normalizeSlotRange(dragAnchor, slotAt));
       };
 
       const onEnd = (endEvent: PointerEvent) => {
-        if (endEvent.pointerId !== pointerId) return;
+        const activeGesture = gestureRef.current;
+        if (!activeGesture || endEvent.pointerId !== activeGesture.pointerId) return;
+
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("pointerup", onEnd);
         window.removeEventListener("pointercancel", onEnd);
-        finishSelection();
+
+        if (activeGesture.longPressTimer) {
+          clearTimeout(activeGesture.longPressTimer);
+          activeGesture.longPressTimer = null;
+        }
+
+        const distance = Math.hypot(
+          endEvent.clientX - activeGesture.startX,
+          endEvent.clientY - activeGesture.startY,
+        );
+
+        if (activeGesture.cancelled || distance > TAP_MOVE_THRESHOLD_PX) {
+          if (activeGesture.selectionActive) {
+            finishSelection();
+          }
+          clearGesture();
+          return;
+        }
+
+        onSlotRangeSelect(
+          normalizeSlotRange(activeGesture.anchor, activeGesture.anchor),
+        );
+        clearGesture();
       };
 
       window.addEventListener("pointermove", onMove);
       window.addEventListener("pointerup", onEnd);
       window.addEventListener("pointercancel", onEnd);
     },
-    [finishSelection, updateDragRange],
+    [activateSlotSelection, clearGesture, finishSelection, onSlotRangeSelect, updateDragRange],
   );
 
   useEffect(() => {
