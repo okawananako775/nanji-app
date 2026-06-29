@@ -1,3 +1,4 @@
+import { addHours } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -6,7 +7,7 @@ import { Snackbar } from "../../components/Snackbar";
 import { getCityDisplayName } from "../../lib/cities";
 import { formatCopyLinesRange } from "../../lib/copyFormat";
 import { applyLocationSync } from "../../lib/locationSync";
-import { timelineRowIndex } from "../../lib/timeGrid";
+import { timelineRowIndex, type SlotRange } from "../../lib/timeGrid";
 import { formatHour, homeSlotToUtc } from "../../lib/timezone";
 import { useStore } from "../../store/StoreContext";
 import { selectHomeCity, selectVisibleCities } from "../../store/selectors";
@@ -18,7 +19,7 @@ import { GroupEditorModal } from "../groups/GroupEditorModal";
 import { BottomBar } from "./BottomBar";
 import { NavBar } from "./NavBar";
 import { TagBar } from "./TagBar";
-import { TimeTable, type SlotSelection } from "./TimeTable";
+import { TimeTable } from "./TimeTable";
 import styles from "./HomePage.module.css";
 
 interface HomeLocationState {
@@ -43,16 +44,9 @@ export function HomePage() {
   const [groupEditId, setGroupEditId] = useState<string | null>(null);
   const [scrollToNowToken, setScrollToNowToken] = useState(0);
   const [showBackToNow, setShowBackToNow] = useState(false);
-  const [rangeStart, setRangeStart] = useState<{ day: number; hour: number } | null>(null);
-  const [rangeHighlight, setRangeHighlight] = useState<{
-    startDay: number;
-    startHour: number;
-    endDay: number;
-    endHour: number;
-  } | null>(null);
+  const [rangeHighlight, setRangeHighlight] = useState<SlotRange | null>(null);
 
   const resetRange = useCallback(() => {
-    setRangeStart(null);
     setRangeHighlight(null);
   }, []);
 
@@ -103,49 +97,36 @@ export function HomePage() {
     }
   }, [location.state, navigate]);
 
-  const onCellClick = useCallback(
-    (slot: SlotSelection) => {
+  const onSlotRangeSelect = useCallback(
+    (range: SlotRange) => {
       const cities = selectVisibleCities(state);
       const currentHome = selectHomeCity(state);
       if (!currentHome) return;
 
-      if (!rangeStart) {
-        setRangeStart({ day: slot.dayOffset, hour: slot.hour });
-        setSnack(
-          t("copy.rangeHint", {
-            time: formatHour(slot.hour, state.settings.timeFormat),
-          }),
-        );
-        return;
-      }
+      const { startDay, startHour, endDay, endHour } = range;
+      const orderedStartUtc = homeSlotToUtc(currentHome.timezone, startDay, startHour);
+      const rangeEndUtc = addHours(
+        homeSlotToUtc(currentHome.timezone, endDay, endHour),
+        1,
+      );
 
-      const startUtc = homeSlotToUtc(currentHome.timezone, rangeStart.day, rangeStart.hour);
-      const startFlat = timelineRowIndex(rangeStart.day, rangeStart.hour);
-      const endFlat = timelineRowIndex(slot.dayOffset, slot.hour);
-      const [startDay, startHour, endDay, endHour] =
-        startFlat <= endFlat
-          ? [rangeStart.day, rangeStart.hour, slot.dayOffset, slot.hour]
-          : [slot.dayOffset, slot.hour, rangeStart.day, rangeStart.hour];
-      const orderedStartUtc = startFlat <= endFlat ? startUtc : slot.utc;
-      const orderedEndUtc = startFlat <= endFlat ? slot.utc : startUtc;
-
-      setRangeHighlight({ startDay, startHour, endDay, endHour });
+      setRangeHighlight(range);
       setCopyHeading(
         t("copy.rangeHeading", {
           start: formatHour(startHour, state.settings.timeFormat),
-          end: formatHour(endHour, state.settings.timeFormat),
+          end: formatHour((endHour + 1) % 24, state.settings.timeFormat),
           city: getCityDisplayName(currentHome, state.settings.language),
         }),
       );
       setCopyJa(
-        formatCopyLinesRange(cities, orderedStartUtc, orderedEndUtc, "ja", state.settings.timeFormat),
+        formatCopyLinesRange(cities, orderedStartUtc, rangeEndUtc, "ja", state.settings.timeFormat),
       );
       setCopyEn(
-        formatCopyLinesRange(cities, orderedStartUtc, orderedEndUtc, "en", state.settings.timeFormat),
+        formatCopyLinesRange(cities, orderedStartUtc, rangeEndUtc, "en", state.settings.timeFormat),
       );
       setCopyOpen(true);
     },
-    [state, t, rangeStart],
+    [state, t],
   );
 
   const openHomeCitySettings = useCallback(() => {
@@ -183,10 +164,9 @@ export function HomePage() {
         />
         <main className={styles.main}>
           <TimeTable
-            onCellClick={onCellClick}
+            onSlotRangeSelect={onSlotRangeSelect}
             scrollToNowToken={scrollToNowToken}
             onNowLineVisibleChange={(visible) => setShowBackToNow(!visible)}
-            rangeStart={rangeStart}
             rangeHighlight={rangeHighlight}
           />
         </main>

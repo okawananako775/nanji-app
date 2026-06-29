@@ -3,7 +3,7 @@ import {
   formatAllCandidatesCopy,
   formatCandidateBlockCopy,
   formatCandidateEntryLine,
-  formatCandidateHeading,
+  formatCandidateLabel,
   type MultiCandidateBlock,
 } from "../../lib/multiCandidateSearch";
 import { copyToClipboard } from "../../lib/copyToClipboard";
@@ -51,9 +51,18 @@ export function MultiCandidateResults({ results, onBack, onCopied }: MultiCandid
         {results.map((block, index) => (
           <div key={`${block.startUtc.toISOString()}-${index}`} className={styles.resultBlock}>
             <div className={styles.resultHeading}>
-              {formatCandidateHeading(index, block, lang, timeFormat, label)}
+              {formatCandidateLabel(index, lang, label)}
             </div>
             <div className={styles.resultLines}>
+              <div>
+                {formatCandidateEntryLine(
+                  block.baseCity,
+                  block.startUtc,
+                  block.endUtc,
+                  lang,
+                  timeFormat,
+                )}
+              </div>
               {block.entries.map((entry) => (
                 <div key={entry.city.id}>
                   {formatCandidateEntryLine(

@@ -1,64 +1,111 @@
 :root {
   color-scheme: light;
-  --color-surface-default: #fdffff;
-  --color-surface-elevated: #ffffff;
-  --color-surface-inverse: #2a2c31;
+
+  /* ── Primitive: Neutral ──────────────────────────────────────────────────── */
+  /* Figma Neutral scale: /50–/950（19ステップ）。CSS変数名 --neutral-40 は Figma Neutral/50 相当（#ffffff）。 */
+  /* ⚠️ /350・/400・/450・/550・/650・/700・/750・/800・/850・/950 は Figma 未確認 */
+  --neutral-40:  #ffffff;    /* Figma: Neutral/50 */
+  --neutral-100: #f6f8fd;
+  --neutral-150: #e9ebf0;
+  --neutral-200: #dcdee3;
+  --neutral-250: #cfd1d6;
+  --neutral-300: #c3c5ca;
+  --neutral-500: #909297;
+  --neutral-600: #5d5f64;
+  --neutral-900: #101217;
+
+  /* ── Semantic: surface ───────────────────────────────────────────────────── */
+  --color-surface-default: #fdffff;                           /* 固有値（純白でも Neutral/50 でもない微妙な青白） */
+  --color-surface-elevated: var(--neutral-40);                /* Neutral/50 #ffffff */
+  --color-surface-inverse: #2a2c31;                           /* ⚠️ Neutral 未確認ステップ */
   --color-surface-cityheading-home: var(--color-surface-inverse);
   --color-surface-cityheading-other: var(--color-surface-elevated);
   --color-border-cityheading-other: transparent;
-  --color-surface-subtle: #ffffff26;
-  --color-surface-fade-100: #fdffff;
+  --color-surface-subtle: #ffffff26;                          /* Neutral/40 at 15% opacity */
+  --color-surface-fade-100: #fdffff;                          /* = --color-surface-default */
   --color-surface-fade-0: #fdffff00;
-  --color-surface-control-tag: #f6f8fd;
-  --color-surface-control-action: #ffffff;
-  --color-surface-control-primary: #2a2c31;
-  --color-text-on-primary: #f6f8fd;
-  --color-icon-on-primary: #ffffff;
-  --color-surface-segment-active: #2a2c31;
-  --color-text-segment-active: #f6f8fd;
-  --color-icon-segment-active: #ffffff;
-  --color-surface-switch-off: #e9ebf0;
-  --color-surface-switch-on: #2a2c31;
-  --color-surface-switch-knob-active: #ffffff;
+  --color-surface-control-tag: var(--neutral-100);            /* #f6f8fd */
+  --color-surface-control-action: var(--neutral-40);          /* #ffffff */
+  --color-surface-control-primary: #2a2c31;                   /* ⚠️ Neutral 未確認ステップ */
+  --color-text-on-primary: var(--neutral-100);                /* #f6f8fd */
+  --color-icon-on-primary: var(--neutral-40);                 /* #ffffff */
+  --color-surface-segment-active: #2a2c31;                    /* = surface-control-primary */
+  --color-text-segment-active: var(--neutral-100);            /* #f6f8fd */
+  --color-icon-segment-active: var(--neutral-40);             /* #ffffff */
+  --color-surface-switch-off: var(--neutral-150);             /* #e9ebf0 */
+  --color-surface-switch-on: #2a2c31;                         /* = surface-inverse */
+  --color-surface-switch-knob: var(--neutral-40);             /* OFF 状態のノブ #ffffff */
+  --color-surface-switch-knob-active: var(--neutral-40);      /* ON 状態のノブ #ffffff（dark で上書き） */
+
+  /* ── Semantic: timeslot ──────────────────────────────────────────────────── */
   --color-timeslot-business-active: #eff0a4;
   --color-timeslot-business-inactive: #d8dfe9;
-  --color-timeslot-business-offhour: #374069;
-  --color-text-primary: #101217;
-  --color-text-inverse: #f6f8fd;
-  --color-text-muted: #909297;
-  --color-text-cityheadingtime: #36383d;
-  --neutral-40: #ffffff;
-  --neutral-150: #e9ebf0;
-  --neutral-200: #dcdee3;
-  --neutral-600: #5d5f64;
-  --color-border-default: #e9ebf0;
-  --color-border-strong: #5d5f64;
-  --color-border-subtle: #f6f8fd;
-  --color-border-timeslot: rgba(255, 255, 255, 0.15);
-  --color-border-timeslot-business: rgba(0, 0, 0, 0.06);
-  --color-timeline-fade-solid: #fdffff;
+  --color-timeslot-business-offhour: #374069;                 /* Time/200 */
+
+  /* ── Semantic: text ──────────────────────────────────────────────────────── */
+  --color-text-primary: var(--neutral-900);                   /* #101217 */
+  --color-text-inverse: var(--neutral-100);                   /* #f6f8fd */
+  --color-text-muted: var(--neutral-500);                     /* #909297 */
+  --color-text-cityheadingtime: #36383d;                      /* ⚠️ Neutral 未確認ステップ */
+  --color-text-cityheading-home-time: var(--neutral-40);      /* Home 時刻大 #ffffff */
+  --color-text-cityheading-home-label: var(--neutral-200);    /* Home 都市名・日付 #dcdee3 */
+  --color-text-cityheading-other-date: var(--neutral-600);    /* Other 日付 #5d5f64 */
+  --color-text-timeslot-inverse: var(--neutral-40);           /* 暗い時間帯スロット・Now badge #ffffff */
+  --color-text-date-tag: var(--neutral-150);                  /* Date tag テキスト #e9ebf0 */
+
+  /* ── Semantic: timeline aliases ──────────────────────────────────────────── */
+  --color-timeline-fade-solid: #fdffff;                       /* = color-surface-default */
   --color-timeline-fade-transparent: #fdffff00;
-  --color-timeline-slot-text: #101217;
-  --color-icon-default: #83858a;
-  --color-icon-inverse: #ffffff;
+  --color-timeline-slot-text: var(--color-text-primary);      /* = neutral-900 */
+
+  /* ── Semantic: icon ──────────────────────────────────────────────────────── */
+  --color-icon-default: #83858a;                              /* ⚠️ Neutral 未確認ステップ */
+  --color-icon-inverse: var(--neutral-40);                    /* #ffffff */
+
+  /* ── Semantic: border ────────────────────────────────────────────────────── */
+  --color-border-default: var(--neutral-150);                 /* #e9ebf0 */
+  --color-border-strong: var(--neutral-600);                  /* #5d5f64 */
+  --color-border-subtle: var(--neutral-100);                  /* #f6f8fd */
+  --color-border-timeslot: #ffffff26;                         /* Neutral/40 at 15% opacity */
+  --color-border-timeslot-business: #0000000f;                /* black at 6% opacity */
+
+  /* ── Semantic: accent ────────────────────────────────────────────────────── */
   --color-accent-current-time: #e2483d;
+
+  /* ── Layout ──────────────────────────────────────────────────────────────── */
   --space-page-edge: 16px;
   --space-column-gap: 8px;
   --space-inset-sm: 8px;
   --space-inset-md: 16px;
+  --column-width: 176px;
+  --time-slot-height: 42px;
+  --time-slots-per-day: 24;
+  --time-cycle-height: 1008px; /* 24 × 42px */
+  --city-heading-height: 118px;
+  --city-heading-overlap: 16px;
+  --navbar-height: 97px;
+  --tagbar-height: 85px;
+  --bottom-bar-height: 122px; /* toggle/actions + 8px padding × 2 */
+  --shadow-card-bleed: 24px;  /* 0 8px 16px shadow offset + blur */
+
+  /* ── Shape ───────────────────────────────────────────────────────────────── */
   --radius-card: 16px;
   --radius-button: 16px;
   --radius-modal: 24px;
   --radius-control: 999px;
   --radius-date-badge: 8px;
-  --shadow-card: 0 8px 16px 0 #c3c5ca;
-  --shadow-floating: 0 4px 4px 0 #cfd1d6;
+
+  /* ── Elevation ───────────────────────────────────────────────────────────── */
+  --shadow-card: 0 8px 16px 0 var(--neutral-300);            /* #c3c5ca */
+  --shadow-floating: 0 4px 4px 0 var(--neutral-250);         /* #cfd1d6 */
   --z-base: 0;
   --z-raised: 10;
   --z-sticky: 100;
   --z-floating: 150;
   --z-popover: calc(var(--z-floating) + 20);
   --z-toast: 9999;
+
+  /* ── Motion ──────────────────────────────────────────────────────────────── */
   --duration-base: 200ms;
   --duration-slow: 350ms;
   --duration-modal: 240ms;
@@ -69,19 +116,13 @@
   --easing-modal: cubic-bezier(0.33, 1, 0.68, 1);
   --easing-liquid-squish: cubic-bezier(0.55, 0, 0.85, 0.45);
   --easing-liquid-expand: cubic-bezier(0.22, 1, 0.36, 1);
-  --column-width: 176px;
-  --time-slot-height: 42px;
-  --time-slots-per-day: 24;
-  --time-cycle-height: 1008px; /* 24 × 42px */
-  --city-heading-height: 118px;
-  --city-heading-overlap: 16px;
-  --navbar-height: 97px;
-  --tagbar-height: 85px;
-  --bottom-bar-height: 122px; /* toggle/actions + 8px padding × 2 */
-  --shadow-card-bleed: 24px; /* 0 8px 16px shadow offset + blur */
+
+  /* ── Typography ──────────────────────────────────────────────────────────── */
   --font-ui: "Hanken Grotesk", "Source Han Sans JP", system-ui, sans-serif;
   --font-display: "Newsreader", "Source Han Sans JP", Georgia, serif;
   --font-city-heading-time: "Newsreader", "Source Han Sans JP", Georgia, serif;
+
+  /* ── Gradient ────────────────────────────────────────────────────────────── */
   --start-hour: 0;
   /* 1スロット = 100% / 24 ≈ 4.1667%。各時刻の中央 = (hour + 0.5) × 4.1667% */
   --gradient-time-of-day: linear-gradient(
@@ -117,34 +158,36 @@
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --color-surface-default: #101217;
-  --color-surface-elevated: #1c1e24;
-  --color-surface-control-tag: #2f323a;
-  --color-surface-control-action: #2a2c31;
-  --color-surface-control-primary: #e9ebf0;
-  --color-text-on-primary: #101217;
-  --color-icon-on-primary: #101217;
-  --color-surface-segment-active: #e9ebf0;
-  --color-text-segment-active: #101217;
-  --color-icon-segment-active: #36383d;
-  --color-surface-switch-off: #5d5f64;
-  --color-surface-switch-on: #e9ebf0;
-  --color-surface-switch-knob-active: #101217;
-  --color-text-primary: #f6f8fd;
-  --color-text-cityheadingtime: #dcdee3;
-  --color-text-muted: #b0b2b8;
-  --color-border-default: #5d5f64;
-  --color-border-strong: #b0b2b8;
-  --color-border-subtle: #2f323a;
-  --color-icon-default: #b0b2b8;
-  --neutral-600: #909297;
-  --color-surface-fade-100: #101217;
+  --color-surface-default: var(--neutral-900);                /* #101217 */
+  --color-surface-elevated: #1c1e24;                          /* ⚠️ Neutral 未確認ステップ */
+  --color-surface-control-tag: #2f323a;                       /* ⚠️ Neutral 未確認ステップ */
+  --color-surface-control-action: #2a2c31;                    /* ⚠️ Neutral 未確認ステップ */
+  --color-surface-control-primary: var(--neutral-150);        /* #e9ebf0 */
+  --color-text-on-primary: var(--neutral-900);                /* #101217 */
+  --color-icon-on-primary: var(--neutral-900);                /* #101217 */
+  --color-surface-segment-active: var(--neutral-150);         /* #e9ebf0 */
+  --color-text-segment-active: var(--neutral-900);            /* #101217 */
+  --color-icon-segment-active: #36383d;                       /* ⚠️ Neutral 未確認ステップ */
+  --color-surface-switch-off: var(--neutral-600);             /* #5d5f64 */
+  --color-surface-switch-on: var(--neutral-150);              /* #e9ebf0 */
+  --color-surface-switch-knob-active: var(--neutral-900);     /* #101217 */
+  --color-text-primary: var(--neutral-100);                   /* #f6f8fd */
+  --color-text-cityheadingtime: var(--neutral-200);           /* #dcdee3 */
+  --color-text-muted: #b0b2b8;                                /* ⚠️ Neutral 未確認ステップ */
+  --color-text-cityheading-other-date: var(--neutral-500);    /* #909297 */
+  --color-border-default: var(--neutral-600);                 /* #5d5f64 */
+  --color-border-strong: #b0b2b8;                             /* ⚠️ Neutral 未確認ステップ */
+  --color-border-subtle: #2f323a;                             /* ⚠️ Neutral 未確認ステップ */
+  --color-icon-default: #b0b2b8;                              /* ⚠️ Neutral 未確認ステップ */
+  --color-surface-fade-100: var(--neutral-900);               /* #101217 */
   --color-surface-fade-0: #10121700;
+  --color-timeline-fade-solid: var(--neutral-900);
+  --color-timeline-fade-transparent: #10121700;
   --shadow-card: 0 8px 16px rgba(0, 0, 0, 0.45);
   --shadow-floating: 0 4px 4px rgba(0, 0, 0, 0.35);
-  --color-surface-cityheading-home: #3d424d;
-  --color-surface-cityheading-other: #171a21;
-  --color-border-cityheading-other: #2a2e38;
+  --color-surface-cityheading-home: #3d424d;                  /* ⚠️ Neutral 未確認ステップ */
+  --color-surface-cityheading-other: #171a21;                 /* ⚠️ Neutral 未確認ステップ */
+  --color-border-cityheading-other: #2a2e38;                  /* dark のみ可視 */
 }
 
 html[lang="ja"] {

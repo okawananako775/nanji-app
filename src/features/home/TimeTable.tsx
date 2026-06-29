@@ -1,5 +1,5 @@
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { useStore } from "../../store/StoreContext";
 import { selectHomeCity, selectVisibleCities } from "../../store/selectors";
 import type { City } from "../../store/types";
@@ -7,8 +7,11 @@ import {
   SLOT_HEIGHT,
   TIMELINE_HALF_DAYS,
   TIMELINE_TOTAL_ROWS,
+  normalizeSlotRange,
+  slotFromPointerY,
   timelineRowIndex,
   timelineSlotFromRowIndex,
+  type SlotRange,
 } from "../../lib/timeGrid";
 import { getCityDisplayName } from "../../lib/cities";
 import {
@@ -21,11 +24,12 @@ import {
   homeSlotToUtc,
   getZonedParts,
 } from "../../lib/timezone";
+import { isNonBusinessDay, preloadHolidayLibrary } from "../../lib/nonBusinessDay";
 import { businessSlotState, defaultSlotTextColor } from "../../lib/timeSlotStyle";
 import { IconHome } from "../../components/icons/Icons";
 import styles from "./TimeTable.module.css";
 
-const HEADING_H = 120;
+const HEADING_H = 118;
 const HEADING_OVERLAP = 16;
 
 function HeadingClockTime({
@@ -54,16 +58,10 @@ export interface SlotSelection {
 }
 
 interface TimeTableProps {
-  onCellClick: (slot: SlotSelection) => void;
+  onSlotRangeSelect: (range: SlotRange) => void;
   scrollToNowToken?: number;
   onNowLineVisibleChange?: (visible: boolean) => void;
-  rangeStart: { day: number; hour: number } | null;
-  rangeHighlight: {
-    startDay: number;
-    startHour: number;
-    endDay: number;
-    endHour: number;
-  } | null;
+  rangeHighlight: SlotRange | null;
 }
 
 function syncFollowerTransforms(
@@ -133,30 +131,19 @@ function scrollToRow(
 function getRangeClass(
   dayOffset: number,
   hour: number,
-  rangeStart: { day: number; hour: number } | null,
-  rangeHighlight: {
-    startDay: number;
-    startHour: number;
-    endDay: number;
-    endHour: number;
-  } | null,
+  rangeHighlight: SlotRange | null,
 ): string {
-  if (rangeHighlight) {
-    const flat = timelineRowIndex(dayOffset, hour);
-    const startFlat = timelineRowIndex(rangeHighlight.startDay, rangeHighlight.startHour);
-    const endFlat = timelineRowIndex(rangeHighlight.endDay, rangeHighlight.endHour);
-    const [lo, hi] = startFlat <= endFlat ? [startFlat, endFlat] : [endFlat, startFlat];
-    if (flat < lo || flat > hi) return "";
-    if (flat === lo && flat === hi) return styles.slotRangeStart;
-    if (flat === lo) return styles.slotRangeStart;
-    if (flat === hi) return styles.slotRangeEnd;
-    return styles.slotRangeMid;
-  }
-  if (!rangeStart) return "";
-  if (rangeStart.day === dayOffset && rangeStart.hour === hour) {
-    return styles.slotRangeStart;
-  }
-  return "";
+  if (!rangeHighlight) return "";
+
+  const flat = timelineRowIndex(dayOffset, hour);
+  const startFlat = timelineRowIndex(rangeHighlight.startDay, rangeHighlight.startHour);
+  const endFlat = timelineRowIndex(rangeHighlight.endDay, rangeHighlight.endHour);
+  const [lo, hi] = startFlat <= endFlat ? [startFlat, endFlat] : [endFlat, startFlat];
+  if (flat < lo || flat > hi) return "";
+  if (flat === lo && flat === hi) return styles.slotRangeStart;
+  if (flat === lo) return styles.slotRangeStart;
+  if (flat === hi) return styles.slotRangeEnd;
+  return styles.slotRangeMid;
 }
 
 function CityColumn({
@@ -167,15 +154,15 @@ function CityColumn({
   lang,
   now,
   highlight,
-  rangeStart,
-  rangeHighlight,
+  selectionHighlight,
   virtualItems,
   totalSize,
-  onCellClick,
+  onSlotPointerDown,
   onMasterScroll,
   frameScrollRef,
   slotsRef,
   isMaster,
+  isSelecting,
 }: {
   city: City;
   homeTz: string;
@@ -184,20 +171,15 @@ function CityColumn({
   lang: "ja" | "en";
   now: Date;
   highlight: { day: number | null; hour: number | null };
-  rangeStart: { day: number; hour: number } | null;
-  rangeHighlight: {
-    startDay: number;
-    startHour: number;
-    endDay: number;
-    endHour: number;
-  } | null;
+  selectionHighlight: SlotRange | null;
   virtualItems: VirtualItem[];
   totalSize: number;
-  onCellClick: (slot: SlotSelection) => void;
+  onSlotPointerDown?: (event: ReactPointerEvent<HTMLButtonElement>, slot: SlotSelection) => void;
   onMasterScroll?: () => void;
   frameScrollRef: (el: HTMLDivElement | null) => void;
   slotsRef?: (el: HTMLDivElement | null) => void;
   isMaster: boolean;
+  isSelecting: boolean;
 }) {
   const isHome = city.isHome;
   const cityName = getCityDisplayName(city, lang);
@@ -261,7 +243,11 @@ function CityColumn({
                   showDateTag = prevLocalHour !== null && localHour === 0;
                 }
 
-                const biz = businessSlotState(localHour, business);
+                const biz = businessSlotState(
+                  localHour,
+                  business,
+                  business ? isNonBusinessDay(utc, city.timezone, city.country) : false,
+                );
                 const textColor = business
                   ? biz === "offhour"
                     ? "light"
@@ -269,7 +255,7 @@ function CityColumn({
                   : defaultSlotTextColor(localHour);
 
                 const highlighted = highlight.day === dayOffset && highlight.hour === hour;
-                const rangeClass = getRangeClass(dayOffset, hour, rangeStart, rangeHighlight);
+                const rangeClass = getRangeClass(dayOffset, hour, selectionHighlight);
 
                 const slotClass = [
                   styles.slot,
@@ -295,6 +281,7 @@ function CityColumn({
                     key={virtualRow.key}
                     type="button"
                     className={slotClass}
+                    onPointerDown={(event) => onSlotPointerDown?.(event, { dayOffset, hour, utc })}
                     style={{
                       position: "absolute",
                       top: 0,
@@ -302,11 +289,11 @@ function CityColumn({
                       width: "100%",
                       height: `${virtualRow.size}px`,
                       transform: `translateY(${virtualRow.start}px)`,
+                      touchAction: isSelecting ? "none" : undefined,
                       ...(!business
                         ? ({ "--slot-local-hour": localHour } as CSSProperties)
                         : {}),
                     }}
-                    onClick={() => onCellClick({ dayOffset, hour, utc })}
                     aria-label={`${cityName} ${formatHour(displayHour, timeFormat)}`}
                   >
                     {showDateTag && (
@@ -325,10 +312,9 @@ function CityColumn({
 }
 
 export function TimeTable({
-  onCellClick,
+  onSlotRangeSelect,
   scrollToNowToken,
   onNowLineVisibleChange,
-  rangeStart,
   rangeHighlight,
 }: TimeTableProps) {
   const { state } = useStore();
@@ -342,10 +328,81 @@ export function TimeTable({
   const scrollTopRafRef = useRef<number | null>(null);
   const didInitialScroll = useRef(false);
   const lastHomeScrollKeyRef = useRef<string | null>(null);
+  const dragAnchorRef = useRef<{ dayOffset: number; hour: number } | null>(null);
+  const dragRangeRef = useRef<SlotRange | null>(null);
+  const selectingRef = useRef(false);
   const [now, setNow] = useState(() => new Date());
   const [frameScrollTop, setFrameScrollTop] = useState(0);
   const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null);
   const [headingH, setHeadingH] = useState(HEADING_H);
+  const [, setHolidayDataVersion] = useState(0);
+  const [dragRange, setDragRange] = useState<SlotRange | null>(null);
+  const businessHoursEnabled = state.settings.businessHoursEnabled;
+  const selectionHighlight = dragRange ?? rangeHighlight;
+  const isSelecting = dragRange !== null;
+
+  const updateDragRange = useCallback((range: SlotRange | null) => {
+    dragRangeRef.current = range;
+    setDragRange(range);
+  }, []);
+
+  const finishSelection = useCallback(() => {
+    if (!selectingRef.current) return;
+    const range = dragRangeRef.current;
+    selectingRef.current = false;
+    dragAnchorRef.current = null;
+    updateDragRange(null);
+    if (range) onSlotRangeSelect(range);
+  }, [onSlotRangeSelect, updateDragRange]);
+
+  const onSlotPointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLButtonElement>, slot: SlotSelection) => {
+      if (event.button !== 0) return;
+
+      const scrollEl = frameScrollRefs.current[0];
+      if (!scrollEl) return;
+
+      event.preventDefault();
+      selectingRef.current = true;
+      dragAnchorRef.current = { dayOffset: slot.dayOffset, hour: slot.hour };
+      updateDragRange(
+        normalizeSlotRange(
+          { dayOffset: slot.dayOffset, hour: slot.hour },
+          { dayOffset: slot.dayOffset, hour: slot.hour },
+        ),
+      );
+
+      const pointerId = event.pointerId;
+
+      const onMove = (moveEvent: PointerEvent) => {
+        if (moveEvent.pointerId !== pointerId || !selectingRef.current) return;
+        const activeScrollEl = frameScrollRefs.current[0];
+        if (!activeScrollEl) return;
+        const slotAt = slotFromPointerY(activeScrollEl, moveEvent.clientY);
+        const anchor = dragAnchorRef.current;
+        if (!slotAt || !anchor) return;
+        updateDragRange(normalizeSlotRange(anchor, slotAt));
+      };
+
+      const onEnd = (endEvent: PointerEvent) => {
+        if (endEvent.pointerId !== pointerId) return;
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onEnd);
+        window.removeEventListener("pointercancel", onEnd);
+        finishSelection();
+      };
+
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onEnd);
+      window.addEventListener("pointercancel", onEnd);
+    },
+    [finishSelection, updateDragRange],
+  );
+
+  useEffect(() => {
+    if (!businessHoursEnabled) return;
+    preloadHolidayLibrary(() => setHolidayDataVersion((version) => version + 1));
+  }, [businessHoursEnabled]);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
@@ -659,11 +716,11 @@ export function TimeTable({
               lang={state.settings.language}
               now={now}
               highlight={{ day: state.ui.highlightDay, hour: state.ui.highlightHour }}
-              rangeStart={rangeStart}
-              rangeHighlight={rangeHighlight}
+              selectionHighlight={selectionHighlight}
               virtualItems={virtualItems}
               totalSize={totalSize}
-              onCellClick={onCellClick}
+              onSlotPointerDown={onSlotPointerDown}
+              isSelecting={isSelecting}
               isMaster={index === 0}
               onMasterScroll={index === 0 ? onMasterScroll : undefined}
               frameScrollRef={(el) => {

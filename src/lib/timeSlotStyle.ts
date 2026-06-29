@@ -8,9 +8,13 @@ export function defaultSlotTextColor(hour: number): SlotTextColor {
 
 export type BusinessSlotState = "active" | "inactive" | "offhour" | "none";
 
-export function businessSlotState(hour: number, enabled: boolean): BusinessSlotState {
+export function businessSlotState(
+  hour: number,
+  enabled: boolean,
+  isNonBusinessDay = false,
+): BusinessSlotState {
   if (!enabled) return "none";
-  if (hour >= 9 && hour <= 16) return "active";
+  if (hour >= 9 && hour <= 16) return isNonBusinessDay ? "inactive" : "active";
   if ((hour >= 6 && hour <= 8) || (hour >= 17 && hour <= 21)) return "inactive";
   if (hour >= 22 || hour <= 5) return "offhour";
   return "none";

@@ -174,12 +174,10 @@
 
 .addBtn {
   border: 1px dashed var(--color-border-default);
-  font-weight: 500;
 }
 
 .clearBtn {
   border: 1px solid var(--color-border-default);
-  font-weight: 500;
 }
 
 .addBtnBlink {

@@ -48,7 +48,7 @@ export function NavBar({ onOpenSettings }: NavBarProps) {
   return (
     <header className={styles.nav}>
       <div className={styles.left}>
-        <img className={styles.logo} src={logoImage} alt={t("logo")} width={120} height={32} />
+        <img className={styles.logo} src={logoImage} alt={t("logo")} width={120} height={53} />
         <div className={styles.groupArea} ref={menuRef}>
           <button
             type="button"

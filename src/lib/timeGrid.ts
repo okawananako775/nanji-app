@@ -17,6 +17,46 @@ export function timelineSlotFromRowIndex(rowIndex: number): { dayOffset: number;
   };
 }
 
+export interface SlotRange {
+  startDay: number;
+  startHour: number;
+  endDay: number;
+  endHour: number;
+}
+
+export function normalizeSlotRange(
+  a: { dayOffset: number; hour: number },
+  b: { dayOffset: number; hour: number },
+): SlotRange {
+  const startFlat = timelineRowIndex(a.dayOffset, a.hour);
+  const endFlat = timelineRowIndex(b.dayOffset, b.hour);
+  if (startFlat <= endFlat) {
+    return {
+      startDay: a.dayOffset,
+      startHour: a.hour,
+      endDay: b.dayOffset,
+      endHour: b.hour,
+    };
+  }
+  return {
+    startDay: b.dayOffset,
+    startHour: b.hour,
+    endDay: a.dayOffset,
+    endHour: a.hour,
+  };
+}
+
+export function slotFromPointerY(
+  scrollEl: HTMLElement,
+  clientY: number,
+): { dayOffset: number; hour: number } | null {
+  const rect = scrollEl.getBoundingClientRect();
+  const yInContent = clientY - rect.top + scrollEl.scrollTop;
+  const rowIndex = Math.floor(yInContent / SLOT_HEIGHT);
+  if (rowIndex < 0 || rowIndex >= TIMELINE_TOTAL_ROWS) return null;
+  return timelineSlotFromRowIndex(rowIndex);
+}
+
 export function isTimelineDayInRange(dayOffset: number): boolean {
   return dayOffset >= -TIMELINE_HALF_DAYS && dayOffset <= TIMELINE_HALF_DAYS;
 }

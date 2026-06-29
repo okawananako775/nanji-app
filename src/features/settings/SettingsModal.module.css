@@ -121,7 +121,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--neutral-40);
+  background: var(--color-surface-switch-knob);
   transition: transform var(--duration-base) var(--easing-standard);
 }
 

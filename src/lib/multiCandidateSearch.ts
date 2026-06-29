@@ -90,21 +90,9 @@ function formatRangeTimes(
   return `${start}〜${end}`;
 }
 
-export function formatCandidateHeading(
-  index: number,
-  block: MultiCandidateBlock,
-  lang: "ja" | "en",
-  timeFormat: "24h" | "12h",
-  label: string,
-): string {
-  const cityName = lang === "ja" ? block.baseCity.nameJa : block.baseCity.name;
-  const datePart = formatDateHeading(block.startUtc, block.baseCity.timezone, lang);
-  const timePart = formatRangeTimes(block.startUtc, block.endUtc, block.baseCity.timezone, timeFormat);
-
-  if (lang === "ja") {
-    return `${label}${index + 1}：${datePart} ${timePart}（${cityName}）`;
-  }
-  return `${label} ${index + 1}: ${datePart}, ${timePart} (${cityName})`;
+export function formatCandidateLabel(index: number, lang: "ja" | "en", label: string): string {
+  if (lang === "ja") return `${label}${index + 1}:`;
+  return `${label} ${index + 1}:`;
 }
 
 export function formatCandidateEntryLine(
@@ -130,11 +118,18 @@ export function formatCandidateBlockCopy(
   timeFormat: "24h" | "12h",
   label: string,
 ): string {
-  const heading = formatCandidateHeading(index, block, lang, timeFormat, label);
+  const heading = formatCandidateLabel(index, lang, label);
+  const baseLine = formatCandidateEntryLine(
+    block.baseCity,
+    block.startUtc,
+    block.endUtc,
+    lang,
+    timeFormat,
+  );
   const lines = block.entries.map((entry) =>
     formatCandidateEntryLine(entry.city, entry.startUtc, entry.endUtc, lang, timeFormat),
   );
-  return [heading, ...lines].join("\n");
+  return [heading, baseLine, ...lines].join("\n");
 }
 
 export function formatAllCandidatesCopy(

@@ -99,7 +99,7 @@
 }
 
 .headingHome .headingTop {
-  color: var(--neutral-200);
+  color: var(--color-text-cityheading-home-label);
 }
 
 .headingOther .headingTop {
@@ -136,7 +136,7 @@
 }
 
 .headingHome .timeLarge {
-  color: var(--neutral-40);
+  color: var(--color-text-cityheading-home-time);
 }
 
 .headingOther .timeLarge {
@@ -148,11 +148,11 @@
 }
 
 .headingHome .dateSmall {
-  color: var(--neutral-200);
+  color: var(--color-text-cityheading-home-label);
 }
 
 .headingOther .dateSmall {
-  color: var(--neutral-600);
+  color: var(--color-text-cityheading-other-date);
 }
 
 .frame {
@@ -280,7 +280,7 @@
 }
 
 .slotLight {
-  color: var(--neutral-40);
+  color: var(--color-text-timeslot-inverse);
 }
 
 .slotDark {
@@ -301,7 +301,7 @@
 
 .slotBizOff {
   background: var(--color-timeslot-business-offhour);
-  color: var(--neutral-40);
+  color: var(--color-text-timeslot-inverse);
   border-bottom-color: var(--color-border-timeslot);
 }
 
@@ -314,7 +314,7 @@
   border-radius: var(--radius-date-badge);
   font-size: 12px;
   font-weight: 600;
-  color: var(--neutral-150);
+  color: var(--color-text-date-tag);
   flex-shrink: 0;
 }
 
@@ -358,7 +358,7 @@
   left: var(--space-page-edge);
   transform: translateY(-50%);
   background: var(--color-accent-current-time);
-  color: var(--neutral-40);
+  color: var(--color-text-timeslot-inverse);
   font-size: 12px;
   font-weight: 600;
   padding: 2px 8px;
