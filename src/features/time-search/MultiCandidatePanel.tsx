@@ -1,4 +1,3 @@
-import { addDays } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { catalogToCity, CITY_CATALOG, getCityDisplayName } from "../../lib/cities";
 import { generateId } from "../../lib/id";
@@ -8,7 +7,7 @@ import {
   type DateCandidate,
   type MultiCandidateBlock,
 } from "../../lib/multiCandidateSearch";
-import { safeFormatInTimeZone } from "../../lib/timezone";
+import { clampDateInput, getTimelineDateBounds } from "../../lib/timeSearchJump";
 import { useStore } from "../../store/StoreContext";
 import { selectDisplayCities, selectHomeCity, selectVisibleCities } from "../../store/selectors";
 import type { City } from "../../store/types";
@@ -52,9 +51,17 @@ export function MultiCandidatePanel({
   const groups = state.groups.allIds.map((id) => state.groups.byId[id]).filter(Boolean);
   const atMaxTargets = targetCities.length >= MAX_TARGETS;
 
-  const homeTimezone = home?.timezone ?? "UTC";
-  const minDate = safeFormatInTimeZone(addDays(new Date(), -30), homeTimezone, "yyyy-MM-dd");
-  const maxDate = safeFormatInTimeZone(addDays(new Date(), 30), homeTimezone, "yyyy-MM-dd");
+  const resolveBaseCity = (): City | null => {
+    const fromDisplay = activeCities.find((city) => city.id === baseCityId);
+    if (fromDisplay) return fromDisplay;
+    const entry = CITY_CATALOG.find((city) => city.id === baseCityId);
+    if (!entry) return null;
+    return catalogToCity(entry, baseCityId === home?.id);
+  };
+
+  const baseCity = resolveBaseCity();
+  const baseTimezone = baseCity?.timezone ?? home?.timezone ?? "UTC";
+  const { minDate, maxDate } = getTimelineDateBounds(baseTimezone);
   const targetExclude = new Set([...targetCities.map((city) => city.id), baseCityId]);
   const visibleTargets = targetCities;
 
@@ -80,7 +87,7 @@ export function MultiCandidatePanel({
   const addCandidate = () => {
     if (candidates.length >= MAX_CANDIDATES) return;
     const last = candidates[candidates.length - 1];
-    onCandidatesChange([...candidates, createDateCandidate(homeTimezone, { ...last, id: generateId() })]);
+    onCandidatesChange([...candidates, createDateCandidate(baseTimezone, { ...last, id: generateId() })]);
   };
 
   const removeCandidate = (index: number) => {
@@ -120,15 +127,12 @@ export function MultiCandidatePanel({
   };
 
   const runSearch = () => {
-    if (!home) return;
-    const baseCity =
-      activeCities.find((city) => city.id === baseCityId) ??
-      (() => {
-        const entry = CITY_CATALOG.find((city) => city.id === baseCityId);
-        return entry ? catalogToCity(entry, baseCityId === home.id) : null;
-      })();
-    if (!baseCity || targetCities.length === 0) return;
-    onSearch(buildMultiCandidateResults(baseCity, candidates, targetCities));
+    if (!home || !baseCity || targetCities.length === 0) return;
+    const clampedCandidates = candidates.map((candidate) => ({
+      ...candidate,
+      date: clampDateInput(candidate.date, minDate, maxDate),
+    }));
+    onSearch(buildMultiCandidateResults(baseCity, clampedCandidates, targetCities));
   };
 
   const renderTargetLabel = (city: City) => {
@@ -180,7 +184,9 @@ export function MultiCandidatePanel({
                   value={candidate.date}
                   min={minDate}
                   max={maxDate}
-                  onChange={(nextDate) => updateCandidate(index, { date: nextDate })}
+                  onChange={(nextDate) =>
+                    updateCandidate(index, { date: clampDateInput(nextDate, minDate, maxDate) })
+                  }
                 />
               </div>
               <div className={styles.candidateTimeRange}>

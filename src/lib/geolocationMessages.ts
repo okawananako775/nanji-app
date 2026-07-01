@@ -13,6 +13,8 @@ export function geolocationErrorMessage(reason: GeolocationErrorReason, t: TFunc
       return t("onboarding.locationUnsupported");
     case "unavailable":
       return t("onboarding.locationUnavailable");
+    case "no_city":
+      return t("settings.locationNoCity");
     default:
       return t("onboarding.locationUnavailable");
   }

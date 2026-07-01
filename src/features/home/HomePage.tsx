@@ -1,12 +1,12 @@
 import { addHours } from "date-fns";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CopySheet } from "../../components/CopySheet";
 import { Snackbar } from "../../components/Snackbar";
 import { getCityDisplayName } from "../../lib/cities";
 import { formatCopyLinesRange } from "../../lib/copyFormat";
-import { applyLocationSync } from "../../lib/locationSync";
+import { applyLocationSync, type LocationSyncCallbacks } from "../../lib/locationSync";
 import { timelineRowIndex, type SlotRange } from "../../lib/timeGrid";
 import { formatHour, homeSlotToUtc } from "../../lib/timezone";
 import { useStore } from "../../store/StoreContext";
@@ -50,21 +50,42 @@ export function HomePage() {
     setRangeHighlight(null);
   }, []);
 
-  useEffect(() => {
-    if (!state.settings.locationSyncEnabled) return;
-    applyLocationSync(dispatch, state, {
+  const locationSyncEnabledRef = useRef(state.settings.locationSyncEnabled);
+  locationSyncEnabledRef.current = state.settings.locationSyncEnabled;
+
+  const locationSyncCallbacks = useCallback((): LocationSyncCallbacks => ({
       onError: (reason) => {
         if (import.meta.env.DEV && reason !== "timeout") {
           console.warn("[locationSync] background sync failed", reason);
         }
-        // Only disable sync when the environment blocks geolocation permanently.
         if (reason === "denied" || reason === "insecure" || reason === "unsupported") {
           dispatch({ type: "UPDATE_SETTINGS", payload: { locationSyncEnabled: false } });
         }
       },
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      onNoCity: () => {
+        dispatch({ type: "UPDATE_SETTINGS", payload: { locationSyncEnabled: false } });
+        setSnack(t("settings.locationNoCity"));
+      },
+    }),
+    [dispatch, t],
+  );
+
+  useEffect(() => {
+    if (!state.settings.locationSyncEnabled) return;
+    applyLocationSync(dispatch, locationSyncCallbacks(), { cacheOnly: true });
+  }, [dispatch, locationSyncCallbacks, state.settings.locationSyncEnabled]);
+
+  useEffect(() => {
+    if (!state.settings.locationSyncEnabled) return;
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "visible" || !locationSyncEnabledRef.current) return;
+      applyLocationSync(dispatch, locationSyncCallbacks(), { cacheOnly: false });
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [dispatch, locationSyncCallbacks, state.settings.locationSyncEnabled]);
 
   useEffect(() => {
     if (storageReset) {

@@ -78,30 +78,30 @@ interface TimeTableProps {
   rangeHighlight: SlotRange | null;
 }
 
-function syncFollowerTransforms(
-  followerSlots: readonly (HTMLDivElement | null)[],
+function syncFollowerScroll(
+  frameScrolls: readonly (HTMLDivElement | null)[],
   top: number,
 ) {
-  followerSlots.forEach((el, index) => {
-    if (index === 0 || !el) return;
-    el.style.transform = `translateY(-${top}px)`;
+  frameScrolls.forEach((el, index) => {
+    if (index === 0 || !el || el.scrollTop === top) return;
+    el.scrollTop = top;
   });
 }
 
 function applyScrollPosition(
-  master: HTMLDivElement | null,
-  followerSlots: readonly (HTMLDivElement | null)[],
+  frameScrolls: readonly (HTMLDivElement | null)[],
   top: number,
   onScroll?: (top: number) => void,
 ) {
-  if (master) master.scrollTop = top;
-  syncFollowerTransforms(followerSlots, top);
+  frameScrolls.forEach((el, index) => {
+    if (!el || el.scrollTop === top) return;
+    el.scrollTop = top;
+  });
   onScroll?.(top);
 }
 
 function scrollToRow(
-  master: HTMLDivElement | null,
-  followerSlots: readonly (HTMLDivElement | null)[],
+  frameScrolls: readonly (HTMLDivElement | null)[],
   dayOffset: number,
   hour: number,
   minuteFraction = 0,
@@ -109,13 +109,14 @@ function scrollToRow(
   onScroll?: (top: number) => void,
   onScrollEnd?: (top: number) => void,
 ) {
+  const master = frameScrolls[0];
   if (!master) return;
 
   const y = timelineRowIndex(dayOffset, hour) * SLOT_HEIGHT + minuteFraction * SLOT_HEIGHT;
   const targetTop = Math.max(0, y - master.clientHeight / 2);
 
   if (behavior === "auto") {
-    applyScrollPosition(master, followerSlots, targetTop, onScroll);
+    applyScrollPosition(frameScrolls, targetTop, onScroll);
     onScrollEnd?.(targetTop);
     return;
   }
@@ -131,7 +132,7 @@ function scrollToRow(
     const progress = Math.min((now - startTime) / duration, 1);
     const eased = 1 - (1 - progress) ** 3;
     const top = startTop + distance * eased;
-    applyScrollPosition(master, followerSlots, top, onScroll);
+    applyScrollPosition(frameScrolls, top, onScroll);
     if (progress < 1) {
       requestAnimationFrame(step);
     } else {
@@ -172,9 +173,7 @@ function CityColumn({
   virtualItems,
   totalSize,
   onSlotPointerDown,
-  onMasterScroll,
   frameScrollRef,
-  slotsRef,
   isMaster,
   isSelecting,
 }: {
@@ -189,30 +188,12 @@ function CityColumn({
   virtualItems: VirtualItem[];
   totalSize: number;
   onSlotPointerDown?: (event: ReactPointerEvent<HTMLButtonElement>, slot: SlotSelection) => void;
-  onMasterScroll?: () => void;
   frameScrollRef: (el: HTMLDivElement | null) => void;
-  slotsRef?: (el: HTMLDivElement | null) => void;
   isMaster: boolean;
   isSelecting: boolean;
 }) {
   const isHome = city.isHome;
   const cityName = getCityDisplayName(city, lang);
-  const frameElRef = useRef<HTMLDivElement | null>(null);
-
-  useLayoutEffect(() => {
-    if (!isMaster && frameElRef.current) {
-      frameElRef.current.scrollTop = 0;
-    }
-  }, [isMaster]);
-
-  const setFrameScrollRef = (el: HTMLDivElement | null) => {
-    frameElRef.current = el;
-    frameScrollRef(el);
-  };
-
-  const setSlotsRef = (el: HTMLDivElement | null) => {
-    slotsRef?.(el);
-  };
 
   return (
     <div className={styles.column}>
@@ -233,15 +214,10 @@ function CityColumn({
           <div className={styles.fadeTop} />
           <div className={styles.fadeBottom} />
           <div
-            ref={setFrameScrollRef}
+            ref={frameScrollRef}
             className={`${styles.frameScroll} ${isMaster ? "" : styles.frameScrollFollower}`}
-            onScroll={isMaster ? onMasterScroll : undefined}
           >
-            <div
-              ref={slotsRef ? setSlotsRef : undefined}
-              className={`${styles.slots} ${isMaster ? "" : styles.slotsFollower}`}
-              style={{ height: totalSize }}
-            >
+            <div className={styles.slots} style={{ height: totalSize }}>
               {virtualItems.map((virtualRow) => {
                 const { dayOffset, hour } = timelineSlotFromRowIndex(virtualRow.index);
                 const utc = homeSlotToUtc(homeTz, dayOffset, hour);
@@ -336,7 +312,6 @@ export function TimeTable({
   const home = selectHomeCity(state);
   const homeTz = home?.timezone ?? "UTC";
   const frameScrollRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const followerSlotsRefs = useRef<(HTMLDivElement | null)[]>([]);
   const xScrollRef = useRef<HTMLDivElement>(null);
   const frameScrollTopRef = useRef(0);
   const scrollTopRafRef = useRef<number | null>(null);
@@ -560,31 +535,33 @@ export function TimeTable({
     const master = frameScrollRefs.current[0];
     if (!master) return;
     const top = master.scrollTop;
-    syncFollowerTransforms(followerSlotsRefs.current, top);
+    syncFollowerScroll(frameScrollRefs.current, top);
     scheduleScrollTopStateUpdate(top);
   }, [scheduleScrollTopStateUpdate]);
 
   const getMasterScrollEl = useCallback(() => frameScrollRefs.current[0] ?? null, []);
 
-  const syncMasterScrollPosition = useCallback(
-    (top: number) => {
-      const master = getMasterScrollEl();
-      if (!master) return;
-      master.scrollTop = top;
-      syncFollowerTransforms(followerSlotsRefs.current, top);
-      scheduleScrollTopStateUpdate(top);
-    },
-    [getMasterScrollEl, scheduleScrollTopStateUpdate],
-  );
-
   const syncAllFollowers = useCallback(() => {
     const top = frameScrollRefs.current[0]?.scrollTop ?? frameScrollTopRef.current;
-    syncFollowerTransforms(followerSlotsRefs.current, top);
+    syncFollowerScroll(frameScrollRefs.current, top);
   }, []);
+
+  useEffect(() => {
+    const master = getMasterScrollEl();
+    if (!master) return;
+    master.addEventListener("scroll", onMasterScroll, { passive: true });
+    return () => master.removeEventListener("scroll", onMasterScroll);
+  }, [getMasterScrollEl, onMasterScroll, cityIdsKey]);
+
+  const syncMasterScrollPosition = useCallback(
+    (top: number) => {
+      applyScrollPosition(frameScrollRefs.current, top, scheduleScrollTopStateUpdate);
+    },
+    [scheduleScrollTopStateUpdate],
+  );
 
   useLayoutEffect(() => {
     frameScrollRefs.current.length = cities.length;
-    followerSlotsRefs.current.length = cities.length;
     syncAllFollowers();
   }, [cityIdsKey, cities.length, syncAllFollowers, virtualItems.length]);
 
@@ -637,9 +614,7 @@ export function TimeTable({
 
         if (isFollower) {
           e.preventDefault();
-          master.scrollTop = startScrollTop + dy;
-          syncFollowerTransforms(followerSlotsRefs.current, master.scrollTop);
-          scheduleScrollTopStateUpdate(master.scrollTop);
+          applyScrollPosition(frameScrollRefs.current, startScrollTop + dy, scheduleScrollTopStateUpdate);
         }
       };
 
@@ -723,8 +698,7 @@ export function TimeTable({
         setFrameScrollTop(0);
         const master = frameScrollRefs.current[0];
         if (master) {
-          master.scrollTop = 0;
-          syncFollowerTransforms(followerSlotsRefs.current, 0);
+          applyScrollPosition(frameScrollRefs.current, 0);
         }
         syncAllFollowers();
       }
@@ -745,8 +719,7 @@ export function TimeTable({
     if (!home || didInitialScroll.current || !scrollElement) return;
     const parts = getZonedParts(new Date(), home.timezone);
     scrollToRow(
-      scrollElement,
-      followerSlotsRefs.current,
+      frameScrollRefs.current,
       0,
       parts.hour,
       parts.minute / 60,
@@ -764,8 +737,7 @@ export function TimeTable({
     if (!scrollEl) return;
     const parts = getZonedParts(new Date(), home.timezone);
     scrollToRow(
-      scrollEl,
-      followerSlotsRefs.current,
+      frameScrollRefs.current,
       0,
       parts.hour,
       parts.minute / 60,
@@ -782,8 +754,7 @@ export function TimeTable({
     const scrollEl = getMasterScrollEl();
     if (!scrollEl) return;
     scrollToRow(
-      scrollEl,
-      followerSlotsRefs.current,
+      frameScrollRefs.current,
       state.ui.highlightDay,
       state.ui.highlightHour,
       0,
@@ -837,27 +808,16 @@ export function TimeTable({
               onSlotPointerDown={onSlotPointerDown}
               isSelecting={isSelecting}
               isMaster={index === 0}
-              onMasterScroll={index === 0 ? onMasterScroll : undefined}
               frameScrollRef={(el) => {
                 frameScrollRefs.current[index] = el;
                 if (index === 0 && el) {
                   setScrollElement(el);
                 } else if (el) {
-                  el.scrollTop = 0;
+                  const top =
+                    frameScrollRefs.current[0]?.scrollTop ?? frameScrollTopRef.current;
+                  if (el.scrollTop !== top) el.scrollTop = top;
                 }
               }}
-              slotsRef={
-                index === 0
-                  ? undefined
-                  : (el) => {
-                      followerSlotsRefs.current[index] = el;
-                      if (el) {
-                        const top =
-                          frameScrollRefs.current[0]?.scrollTop ?? frameScrollTopRef.current;
-                        el.style.transform = `translateY(-${top}px)`;
-                      }
-                    }
-              }
             />
           ))}
           {nowLineTop !== null && home && (

@@ -1,12 +1,14 @@
-import { formatInTimeZone } from "date-fns-tz";
+import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 import type { City } from "../store/types";
 import { formatClockTime } from "./timezone";
 
+function weekdayJa(date: Date, timezone: string): string {
+  return ["日", "月", "火", "水", "木", "金", "土"][toZonedTime(date, timezone).getDay()];
+}
+
 function formatDateShort(date: Date, timezone: string, lang: "ja" | "en"): string {
   if (lang === "ja") {
-    const w = ["日", "月", "火", "水", "木", "金", "土"][
-      new Date(formatInTimeZone(date, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX")).getDay()
-    ];
+    const w = weekdayJa(date, timezone);
     const z = formatInTimeZone(date, timezone, "yyyy/M/d");
     return `${z}（${w}）`;
   }
@@ -16,9 +18,7 @@ function formatDateShort(date: Date, timezone: string, lang: "ja" | "en"): strin
 function formatCityInstant(city: City, utc: Date, lang: "ja" | "en", timeFormat: "24h" | "12h"): string {
   const tz = city.timezone;
   if (lang === "ja") {
-    const w = ["日", "月", "火", "水", "木", "金", "土"][
-      new Date(formatInTimeZone(utc, tz, "yyyy-MM-dd'T'HH:mm:ssXXX")).getDay()
-    ];
+    const w = weekdayJa(utc, tz);
     const date = formatInTimeZone(utc, tz, "yyyy年M月d日");
     const time = formatClockTime(utc, tz, timeFormat);
     const abbr = formatInTimeZone(utc, tz, "zzz");

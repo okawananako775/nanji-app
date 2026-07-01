@@ -1,6 +1,5 @@
 import { applyHomeCityFromPosition } from "./applyHomeCityFromPosition";
 import { checkGeolocationSupport, requestGeolocationPosition, type GeolocationErrorReason } from "./geolocationRequest";
-import type { AppState } from "../store/types";
 import type { Action } from "../store/reducer";
 
 export type LocationSyncCallbacks = {
@@ -8,12 +7,19 @@ export type LocationSyncCallbacks = {
   onNoCity?: () => void;
 };
 
+export type LocationSyncOptions = {
+  /** When true, use cached browser position only (fast, no GPS refresh). */
+  cacheOnly?: boolean;
+};
+
 export function applyLocationSync(
   dispatch: (action: Action) => void,
-  state: AppState,
   callbacks: LocationSyncCallbacks,
+  options: LocationSyncOptions = {},
 ): void {
-  if (!state.settings.locationSyncEnabled || checkGeolocationSupport()) return;
+  if (checkGeolocationSupport()) return;
+
+  const cacheOnly = options.cacheOnly ?? true;
 
   requestGeolocationPosition(
     (pos) => {
@@ -21,6 +27,8 @@ export function applyLocationSync(
       if (!entry) callbacks.onNoCity?.();
     },
     (reason) => callbacks.onError?.(reason),
-    { cacheOnly: true, maximumAge: 600_000 },
+    cacheOnly
+      ? { cacheOnly: true, maximumAge: 600_000 }
+      : { maximumAge: 60_000 },
   );
 }

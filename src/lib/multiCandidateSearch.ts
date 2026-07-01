@@ -1,3 +1,4 @@
+import { addDays } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
 import { generateId } from "./id";
 import { formatClockTime, formatDateHeading, safeFormatInTimeZone } from "./timezone";
@@ -26,17 +27,22 @@ export function localDateTimeToUtc(timezone: string, date: string, hour: number,
   return fromZonedTime(local, timezone);
 }
 
-export function normalizeCandidateTimes(candidate: DateCandidate): DateCandidate {
+export function isOvernightCandidate(candidate: DateCandidate): boolean {
   const startTotal = candidate.startHour * 60 + candidate.startMinute;
   const endTotal = candidate.endHour * 60 + candidate.endMinute;
-  if (endTotal >= startTotal) return candidate;
-  return {
-    ...candidate,
-    startHour: candidate.endHour,
-    startMinute: candidate.endMinute,
-    endHour: candidate.startHour,
-    endMinute: candidate.startMinute,
-  };
+  return endTotal < startTotal;
+}
+
+function addDaysToDateString(date: string, days: number): string {
+  const [y, m, d] = date.split("-").map(Number);
+  const next = addDays(new Date(y, m - 1, d), days);
+  const month = String(next.getMonth() + 1).padStart(2, "0");
+  const day = String(next.getDate()).padStart(2, "0");
+  return `${next.getFullYear()}-${month}-${day}`;
+}
+
+export function candidateEndDate(candidate: DateCandidate): string {
+  return isOvernightCandidate(candidate) ? addDaysToDateString(candidate.date, 1) : candidate.date;
 }
 
 export function buildDefaultTargets(
@@ -56,22 +62,22 @@ export function buildMultiCandidateResults(
   targetCities: City[],
 ): MultiCandidateBlock[] {
   return candidates.map((raw) => {
-    const candidate = normalizeCandidateTimes(raw);
+    const endDate = candidateEndDate(raw);
     const startUtc = localDateTimeToUtc(
       baseCity.timezone,
-      candidate.date,
-      candidate.startHour,
-      candidate.startMinute,
+      raw.date,
+      raw.startHour,
+      raw.startMinute,
     );
     const endUtc = localDateTimeToUtc(
       baseCity.timezone,
-      candidate.date,
-      candidate.endHour,
-      candidate.endMinute,
+      endDate,
+      raw.endHour,
+      raw.endMinute,
     );
     return {
       baseCity,
-      date: candidate.date,
+      date: raw.date,
       startUtc,
       endUtc,
       entries: targetCities.map((city) => ({ city, startUtc, endUtc })),

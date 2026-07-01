@@ -193,10 +193,6 @@
   touch-action: pan-x pan-y;
 }
 
-.slotsFollower {
-  will-change: transform;
-}
-
 .frameScroll::-webkit-scrollbar {
   display: none;
   width: 0;

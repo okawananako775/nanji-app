@@ -3750,5 +3750,197 @@
     "country": "Switzerland",
     "countryFlag": "🇨🇭",
     "timezone": "Europe/Zurich"
+  },
+  {
+    "id": "America/Punta_Arenas",
+    "name": "Punta Arenas",
+    "nameJa": "プンタアレナス",
+    "country": "Chile",
+    "countryFlag": "🇨🇱",
+    "timezone": "America/Punta_Arenas"
+  },
+  {
+    "id": "America/Argentina/Rio_Gallegos",
+    "name": "Río Gallegos",
+    "nameJa": "リオガイェゴス",
+    "country": "Argentina",
+    "countryFlag": "🇦🇷",
+    "timezone": "America/Argentina/Rio_Gallegos"
+  },
+  {
+    "id": "Africa/Porto-Novo",
+    "name": "Porto-Novo",
+    "nameJa": "ポルトノボ",
+    "country": "Benin",
+    "countryFlag": "🇧🇯",
+    "timezone": "Africa/Porto-Novo"
+  },
+  {
+    "id": "Africa/Bissau",
+    "name": "Bissau",
+    "nameJa": "ビサウ",
+    "country": "Guinea-Bissau",
+    "countryFlag": "🇬🇼",
+    "timezone": "Africa/Bissau"
+  },
+  {
+    "id": "Africa/Niamey",
+    "name": "Niamey",
+    "nameJa": "ニアメ",
+    "country": "Niger",
+    "countryFlag": "🇳🇪",
+    "timezone": "Africa/Niamey"
+  },
+  {
+    "id": "Africa/Lome",
+    "name": "Lomé",
+    "nameJa": "ロメ",
+    "country": "Togo",
+    "countryFlag": "🇹🇬",
+    "timezone": "Africa/Lome"
+  },
+  {
+    "id": "Atlantic/Faroe",
+    "name": "Tórshavn",
+    "nameJa": "トースハウン",
+    "country": "Faroe Islands",
+    "countryFlag": "🇫🇴",
+    "timezone": "Atlantic/Faroe"
+  },
+  {
+    "id": "Arctic/Longyearbyen",
+    "name": "Longyearbyen",
+    "nameJa": "ロングイェールビーン",
+    "country": "Svalbard",
+    "countryFlag": "🇸🇯",
+    "timezone": "Arctic/Longyearbyen"
+  },
+  {
+    "id": "America/Juneau",
+    "name": "Juneau",
+    "nameJa": "ジュノー",
+    "country": "United States",
+    "countryFlag": "🇺🇸",
+    "timezone": "America/Juneau"
+  },
+  {
+    "id": "Pacific/Efate",
+    "name": "Port Vila",
+    "nameJa": "ポートビラ",
+    "country": "Vanuatu",
+    "countryFlag": "🇻🇺",
+    "timezone": "Pacific/Efate"
+  },
+  {
+    "id": "Pacific/Rarotonga",
+    "name": "Rarotonga",
+    "nameJa": "ラロトンガ",
+    "country": "Cook Islands",
+    "countryFlag": "🇨🇰",
+    "timezone": "Pacific/Rarotonga"
+  },
+  {
+    "id": "Pacific/Easter",
+    "name": "Easter Island",
+    "nameJa": "イースター島",
+    "country": "Chile",
+    "countryFlag": "🇨🇱",
+    "timezone": "Pacific/Easter"
+  },
+  {
+    "id": "America/Port-au-Prince",
+    "name": "Port-au-Prince",
+    "nameJa": "ポルトープランス",
+    "country": "Haiti",
+    "countryFlag": "🇭🇹",
+    "timezone": "America/Port-au-Prince"
+  },
+  {
+    "id": "Australia/Hobart",
+    "name": "Hobart",
+    "nameJa": "ホバート",
+    "country": "Australia",
+    "countryFlag": "🇦🇺",
+    "timezone": "Australia/Hobart"
+  },
+  {
+    "id": "Australia/Darwin",
+    "name": "Darwin",
+    "nameJa": "ダーウィン",
+    "country": "Australia",
+    "countryFlag": "🇦🇺",
+    "timezone": "Australia/Darwin"
+  },
+  {
+    "id": "Australia/Broken_Hill",
+    "name": "Broken Hill",
+    "nameJa": "ブロークンヒル",
+    "country": "Australia",
+    "countryFlag": "🇦🇺",
+    "timezone": "Australia/Broken_Hill"
+  },
+  {
+    "id": "America/Bahia",
+    "name": "Salvador",
+    "nameJa": "サルバドール",
+    "country": "Brazil",
+    "countryFlag": "🇧🇷",
+    "timezone": "America/Bahia"
+  },
+  {
+    "id": "Pacific/Kiritimati",
+    "name": "Kiritimati",
+    "nameJa": "キリスィマスィ",
+    "country": "Kiribati",
+    "countryFlag": "🇰🇮",
+    "timezone": "Pacific/Kiritimati"
+  },
+  {
+    "id": "Pacific/Majuro",
+    "name": "Majuro",
+    "nameJa": "マジュロ",
+    "country": "Marshall Islands",
+    "countryFlag": "🇲🇭",
+    "timezone": "Pacific/Majuro"
+  },
+  {
+    "id": "Pacific/Tarawa",
+    "name": "Tarawa",
+    "nameJa": "タラワ",
+    "country": "Kiribati",
+    "countryFlag": "🇰🇮",
+    "timezone": "Pacific/Tarawa"
+  },
+  {
+    "id": "Pacific/Funafuti",
+    "name": "Funafuti",
+    "nameJa": "フナフティ",
+    "country": "Tuvalu",
+    "countryFlag": "🇹🇻",
+    "timezone": "Pacific/Funafuti"
+  },
+  {
+    "id": "Pacific/Pohnpei",
+    "name": "Pohnpei",
+    "nameJa": "ポンペイ",
+    "country": "Micronesia",
+    "countryFlag": "🇫🇲",
+    "timezone": "Pacific/Pohnpei"
+  },
+  {
+    "id": "Pacific/Saipan",
+    "name": "Saipan",
+    "nameJa": "サイパン",
+    "country": "Northern Mariana Islands",
+    "countryFlag": "🇲🇵",
+    "timezone": "Pacific/Saipan"
+  },
+  {
+    "id": "Asia/Barnaul",
+    "name": "Barnaul",
+    "nameJa": "バルナウル",
+    "country": "Russia",
+    "countryFlag": "🇷🇺",
+    "timezone": "Asia/Barnaul"
   }
 ]

@@ -1,17 +1,35 @@
-import { addHours } from "date-fns";
-import { getZonedParts } from "./timezone";
-import { isTimelineDayInRange } from "./timeGrid";
+import { addDays, addHours } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
+import { TIMELINE_HALF_DAYS, isTimelineDayInRange } from "./timeGrid";
+import { getZonedParts, safeFormatInTimeZone } from "./timezone";
+
+/** Max hours for relative time search (= timeline half-range). */
+export const TIMELINE_MAX_RELATIVE_HOURS = TIMELINE_HALF_DAYS * 24;
+
+function calendarDayDiffInTimezone(timezone: string, from: Date, to: Date): number {
+  const toUtcDay = (date: Date) => {
+    const [y, m, d] = formatInTimeZone(date, timezone, "yyyy-MM-dd").split("-").map(Number);
+    return Date.UTC(y, m - 1, d);
+  };
+  return Math.round((toUtcDay(to) - toUtcDay(from)) / 86_400_000);
+}
+
+export function getTimelineDateBounds(
+  timezone: string,
+  anchor = new Date(),
+): { minDate: string; maxDate: string } {
+  return {
+    minDate: safeFormatInTimeZone(addDays(anchor, -TIMELINE_HALF_DAYS), timezone, "yyyy-MM-dd"),
+    maxDate: safeFormatInTimeZone(addDays(anchor, TIMELINE_HALF_DAYS), timezone, "yyyy-MM-dd"),
+  };
+}
 
 export type TimeSearchTab = "single" | "relative" | "multi";
 
 /** Map a UTC instant to a home-TZ day offset + hour for the timeline grid. */
 export function jumpTargetFromUtc(homeTz: string, targetUtc: Date): { day: number; hour: number } {
-  const nowParts = getZonedParts(new Date(), homeTz);
+  const dayDiff = calendarDayDiffInTimezone(homeTz, new Date(), targetUtc);
   const targetParts = getZonedParts(targetUtc, homeTz);
-
-  const nowDay = new Date(nowParts.year, nowParts.month, nowParts.day);
-  const targetDay = new Date(targetParts.year, targetParts.month, targetParts.day);
-  const dayDiff = Math.round((targetDay.getTime() - nowDay.getTime()) / 86400000);
 
   return {
     day: dayDiff,

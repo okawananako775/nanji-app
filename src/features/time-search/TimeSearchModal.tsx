@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { addDays } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
 import { Modal } from "../../components/Modal";
 import { CalendarDatePicker } from "../../components/CalendarDatePicker";
 import { useSegmentIndicator } from "../../hooks/useSegmentIndicator";
 import { catalogToCity, CITY_CATALOG, getCityDisplayName } from "../../lib/cities";
-import { clampDateInput, jumpTargetFromUtc, jumpTargetRelative } from "../../lib/timeSearchJump";
+import {
+  clampDateInput,
+  getTimelineDateBounds,
+  jumpTargetFromUtc,
+  jumpTargetRelative,
+  TIMELINE_MAX_RELATIVE_HOURS,
+} from "../../lib/timeSearchJump";
 import { getZonedParts, safeFormatInTimeZone } from "../../lib/timezone";
 import { useStore } from "../../store/StoreContext";
 import { selectDisplayCities, selectHomeCity, selectVisibleCities } from "../../store/selectors";
@@ -79,10 +84,6 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
     [tabSegRef0, tabSegRef1, tabSegRef2],
   );
 
-  const homeTimezone = home?.timezone ?? "UTC";
-  const minDate = safeFormatInTimeZone(addDays(new Date(), -30), homeTimezone, "yyyy-MM-dd");
-  const maxDate = safeFormatInTimeZone(addDays(new Date(), 30), homeTimezone, "yyyy-MM-dd");
-
   const initMultiState = useCallback(() => {
     if (!home) return;
     setBaseCityId(home.id);
@@ -150,9 +151,12 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
     return catalogToCity(entry, cityId === home?.id, 0);
   };
 
+  const singleBase = resolveCity(singleCityId) ?? home;
+  const singleDateBounds = getTimelineDateBounds(singleBase?.timezone ?? "UTC");
+
   const applySingle = () => {
-    if (!home) return;
-    const base = resolveCity(singleCityId) ?? home;
+    if (!home || !singleBase) return;
+    const base = singleBase;
     ensureCityVisibleOnTimeline(dispatch, state, base);
 
     if (singleTargetCityId && singleTargetCityId !== base.id) {
@@ -160,7 +164,7 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
       if (target) ensureCityVisibleOnTimeline(dispatch, state, target);
     }
 
-    const clampedDate = clampDateInput(date, minDate, maxDate);
+    const clampedDate = clampDateInput(date, singleDateBounds.minDate, singleDateBounds.maxDate);
     const utc = fromZonedTime(
       `${clampedDate}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00`,
       base.timezone,
@@ -170,11 +174,16 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
     onClose();
   };
 
+  const clampedRelativeHours = Math.min(
+    TIMELINE_MAX_RELATIVE_HOURS,
+    Math.max(1, relativeHours || 1),
+  );
+
   const applyRelative = () => {
     if (!home) return;
     const target = resolveCity(relativeCityId) ?? home;
     ensureCityVisibleOnTimeline(dispatch, state, target);
-    const jump = jumpTargetRelative(home.timezone, relativeHours, direction);
+    const jump = jumpTargetRelative(home.timezone, clampedRelativeHours, direction);
     dispatch({ type: "SET_HIGHLIGHT", payload: { day: jump.day, hour: jump.hour } });
     onClose();
   };
@@ -293,8 +302,8 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
             <div className={styles.label}>{t("timeSearch.date")}</div>
             <CalendarDatePicker
               value={date}
-              min={minDate}
-              max={maxDate}
+              min={singleDateBounds.minDate}
+              max={singleDateBounds.maxDate}
               onChange={setDate}
             />
           </div>
@@ -346,14 +355,18 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
                 className={styles.input}
                 type="number"
                 min={1}
-                max={72}
+                max={TIMELINE_MAX_RELATIVE_HOURS}
                 value={relativeHours}
-                onChange={(e) => setRelativeHours(Number(e.target.value))}
+                onChange={(e) =>
+                  setRelativeHours(
+                    Math.min(TIMELINE_MAX_RELATIVE_HOURS, Math.max(1, Number(e.target.value) || 1)),
+                  )
+                }
               />
               <button
                 type="button"
                 className={styles.step}
-                onClick={() => setRelativeHours((v) => Math.min(72, v + 1))}
+                onClick={() => setRelativeHours((v) => Math.min(TIMELINE_MAX_RELATIVE_HOURS, v + 1))}
               >
                 ＋
               </button>

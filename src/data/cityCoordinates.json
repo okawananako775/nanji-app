@@ -1,0 +1,1974 @@
+{
+  "europe-aarhus": {
+    "lat": 56.15674,
+    "lng": 10.21076
+  },
+  "Africa/Abidjan": {
+    "lat": 5.35444,
+    "lng": -4.00167
+  },
+  "abu-dhabi": {
+    "lat": 24.45118,
+    "lng": 54.39696
+  },
+  "africa-abuja": {
+    "lat": 9.05785,
+    "lng": 7.49508
+  },
+  "Africa/Accra": {
+    "lat": 5.55602,
+    "lng": -0.1969
+  },
+  "Africa/Addis_Ababa": {
+    "lat": 9.02497,
+    "lng": 38.74689
+  },
+  "adelaide": {
+    "lat": -34.92866,
+    "lng": 138.59863
+  },
+  "asia-ahmedabad": {
+    "lat": 23.02579,
+    "lng": 72.58727
+  },
+  "albuquerque": {
+    "lat": 35.08449,
+    "lng": -106.65114
+  },
+  "africa-alexandria": {
+    "lat": 31.20176,
+    "lng": 29.91582
+  },
+  "Africa/Algiers": {
+    "lat": 36.73225,
+    "lng": 3.08746
+  },
+  "Asia/Almaty": {
+    "lat": 43.25667,
+    "lng": 76.92861
+  },
+  "Asia/Amman": {
+    "lat": 31.95522,
+    "lng": 35.94503
+  },
+  "Europe/Amsterdam": {
+    "lat": 52.37403,
+    "lng": 4.88969
+  },
+  "America/Anchorage": {
+    "lat": 61.2181,
+    "lng": -149.9003
+  },
+  "Africa/Antananarivo": {
+    "lat": -18.91368,
+    "lng": 47.53613
+  },
+  "america-antofagasta": {
+    "lat": -23.65236,
+    "lng": -70.3954
+  },
+  "europe-antwerp": {
+    "lat": 51.22047,
+    "lng": 4.40026
+  },
+  "Pacific/Apia": {
+    "lat": -13.83333,
+    "lng": -171.76666
+  },
+  "america-arequipa": {
+    "lat": -16.39889,
+    "lng": -71.535
+  },
+  "Asia/Ashgabat": {
+    "lat": 37.95,
+    "lng": 58.38333
+  },
+  "Africa/Asmara": {
+    "lat": 15.33805,
+    "lng": 38.93184
+  },
+  "asia-astana": {
+    "lat": 43.25667,
+    "lng": 76.92861
+  },
+  "America/Asuncion": {
+    "lat": -25.28646,
+    "lng": -57.647
+  },
+  "Europe/Athens": {
+    "lat": 37.98376,
+    "lng": 23.72784
+  },
+  "atlanta": {
+    "lat": 33.749,
+    "lng": -84.388
+  },
+  "Pacific/Auckland": {
+    "lat": -36.84853,
+    "lng": 174.76349
+  },
+  "austin": {
+    "lat": 30.26715,
+    "lng": -97.74306
+  },
+  "Asia/Baghdad": {
+    "lat": 33.34058,
+    "lng": 44.40088
+  },
+  "Asia/Baku": {
+    "lat": 40.37767,
+    "lng": 49.89201
+  },
+  "bali": {
+    "lat": -8.4095,
+    "lng": 115.1889
+  },
+  "baltimore": {
+    "lat": 39.29038,
+    "lng": -76.61219
+  },
+  "Africa/Bamako": {
+    "lat": 12.65,
+    "lng": -8
+  },
+  "Asia/Brunei": {
+    "lat": 4.89035,
+    "lng": 114.94006
+  },
+  "asia-bandung": {
+    "lat": -6.92222,
+    "lng": 107.60694
+  },
+  "bangalore": {
+    "lat": 31.18874,
+    "lng": 75.99495
+  },
+  "Asia/Bangkok": {
+    "lat": 13.75398,
+    "lng": 100.50144
+  },
+  "Africa/Banjul": {
+    "lat": 13.45274,
+    "lng": -16.57803
+  },
+  "barcelona": {
+    "lat": 41.38879,
+    "lng": 2.15899
+  },
+  "america-barranquilla": {
+    "lat": 10.96854,
+    "lng": -74.78132
+  },
+  "europe-basel": {
+    "lat": 47.55839,
+    "lng": 7.57327
+  },
+  "Asia/Shanghai": {
+    "lat": 31.22222,
+    "lng": 121.45806
+  },
+  "Asia/Beirut": {
+    "lat": 33.89332,
+    "lng": 35.50157
+  },
+  "America/Belem": {
+    "lat": -1.45583,
+    "lng": -48.50444
+  },
+  "europe-belfast": {
+    "lat": 54.5973,
+    "lng": -5.9301
+  },
+  "Europe/Belgrade": {
+    "lat": 44.80401,
+    "lng": 20.46513
+  },
+  "america-belize": {
+    "lat": 17.49952,
+    "lng": -88.19756
+  },
+  "europe-bergen": {
+    "lat": 60.39299,
+    "lng": 5.32415
+  },
+  "Europe/Berlin": {
+    "lat": 52.52437,
+    "lng": 13.41053
+  },
+  "europe-bern": {
+    "lat": 46.94809,
+    "lng": 7.44744
+  },
+  "europe-bilbao": {
+    "lat": 43.26271,
+    "lng": -2.92528
+  },
+  "birmingham-us": {
+    "lat": 33.5186,
+    "lng": -86.8104
+  },
+  "europe-birmingham-uk": {
+    "lat": 52.4862,
+    "lng": -1.8904
+  },
+  "Asia/Bishkek": {
+    "lat": 42.87,
+    "lng": 74.59
+  },
+  "Africa/Blantyre": {
+    "lat": -15.7861,
+    "lng": 35.0058
+  },
+  "America/Bogota": {
+    "lat": 4.60971,
+    "lng": -74.08175
+  },
+  "boise": {
+    "lat": 43.6135,
+    "lng": -116.20345
+  },
+  "europe-bologna": {
+    "lat": 44.49381,
+    "lng": 11.33875
+  },
+  "europe-bordeaux": {
+    "lat": 44.84044,
+    "lng": -0.5805
+  },
+  "boston": {
+    "lat": 42.3601,
+    "lng": -71.0589
+  },
+  "brasilia": {
+    "lat": -15.77972,
+    "lng": -47.92972
+  },
+  "europe-bratislava": {
+    "lat": 48.14816,
+    "lng": 17.10674
+  },
+  "Africa/Brazzaville": {
+    "lat": -4.2634,
+    "lng": 15.2429
+  },
+  "America/Barbados": {
+    "lat": 13.10732,
+    "lng": -59.62021
+  },
+  "brisbane": {
+    "lat": -27.46794,
+    "lng": 153.02809
+  },
+  "europe-bristol": {
+    "lat": 51.4545,
+    "lng": -2.5879
+  },
+  "europe-brno": {
+    "lat": 49.19522,
+    "lng": 16.60796
+  },
+  "Europe/Brussels": {
+    "lat": 50.85045,
+    "lng": 4.34878
+  },
+  "Europe/Bucharest": {
+    "lat": 44.43225,
+    "lng": 26.10626
+  },
+  "Europe/Budapest": {
+    "lat": 47.49835,
+    "lng": 19.04045
+  },
+  "America/Buenos_Aires": {
+    "lat": -34.61315,
+    "lng": -58.37723
+  },
+  "buffalo": {
+    "lat": 42.88645,
+    "lng": -78.87837
+  },
+  "busan": {
+    "lat": 35.10168,
+    "lng": 129.03004
+  },
+  "asia-cagayan-de-oro": {
+    "lat": 8.48222,
+    "lng": 124.64722
+  },
+  "Africa/Cairo": {
+    "lat": 30.06263,
+    "lng": 31.24967
+  },
+  "calgary": {
+    "lat": 51.05011,
+    "lng": -114.08529
+  },
+  "america-cali": {
+    "lat": 3.43722,
+    "lng": -76.5225
+  },
+  "asia-can-tho": {
+    "lat": 10.03711,
+    "lng": 105.78825
+  },
+  "cancun": {
+    "lat": 21.17429,
+    "lng": -86.84656
+  },
+  "cape-town": {
+    "lat": -33.92584,
+    "lng": 18.42322
+  },
+  "America/Caracas": {
+    "lat": 10.48801,
+    "lng": -66.87919
+  },
+  "europe-cardiff": {
+    "lat": 51.4816,
+    "lng": -3.1791
+  },
+  "america-cartagena": {
+    "lat": 10.39972,
+    "lng": -75.51444
+  },
+  "Africa/Casablanca": {
+    "lat": 33.58831,
+    "lng": -7.61138
+  },
+  "america-cayenne": {
+    "lat": 4.9224,
+    "lng": -52.3135
+  },
+  "cebu": {
+    "lat": 10.31672,
+    "lng": 123.89071
+  },
+  "asia-chandigarh": {
+    "lat": 30.73629,
+    "lng": 76.7884
+  },
+  "asia-changsha": {
+    "lat": 28.19874,
+    "lng": 112.97087
+  },
+  "charlotte": {
+    "lat": 35.22709,
+    "lng": -80.84313
+  },
+  "Pacific/Chatham": {
+    "lat": -36.84853,
+    "lng": 174.76349
+  },
+  "chengdu": {
+    "lat": 30.66667,
+    "lng": 104.06667
+  },
+  "chennai": {
+    "lat": 13.08784,
+    "lng": 80.27847
+  },
+  "asia-chiang-mai": {
+    "lat": 18.79038,
+    "lng": 98.98468
+  },
+  "America/Chicago": {
+    "lat": 41.8781,
+    "lng": -87.6298
+  },
+  "europe-chisinau": {
+    "lat": 47.00556,
+    "lng": 28.8575
+  },
+  "Asia/Choibalsan": {
+    "lat": 48.07257,
+    "lng": 114.53264
+  },
+  "asia-chongqing": {
+    "lat": 29.56278,
+    "lng": 106.55278
+  },
+  "cincinnati": {
+    "lat": 39.12711,
+    "lng": -84.51439
+  },
+  "cleveland": {
+    "lat": 41.4995,
+    "lng": -81.69541
+  },
+  "europe-cluj": {
+    "lat": 46.76667,
+    "lng": 23.6
+  },
+  "asia-coimbatore": {
+    "lat": 11.00555,
+    "lng": 76.96612
+  },
+  "europe-cologne": {
+    "lat": 52.52437,
+    "lng": 13.41053
+  },
+  "Asia/Colombo": {
+    "lat": 6.93548,
+    "lng": 79.84868
+  },
+  "columbus": {
+    "lat": 39.96118,
+    "lng": -82.99879
+  },
+  "Africa/Conakry": {
+    "lat": 9.53795,
+    "lng": -13.67729
+  },
+  "america-concepcion": {
+    "lat": -36.82699,
+    "lng": -73.04977
+  },
+  "africa-constantine": {
+    "lat": 36.365,
+    "lng": 6.61472
+  },
+  "Europe/Copenhagen": {
+    "lat": 55.67594,
+    "lng": 12.56553
+  },
+  "America/Argentina/Cordoba": {
+    "lat": -31.4135,
+    "lng": -64.18105
+  },
+  "europe-cork": {
+    "lat": 51.89797,
+    "lng": -8.47061
+  },
+  "America/Cuiaba": {
+    "lat": -15.59611,
+    "lng": -56.09667
+  },
+  "america-cusco": {
+    "lat": -13.52264,
+    "lng": -71.96734
+  },
+  "asia-da-nang": {
+    "lat": 16.06778,
+    "lng": 108.22083
+  },
+  "asia-daegu": {
+    "lat": 35.87028,
+    "lng": 128.59111
+  },
+  "Africa/Dakar": {
+    "lat": 14.6937,
+    "lng": -17.44406
+  },
+  "asia-dalian": {
+    "lat": 38.91222,
+    "lng": 121.60222
+  },
+  "dallas": {
+    "lat": 32.7767,
+    "lng": -96.797
+  },
+  "Asia/Damascus": {
+    "lat": 33.5102,
+    "lng": 36.29128
+  },
+  "Africa/Dar_es_Salaam": {
+    "lat": -6.82349,
+    "lng": 39.26951
+  },
+  "asia-davao": {
+    "lat": 7.07306,
+    "lng": 125.61278
+  },
+  "europe-debrecen": {
+    "lat": 47.53167,
+    "lng": 21.62444
+  },
+  "delhi": {
+    "lat": 28.65195,
+    "lng": 77.23149
+  },
+  "asia-denpasar": {
+    "lat": -8.65,
+    "lng": 115.21667
+  },
+  "America/Denver": {
+    "lat": 39.7392,
+    "lng": -104.9903
+  },
+  "des-moines": {
+    "lat": 41.60054,
+    "lng": -93.60911
+  },
+  "America/Detroit": {
+    "lat": 42.3314,
+    "lng": -83.0458
+  },
+  "Asia/Dhaka": {
+    "lat": 23.7104,
+    "lng": 90.40744
+  },
+  "Asia/Dili": {
+    "lat": -8.55861,
+    "lng": 125.57361
+  },
+  "Africa/Djibouti": {
+    "lat": 11.5721,
+    "lng": 43.1456
+  },
+  "Asia/Qatar": {
+    "lat": 25.28545,
+    "lng": 51.53096
+  },
+  "Africa/Douala": {
+    "lat": 4.04827,
+    "lng": 9.70428
+  },
+  "europe-dresden": {
+    "lat": 51.05089,
+    "lng": 13.73832
+  },
+  "Asia/Dubai": {
+    "lat": 25.07725,
+    "lng": 55.30927
+  },
+  "Europe/Dublin": {
+    "lat": 53.33306,
+    "lng": -6.24889
+  },
+  "africa-durban": {
+    "lat": -29.8579,
+    "lng": 31.0292
+  },
+  "Asia/Dushanbe": {
+    "lat": 38.53575,
+    "lng": 68.77905
+  },
+  "europe-dusseldorf": {
+    "lat": 51.22172,
+    "lng": 6.77616
+  },
+  "edinburgh": {
+    "lat": 55.9533,
+    "lng": -3.1883
+  },
+  "America/Edmonton": {
+    "lat": 53.55014,
+    "lng": -113.46871
+  },
+  "el-paso": {
+    "lat": 31.75872,
+    "lng": -106.48693
+  },
+  "africa-fes": {
+    "lat": 34.03313,
+    "lng": -5.00028
+  },
+  "europe-florence": {
+    "lat": 43.77925,
+    "lng": 11.24626
+  },
+  "America/Fortaleza": {
+    "lat": -3.71722,
+    "lng": -38.54306
+  },
+  "frankfurt": {
+    "lat": 50.11552,
+    "lng": 8.68417
+  },
+  "Africa/Freetown": {
+    "lat": 8.48714,
+    "lng": -13.2356
+  },
+  "fresno": {
+    "lat": 36.74773,
+    "lng": -119.77237
+  },
+  "fukuoka": {
+    "lat": 33.6,
+    "lng": 130.41667
+  },
+  "Africa/Gaborone": {
+    "lat": -24.65451,
+    "lng": 25.90859
+  },
+  "europe-galway": {
+    "lat": 53.33861,
+    "lng": -8.945
+  },
+  "europe-gdansk": {
+    "lat": 54.35227,
+    "lng": 18.64912
+  },
+  "geneva": {
+    "lat": 47.36667,
+    "lng": 8.55
+  },
+  "america-george-town": {
+    "lat": 19.2869,
+    "lng": -81.3674
+  },
+  "america-georgetown": {
+    "lat": 6.80448,
+    "lng": -58.15527
+  },
+  "africa-giza": {
+    "lat": 30.00944,
+    "lng": 31.20861
+  },
+  "europe-glasgow": {
+    "lat": 55.8642,
+    "lng": -4.2518
+  },
+  "europe-gothenburg": {
+    "lat": 59.32938,
+    "lng": 18.06871
+  },
+  "america-grand-turk": {
+    "lat": 21.4675,
+    "lng": -71.1389
+  },
+  "europe-graz": {
+    "lat": 47.06667,
+    "lng": 15.45
+  },
+  "guadalajara": {
+    "lat": 20.66682,
+    "lng": -103.39182
+  },
+  "Pacific/Guam": {
+    "lat": 13.4443,
+    "lng": 144.7937
+  },
+  "guangzhou": {
+    "lat": 23.11667,
+    "lng": 113.25
+  },
+  "America/Guatemala": {
+    "lat": 14.64072,
+    "lng": -90.51327
+  },
+  "america-guayaquil-ec": {
+    "lat": -2.19616,
+    "lng": -79.88621
+  },
+  "asia-guwahati": {
+    "lat": 26.1844,
+    "lng": 91.7458
+  },
+  "asia-hai-phong": {
+    "lat": 21.06308,
+    "lng": 106.0857
+  },
+  "halifax": {
+    "lat": 44.6464,
+    "lng": -63.57291
+  },
+  "hamburg": {
+    "lat": 53.55073,
+    "lng": 9.99302
+  },
+  "asia-hangzhou": {
+    "lat": 30.29365,
+    "lng": 120.16142
+  },
+  "hanoi": {
+    "lat": 21.0245,
+    "lng": 105.84117
+  },
+  "Africa/Harare": {
+    "lat": -17.82772,
+    "lng": 31.05337
+  },
+  "asia-harbin": {
+    "lat": 45.75,
+    "lng": 126.65
+  },
+  "hartford": {
+    "lat": 41.76371,
+    "lng": -72.68509
+  },
+  "America/Havana": {
+    "lat": 23.13302,
+    "lng": -82.38304
+  },
+  "Europe/Helsinki": {
+    "lat": 60.16952,
+    "lng": 24.93545
+  },
+  "Asia/Ho_Chi_Minh": {
+    "lat": 10.82302,
+    "lng": 106.62965
+  },
+  "Asia/Hong_Kong": {
+    "lat": 22.27832,
+    "lng": 114.17469
+  },
+  "Pacific/Guadalcanal": {
+    "lat": -9.43333,
+    "lng": 159.95
+  },
+  "Pacific/Honolulu": {
+    "lat": 21.3069,
+    "lng": -157.8583
+  },
+  "houston": {
+    "lat": 29.7604,
+    "lng": -95.3698
+  },
+  "Asia/Hovd": {
+    "lat": 44.67024,
+    "lng": 102.17491
+  },
+  "hyderabad": {
+    "lat": 17.38405,
+    "lng": 78.45636
+  },
+  "asia-incheon": {
+    "lat": 37.45646,
+    "lng": 126.70515
+  },
+  "indianapolis": {
+    "lat": 39.76838,
+    "lng": -86.15804
+  },
+  "asia-indore": {
+    "lat": 22.71792,
+    "lng": 75.8333
+  },
+  "america-iquitos": {
+    "lat": -3.74912,
+    "lng": -73.25383
+  },
+  "Asia/Irkutsk": {
+    "lat": 52.29778,
+    "lng": 104.29639
+  },
+  "islamabad": {
+    "lat": 33.72148,
+    "lng": 73.04329
+  },
+  "Europe/Istanbul": {
+    "lat": 41.01384,
+    "lng": 28.94966
+  },
+  "jacksonville": {
+    "lat": 30.33218,
+    "lng": -81.65565
+  },
+  "asia-jaipur": {
+    "lat": 26.91962,
+    "lng": 75.78781
+  },
+  "Asia/Jakarta": {
+    "lat": -6.21462,
+    "lng": 106.84513
+  },
+  "jeddah": {
+    "lat": 21.49012,
+    "lng": 39.18624
+  },
+  "asia-jeju": {
+    "lat": 33.50972,
+    "lng": 126.52194
+  },
+  "Asia/Jerusalem": {
+    "lat": 31.76904,
+    "lng": 35.21633
+  },
+  "Africa/Johannesburg": {
+    "lat": -26.20227,
+    "lng": 28.04363
+  },
+  "asia-johor-bahru": {
+    "lat": 1.4655,
+    "lng": 103.7578
+  },
+  "Asia/Kabul": {
+    "lat": 34.52813,
+    "lng": 69.17233
+  },
+  "Europe/Kaliningrad": {
+    "lat": 54.70649,
+    "lng": 20.51095
+  },
+  "Africa/Kampala": {
+    "lat": 0.31628,
+    "lng": 32.58219
+  },
+  "africa-kano": {
+    "lat": 12.00012,
+    "lng": 8.51672
+  },
+  "asia-kanpur": {
+    "lat": 26.46523,
+    "lng": 80.34975
+  },
+  "kansas-city": {
+    "lat": 39.09973,
+    "lng": -94.57857
+  },
+  "asia-kaohsiung": {
+    "lat": 22.61626,
+    "lng": 120.31333
+  },
+  "Asia/Karachi": {
+    "lat": 24.8608,
+    "lng": 67.0104
+  },
+  "Asia/Kathmandu": {
+    "lat": 27.70169,
+    "lng": 85.3206
+  },
+  "europe-kazan": {
+    "lat": 55.78874,
+    "lng": 49.12214
+  },
+  "europe-kharkiv": {
+    "lat": 49.9935,
+    "lng": 36.2304
+  },
+  "Africa/Khartoum": {
+    "lat": 15.55177,
+    "lng": 32.53241
+  },
+  "Africa/Kigali": {
+    "lat": -1.94995,
+    "lng": 30.05885
+  },
+  "America/Jamaica": {
+    "lat": 17.99702,
+    "lng": -76.79358
+  },
+  "Africa/Kinshasa": {
+    "lat": -4.4419,
+    "lng": 15.2663
+  },
+  "asia-kochi": {
+    "lat": 19.07283,
+    "lng": 72.88261
+  },
+  "kolkata": {
+    "lat": 22.56263,
+    "lng": 88.36304
+  },
+  "asia-kota-kinabalu": {
+    "lat": 5.9749,
+    "lng": 116.0724
+  },
+  "europe-krakow": {
+    "lat": 50.06143,
+    "lng": 19.93658
+  },
+  "Asia/Krasnoyarsk": {
+    "lat": 56.01839,
+    "lng": 92.86717
+  },
+  "Asia/Kuala_Lumpur": {
+    "lat": 3.1412,
+    "lng": 101.68653
+  },
+  "asia-kuching": {
+    "lat": 1.55,
+    "lng": 110.33333
+  },
+  "africa-kumasi": {
+    "lat": 6.68848,
+    "lng": -1.62443
+  },
+  "asia-kunming": {
+    "lat": 25.03889,
+    "lng": 102.71833
+  },
+  "Asia/Kuwait": {
+    "lat": 29.36972,
+    "lng": 47.97833
+  },
+  "Europe/Kiev": {
+    "lat": 50.4501,
+    "lng": 30.5234
+  },
+  "America/La_Paz": {
+    "lat": -16.5,
+    "lng": -68.15
+  },
+  "Africa/Lagos": {
+    "lat": 6.45407,
+    "lng": 3.39467
+  },
+  "lahore": {
+    "lat": 31.558,
+    "lng": 74.35071
+  },
+  "las-vegas": {
+    "lat": 36.17497,
+    "lng": -115.13722
+  },
+  "europe-leeds": {
+    "lat": 53.8008,
+    "lng": -1.5491
+  },
+  "europe-leipzig": {
+    "lat": 51.33962,
+    "lng": 12.37129
+  },
+  "asia-lhasa": {
+    "lat": 29.65,
+    "lng": 91.1
+  },
+  "America/Lima": {
+    "lat": -12.04318,
+    "lng": -77.02824
+  },
+  "Europe/Lisbon": {
+    "lat": 38.71667,
+    "lng": -9.13333
+  },
+  "europe-liverpool": {
+    "lat": 53.4084,
+    "lng": -2.9916
+  },
+  "europe-ljubljana": {
+    "lat": 46.05108,
+    "lng": 14.50513
+  },
+  "Europe/London": {
+    "lat": 51.5074,
+    "lng": -0.1278
+  },
+  "long-beach": {
+    "lat": 33.76696,
+    "lng": -118.18923
+  },
+  "America/Los_Angeles": {
+    "lat": 34.0522,
+    "lng": -118.2437
+  },
+  "louisville": {
+    "lat": 38.25424,
+    "lng": -85.75941
+  },
+  "Africa/Luanda": {
+    "lat": -8.83682,
+    "lng": 13.23432
+  },
+  "Africa/Lubumbashi": {
+    "lat": -11.6876,
+    "lng": 27.5026
+  },
+  "asia-lucknow": {
+    "lat": 26.83928,
+    "lng": 80.92313
+  },
+  "Africa/Lusaka": {
+    "lat": -15.40669,
+    "lng": 28.28713
+  },
+  "Europe/Luxembourg": {
+    "lat": 49.61167,
+    "lng": 6.13
+  },
+  "africa-luxor": {
+    "lat": 25.69893,
+    "lng": 32.6421
+  },
+  "europe-lviv": {
+    "lat": 49.83826,
+    "lng": 24.02324
+  },
+  "lyon": {
+    "lat": 45.74846,
+    "lng": 4.84671
+  },
+  "Asia/Macau": {
+    "lat": 22.20056,
+    "lng": 113.54611
+  },
+  "Europe/Madrid": {
+    "lat": 40.4165,
+    "lng": -3.70256
+  },
+  "asia-madurai": {
+    "lat": 9.919,
+    "lng": 78.11953
+  },
+  "Asia/Magadan": {
+    "lat": 59.5638,
+    "lng": 150.80347
+  },
+  "asia-makassar": {
+    "lat": -5.1477,
+    "lng": 119.4327
+  },
+  "Indian/Maldives": {
+    "lat": 4.17521,
+    "lng": 73.50916
+  },
+  "europe-malmo": {
+    "lat": 55.60587,
+    "lng": 13.00073
+  },
+  "America/Managua": {
+    "lat": 12.13282,
+    "lng": -86.2504
+  },
+  "Asia/Bahrain": {
+    "lat": 26.22787,
+    "lng": 50.58565
+  },
+  "America/Manaus": {
+    "lat": -3.10194,
+    "lng": -60.025
+  },
+  "manchester": {
+    "lat": 53.4808,
+    "lng": -2.2426
+  },
+  "Asia/Manila": {
+    "lat": 14.6042,
+    "lng": 120.9822
+  },
+  "Africa/Maputo": {
+    "lat": -25.96553,
+    "lng": 32.58322
+  },
+  "america-mar-del-plata": {
+    "lat": -38.00042,
+    "lng": -57.5562
+  },
+  "america-maracaibo": {
+    "lat": 10.66663,
+    "lng": -71.61245
+  },
+  "africa-marrakech": {
+    "lat": 33.58831,
+    "lng": -7.61138
+  },
+  "marseille": {
+    "lat": 43.29695,
+    "lng": 5.38107
+  },
+  "Africa/Maseru": {
+    "lat": -29.31667,
+    "lng": 27.48333
+  },
+  "Africa/Mbabane": {
+    "lat": -26.31667,
+    "lng": 31.13333
+  },
+  "asia-medan": {
+    "lat": 3.58333,
+    "lng": 98.66667
+  },
+  "medellin": {
+    "lat": 6.25184,
+    "lng": -75.56359
+  },
+  "melbourne": {
+    "lat": -37.814,
+    "lng": 144.96332
+  },
+  "memphis": {
+    "lat": 35.14953,
+    "lng": -90.04898
+  },
+  "America/Argentina/Mendoza": {
+    "lat": -32.89084,
+    "lng": -68.82717
+  },
+  "america-mendoza-cl": {
+    "lat": -33.45694,
+    "lng": -70.64827
+  },
+  "merida": {
+    "lat": 20.97537,
+    "lng": -89.61696
+  },
+  "America/Mexico_City": {
+    "lat": 19.42847,
+    "lng": -99.12766
+  },
+  "miami": {
+    "lat": 25.7617,
+    "lng": -80.1918
+  },
+  "milan": {
+    "lat": 45.46427,
+    "lng": 9.18951
+  },
+  "milwaukee": {
+    "lat": 43.0389,
+    "lng": -87.90647
+  },
+  "minneapolis": {
+    "lat": 44.97997,
+    "lng": -93.26384
+  },
+  "europe-minsk": {
+    "lat": 53.9,
+    "lng": 27.56667
+  },
+  "Africa/Mogadishu": {
+    "lat": 2.03711,
+    "lng": 45.34375
+  },
+  "africa-mombasa": {
+    "lat": -4.05466,
+    "lng": 39.66359
+  },
+  "Africa/Monrovia": {
+    "lat": 6.30054,
+    "lng": -10.7969
+  },
+  "America/Monterrey": {
+    "lat": 25.67507,
+    "lng": -100.31847
+  },
+  "America/Montevideo": {
+    "lat": -34.90328,
+    "lng": -56.18816
+  },
+  "montreal": {
+    "lat": 45.50884,
+    "lng": -73.58781
+  },
+  "Indian/Comoro": {
+    "lat": -11.7172,
+    "lng": 43.2473
+  },
+  "Europe/Moscow": {
+    "lat": 55.75222,
+    "lng": 37.61556
+  },
+  "Asia/Kolkata": {
+    "lat": 19.07283,
+    "lng": 72.88261
+  },
+  "munich": {
+    "lat": 48.13743,
+    "lng": 11.57549
+  },
+  "europe-murmansk": {
+    "lat": 68.97917,
+    "lng": 33.09251
+  },
+  "Asia/Muscat": {
+    "lat": 23.58413,
+    "lng": 58.40778
+  },
+  "Africa/Ndjamena": {
+    "lat": 12.1348,
+    "lng": 15.0557
+  },
+  "nagoya": {
+    "lat": 35.18147,
+    "lng": 136.90641
+  },
+  "asia-nagpur": {
+    "lat": 21.14631,
+    "lng": 79.08491
+  },
+  "Africa/Nairobi": {
+    "lat": -1.28333,
+    "lng": 36.81667
+  },
+  "asia-nanjing": {
+    "lat": 32.06167,
+    "lng": 118.77778
+  },
+  "europe-naples": {
+    "lat": 40.85216,
+    "lng": 14.26811
+  },
+  "nashville": {
+    "lat": 36.16589,
+    "lng": -86.78444
+  },
+  "america-nassau": {
+    "lat": 25.05823,
+    "lng": -77.34306
+  },
+  "new-orleans": {
+    "lat": 29.95465,
+    "lng": -90.07507
+  },
+  "America/New_York": {
+    "lat": 40.7128,
+    "lng": -74.006
+  },
+  "europe-nice": {
+    "lat": 43.70313,
+    "lng": 7.26608
+  },
+  "Europe/Nicosia": {
+    "lat": 35.17531,
+    "lng": 33.3642
+  },
+  "Pacific/Noumea": {
+    "lat": -22.2758,
+    "lng": 166.458
+  },
+  "Asia/Novosibirsk": {
+    "lat": 55.0415,
+    "lng": 82.9346
+  },
+  "Pacific/Tongatapu": {
+    "lat": -21.13938,
+    "lng": -175.2018
+  },
+  "europe-nuremberg": {
+    "lat": 49.81417,
+    "lng": 12.14161
+  },
+  "europe-odense": {
+    "lat": 55.39594,
+    "lng": 10.38831
+  },
+  "europe-odessa": {
+    "lat": 46.47747,
+    "lng": 30.73262
+  },
+  "oklahoma-city": {
+    "lat": 35.46756,
+    "lng": -97.51643
+  },
+  "omaha": {
+    "lat": 41.25626,
+    "lng": -95.94043
+  },
+  "africa-oran": {
+    "lat": 35.69906,
+    "lng": -0.63588
+  },
+  "america-aruba": {
+    "lat": 12.5211,
+    "lng": -69.9683
+  },
+  "orlando": {
+    "lat": 28.53834,
+    "lng": -81.37924
+  },
+  "osaka": {
+    "lat": 34.6937,
+    "lng": 135.5023
+  },
+  "Europe/Oslo": {
+    "lat": 59.91273,
+    "lng": 10.74609
+  },
+  "ottawa": {
+    "lat": 45.41117,
+    "lng": -75.69812
+  },
+  "Africa/Ouagadougou": {
+    "lat": 12.36566,
+    "lng": -1.53388
+  },
+  "asia-palembang": {
+    "lat": -2.91673,
+    "lng": 104.7458
+  },
+  "America/Panama": {
+    "lat": 8.9936,
+    "lng": -79.51973
+  },
+  "Pacific/Tahiti": {
+    "lat": -17.6509,
+    "lng": -149.426
+  },
+  "america-paramaribo": {
+    "lat": 5.86638,
+    "lng": -55.16682
+  },
+  "Europe/Paris": {
+    "lat": 48.85341,
+    "lng": 2.3488
+  },
+  "asia-patna": {
+    "lat": 25.59408,
+    "lng": 85.13563
+  },
+  "asia-pattaya": {
+    "lat": 12.93333,
+    "lng": 100.88333
+  },
+  "asia-penang": {
+    "lat": 6.12361,
+    "lng": 102.24333
+  },
+  "perth": {
+    "lat": -31.95224,
+    "lng": 115.8614
+  },
+  "Asia/Kamchatka": {
+    "lat": 53.04444,
+    "lng": 158.65076
+  },
+  "philadelphia": {
+    "lat": 39.9526,
+    "lng": -75.1652
+  },
+  "Asia/Phnom_Penh": {
+    "lat": 11.56245,
+    "lng": 104.91601
+  },
+  "phoenix": {
+    "lat": 33.4484,
+    "lng": -112.074
+  },
+  "asia-phuket": {
+    "lat": 7.89059,
+    "lng": 98.3981
+  },
+  "pittsburgh": {
+    "lat": 40.44062,
+    "lng": -79.99589
+  },
+  "Atlantic/Azores": {
+    "lat": 37.73952,
+    "lng": -25.66874
+  },
+  "africa-port-elizabeth": {
+    "lat": -33.96109,
+    "lng": 25.61494
+  },
+  "africa-port-harcourt": {
+    "lat": 4.77742,
+    "lng": 7.0134
+  },
+  "Indian/Mauritius": {
+    "lat": -20.16194,
+    "lng": 57.49889
+  },
+  "Pacific/Port_Moresby": {
+    "lat": -9.47723,
+    "lng": 147.15089
+  },
+  "america-port-of-spain": {
+    "lat": 10.6918,
+    "lng": -61.2225
+  },
+  "portland": {
+    "lat": 45.52345,
+    "lng": -122.67621
+  },
+  "porto": {
+    "lat": 41.14961,
+    "lng": -8.61099
+  },
+  "America/Porto_Velho": {
+    "lat": -8.76194,
+    "lng": -63.90389
+  },
+  "Europe/Prague": {
+    "lat": 50.08804,
+    "lng": 14.42076
+  },
+  "Atlantic/Cape_Verde": {
+    "lat": 14.9331,
+    "lng": -23.5133
+  },
+  "africa-pretoria": {
+    "lat": -25.74486,
+    "lng": 28.18783
+  },
+  "providence": {
+    "lat": 41.82399,
+    "lng": -71.41283
+  },
+  "asia-pune": {
+    "lat": 18.51957,
+    "lng": 73.85535
+  },
+  "america-punta-del-este": {
+    "lat": -34.94747,
+    "lng": -54.93382
+  },
+  "Asia/Pyongyang": {
+    "lat": 39.03385,
+    "lng": 125.75432
+  },
+  "asia-qingdao": {
+    "lat": 36.06488,
+    "lng": 120.38042
+  },
+  "asia-quezon-city": {
+    "lat": 14.6488,
+    "lng": 121.0509
+  },
+  "America/Guayaquil": {
+    "lat": -2.19616,
+    "lng": -79.88621
+  },
+  "africa-rabat": {
+    "lat": 34.01325,
+    "lng": -6.83255
+  },
+  "raleigh": {
+    "lat": 35.7721,
+    "lng": -78.63861
+  },
+  "America/Recife": {
+    "lat": -8.05389,
+    "lng": -34.88111
+  },
+  "reno": {
+    "lat": 39.52963,
+    "lng": -119.8138
+  },
+  "Indian/Reunion": {
+    "lat": 50.04606,
+    "lng": 1.42079
+  },
+  "Atlantic/Reykjavik": {
+    "lat": 64.13548,
+    "lng": -21.89541
+  },
+  "richmond": {
+    "lat": 37.55376,
+    "lng": -77.46026
+  },
+  "Europe/Riga": {
+    "lat": 56.946,
+    "lng": 24.10589
+  },
+  "rio-de-janeiro": {
+    "lat": -22.90642,
+    "lng": -43.18223
+  },
+  "Asia/Riyadh": {
+    "lat": 24.68773,
+    "lng": 46.72185
+  },
+  "Europe/Rome": {
+    "lat": 41.89193,
+    "lng": 12.51133
+  },
+  "america-rosario": {
+    "lat": -32.94682,
+    "lng": -60.63932
+  },
+  "europe-rostov": {
+    "lat": 57.1914,
+    "lng": 39.41394
+  },
+  "rotterdam": {
+    "lat": 51.9225,
+    "lng": 4.47917
+  },
+  "sacramento": {
+    "lat": 38.58157,
+    "lng": -121.4944
+  },
+  "saint-petersburg": {
+    "lat": 59.93863,
+    "lng": 30.31413
+  },
+  "salt-lake-city": {
+    "lat": 40.76078,
+    "lng": -111.89105
+  },
+  "america-salta": {
+    "lat": -24.7859,
+    "lng": -65.41166
+  },
+  "europe-salzburg": {
+    "lat": 47.79941,
+    "lng": 13.04399
+  },
+  "Europe/Samara": {
+    "lat": 53.20007,
+    "lng": 50.15
+  },
+  "san-antonio": {
+    "lat": 29.42412,
+    "lng": -98.49363
+  },
+  "san-diego": {
+    "lat": 32.71571,
+    "lng": -117.16472
+  },
+  "san-francisco": {
+    "lat": 37.7749,
+    "lng": -122.4194
+  },
+  "san-jose": {
+    "lat": 37.33939,
+    "lng": -121.89496
+  },
+  "America/Costa_Rica": {
+    "lat": 9.93333,
+    "lng": -84.08333
+  },
+  "America/Puerto_Rico": {
+    "lat": 18.46633,
+    "lng": -66.10572
+  },
+  "America/El_Salvador": {
+    "lat": 13.68935,
+    "lng": -89.18718
+  },
+  "Asia/Aden": {
+    "lat": 12.77944,
+    "lng": 45.03667
+  },
+  "america-santa-cruz": {
+    "lat": -17.78629,
+    "lng": -63.18117
+  },
+  "America/Santiago": {
+    "lat": -33.45694,
+    "lng": -70.64827
+  },
+  "America/Santo_Domingo": {
+    "lat": 18.47186,
+    "lng": -69.89232
+  },
+  "America/Sao_Paulo": {
+    "lat": -23.5475,
+    "lng": -46.63611
+  },
+  "sapporo": {
+    "lat": 43.06667,
+    "lng": 141.35
+  },
+  "europe-sarajevo": {
+    "lat": 43.8563,
+    "lng": 18.4131
+  },
+  "seattle": {
+    "lat": 47.6062,
+    "lng": -122.3321
+  },
+  "Asia/Seoul": {
+    "lat": 37.566,
+    "lng": 126.9784
+  },
+  "europe-seville": {
+    "lat": 39.57488,
+    "lng": -4.96387
+  },
+  "africa-sfax": {
+    "lat": 34.74056,
+    "lng": 10.76028
+  },
+  "shanghai": {
+    "lat": 31.22222,
+    "lng": 121.45806
+  },
+  "asia-shenyang": {
+    "lat": 41.79222,
+    "lng": 123.43278
+  },
+  "shenzhen": {
+    "lat": 22.54554,
+    "lng": 114.0683
+  },
+  "Asia/Singapore": {
+    "lat": 1.28967,
+    "lng": 103.85007
+  },
+  "europe-skopje": {
+    "lat": 41.99646,
+    "lng": 21.43141
+  },
+  "Europe/Sofia": {
+    "lat": 42.69751,
+    "lng": 23.32415
+  },
+  "africa-sousse": {
+    "lat": 35.82539,
+    "lng": 10.63699
+  },
+  "st-johns": {
+    "lat": 47.56494,
+    "lng": -52.70931
+  },
+  "st-louis": {
+    "lat": 38.62727,
+    "lng": -90.19789
+  },
+  "Europe/Stockholm": {
+    "lat": 59.32938,
+    "lng": 18.06871
+  },
+  "europe-strasbourg": {
+    "lat": 48.58392,
+    "lng": 7.74553
+  },
+  "europe-stuttgart": {
+    "lat": 48.78232,
+    "lng": 9.17702
+  },
+  "asia-surabaya": {
+    "lat": -7.24917,
+    "lng": 112.75083
+  },
+  "asia-surat": {
+    "lat": 21.19594,
+    "lng": 72.83023
+  },
+  "Pacific/Fiji": {
+    "lat": -18.14161,
+    "lng": 178.44149
+  },
+  "Australia/Sydney": {
+    "lat": -33.86785,
+    "lng": 151.20732
+  },
+  "asia-taichung": {
+    "lat": 24.1469,
+    "lng": 120.6839
+  },
+  "asia-tainan": {
+    "lat": 22.99083,
+    "lng": 120.21333
+  },
+  "Asia/Taipei": {
+    "lat": 25.04776,
+    "lng": 121.53185
+  },
+  "Europe/Tallinn": {
+    "lat": 59.43696,
+    "lng": 24.75353
+  },
+  "tampa": {
+    "lat": 27.94752,
+    "lng": -82.45843
+  },
+  "europe-tampere": {
+    "lat": 61.49911,
+    "lng": 23.78712
+  },
+  "Asia/Tashkent": {
+    "lat": 41.26465,
+    "lng": 69.21627
+  },
+  "Asia/Tbilisi": {
+    "lat": 41.69411,
+    "lng": 44.83368
+  },
+  "America/Tegucigalpa": {
+    "lat": 14.0818,
+    "lng": -87.20681
+  },
+  "Asia/Tehran": {
+    "lat": 35.69439,
+    "lng": 51.42151
+  },
+  "tel-aviv": {
+    "lat": 32.08088,
+    "lng": 34.78057
+  },
+  "africa-tema": {
+    "lat": 5.6698,
+    "lng": -0.01657
+  },
+  "europe-the-hague": {
+    "lat": 52.07667,
+    "lng": 4.29861
+  },
+  "europe-thessaloniki": {
+    "lat": 40.64361,
+    "lng": 22.93086
+  },
+  "Asia/Thimphu": {
+    "lat": 27.46609,
+    "lng": 89.64191
+  },
+  "asia-thiruvananthapuram": {
+    "lat": 8.4855,
+    "lng": 76.94924
+  },
+  "asia-tianjin": {
+    "lat": 39.14222,
+    "lng": 117.17667
+  },
+  "tijuana": {
+    "lat": 32.5027,
+    "lng": -117.00371
+  },
+  "europe-tirane": {
+    "lat": 41.3275,
+    "lng": 19.81889
+  },
+  "Asia/Tokyo": {
+    "lat": 35.6762,
+    "lng": 139.6503
+  },
+  "America/Toronto": {
+    "lat": 43.70011,
+    "lng": -79.4163
+  },
+  "europe-toulouse": {
+    "lat": 43.60426,
+    "lng": 1.44367
+  },
+  "Africa/Tripoli": {
+    "lat": 32.88743,
+    "lng": 13.18733
+  },
+  "europe-trondheim": {
+    "lat": 63.43049,
+    "lng": 10.39506
+  },
+  "tucson": {
+    "lat": 32.22174,
+    "lng": -110.92648
+  },
+  "Africa/Tunis": {
+    "lat": 36.81897,
+    "lng": 10.16579
+  },
+  "europe-turin": {
+    "lat": 45.07049,
+    "lng": 7.68682
+  },
+  "europe-turku": {
+    "lat": 60.45148,
+    "lng": 22.26869
+  },
+  "europe-ufa": {
+    "lat": 54.74306,
+    "lng": 55.96779
+  },
+  "Asia/Ulaanbaatar": {
+    "lat": 47.70693,
+    "lng": 106.95276
+  },
+  "asia-urumqi": {
+    "lat": 43.80096,
+    "lng": 87.60046
+  },
+  "america-ushuaia": {
+    "lat": -54.81084,
+    "lng": -68.31591
+  },
+  "europe-utrecht": {
+    "lat": 52.09083,
+    "lng": 5.12222
+  },
+  "europe-valencia": {
+    "lat": 39.46975,
+    "lng": -0.37739
+  },
+  "america-valencia-ve": {
+    "lat": 10.16202,
+    "lng": -68.00765
+  },
+  "Europe/Malta": {
+    "lat": 35.89968,
+    "lng": 14.5148
+  },
+  "america-valparaiso": {
+    "lat": -33.036,
+    "lng": -71.62963
+  },
+  "America/Vancouver": {
+    "lat": 49.24966,
+    "lng": -123.11934
+  },
+  "europe-venice": {
+    "lat": 45.43713,
+    "lng": 12.33265
+  },
+  "victoria": {
+    "lat": 48.4359,
+    "lng": -123.35155
+  },
+  "Indian/Seychelles": {
+    "lat": -4.6191,
+    "lng": 55.4513
+  },
+  "Europe/Vienna": {
+    "lat": 48.20849,
+    "lng": 16.37208
+  },
+  "Asia/Vientiane": {
+    "lat": 17.96667,
+    "lng": 102.6
+  },
+  "Europe/Vilnius": {
+    "lat": 54.68916,
+    "lng": 25.2798
+  },
+  "asia-visakhapatnam": {
+    "lat": 17.68009,
+    "lng": 83.20161
+  },
+  "Asia/Vladivostok": {
+    "lat": 43.10562,
+    "lng": 131.87353
+  },
+  "europe-volgograd": {
+    "lat": 48.71939,
+    "lng": 44.50183
+  },
+  "Europe/Warsaw": {
+    "lat": 52.22977,
+    "lng": 21.01178
+  },
+  "washington-dc": {
+    "lat": 38.9072,
+    "lng": -77.0369
+  },
+  "wellington": {
+    "lat": -41.28664,
+    "lng": 174.77557
+  },
+  "america-curacao": {
+    "lat": 12.1224,
+    "lng": -68.8824
+  },
+  "Africa/Windhoek": {
+    "lat": -22.55941,
+    "lng": 17.08323
+  },
+  "winnipeg": {
+    "lat": 49.8844,
+    "lng": -97.14704
+  },
+  "europe-wroclaw": {
+    "lat": 51.1,
+    "lng": 17.03333
+  },
+  "asia-wuhan": {
+    "lat": 30.58333,
+    "lng": 114.26667
+  },
+  "asia-xian": {
+    "lat": 34.25833,
+    "lng": 108.92861
+  },
+  "Asia/Yangon": {
+    "lat": 16.80528,
+    "lng": 96.15611
+  },
+  "Asia/Yekaterinburg": {
+    "lat": 56.8519,
+    "lng": 60.6122
+  },
+  "Asia/Yerevan": {
+    "lat": 40.18111,
+    "lng": 44.51361
+  },
+  "asia-yogyakarta": {
+    "lat": -7.80139,
+    "lng": 110.36472
+  },
+  "Asia/Sakhalin": {
+    "lat": 46.95407,
+    "lng": 142.73603
+  },
+  "Europe/Zagreb": {
+    "lat": 45.81444,
+    "lng": 15.97798
+  },
+  "africa-zanzibar": {
+    "lat": -6.16394,
+    "lng": 39.19793
+  },
+  "asia-zhengzhou": {
+    "lat": 34.75778,
+    "lng": 113.64861
+  },
+  "Europe/Zurich": {
+    "lat": 47.36667,
+    "lng": 8.55
+  },
+  "America/Punta_Arenas": {
+    "lat": -53.15483,
+    "lng": -70.91129
+  },
+  "America/Argentina/Rio_Gallegos": {
+    "lat": -51.62261,
+    "lng": -69.21813
+  },
+  "Africa/Porto-Novo": {
+    "lat": 6.49646,
+    "lng": 2.60359
+  },
+  "Africa/Bissau": {
+    "lat": 11.86357,
+    "lng": -15.59767
+  },
+  "Africa/Niamey": {
+    "lat": 13.51366,
+    "lng": 2.1098
+  },
+  "Africa/Lome": {
+    "lat": 6.12874,
+    "lng": 1.22154
+  },
+  "Atlantic/Faroe": {
+    "lat": 62.00973,
+    "lng": -6.77164
+  },
+  "Arctic/Longyearbyen": {
+    "lat": 78.22334,
+    "lng": 15.64689
+  },
+  "America/Juneau": {
+    "lat": 58.30194,
+    "lng": -134.41972
+  },
+  "Pacific/Efate": {
+    "lat": -17.73648,
+    "lng": 168.31366
+  },
+  "Pacific/Rarotonga": {
+    "lat": -21.2075,
+    "lng": -159.77545
+  },
+  "Pacific/Easter": {
+    "lat": -33.45694,
+    "lng": -70.64827
+  },
+  "America/Port-au-Prince": {
+    "lat": 18.54349,
+    "lng": -72.33881
+  },
+  "Australia/Hobart": {
+    "lat": -42.87936,
+    "lng": 147.32941
+  },
+  "Australia/Darwin": {
+    "lat": -12.46113,
+    "lng": 130.84185
+  },
+  "Australia/Broken_Hill": {
+    "lat": -31.9652,
+    "lng": 141.4512
+  },
+  "America/Bahia": {
+    "lat": -12.97111,
+    "lng": -38.51083
+  },
+  "Pacific/Kiritimati": {
+    "lat": 1.3278,
+    "lng": 172.97696
+  },
+  "Pacific/Majuro": {
+    "lat": 7.08971,
+    "lng": 171.38027
+  },
+  "Pacific/Tarawa": {
+    "lat": 1.3278,
+    "lng": 172.97696
+  },
+  "Pacific/Funafuti": {
+    "lat": -8.52425,
+    "lng": 179.19417
+  },
+  "Pacific/Pohnpei": {
+    "lat": 7.44648,
+    "lng": 151.84135
+  },
+  "Pacific/Saipan": {
+    "lat": 15.21233,
+    "lng": 145.7545
+  },
+  "Asia/Barnaul": {
+    "lat": 53.36056,
+    "lng": 83.76361
+  }
+}
