@@ -62,6 +62,9 @@
   --color-icon-default: #83858a;                              /* ⚠️ Neutral 未確認ステップ */
   --color-icon-inverse: var(--neutral-40);                    /* #ffffff */
 
+  /* ── Brand: logo ─────────────────────────────────────────────────────────── */
+  --logo-filter: none;
+
   /* ── Semantic: border ────────────────────────────────────────────────────── */
   --color-border-default: var(--neutral-150);                 /* #e9ebf0 */
   --color-border-strong: var(--neutral-600);                  /* #5d5f64 */
@@ -120,6 +123,7 @@
   /* ── Typography ──────────────────────────────────────────────────────────── */
   --font-ui: "Hanken Grotesk", "Source Han Sans JP", system-ui, sans-serif;
   --font-display: "Newsreader", "Source Han Sans JP", Georgia, serif;
+  --font-modal-title: "Bricolage Grotesque", system-ui, sans-serif;
   --font-city-heading-time: "Newsreader", "Source Han Sans JP", Georgia, serif;
 
   /* ── Gradient ────────────────────────────────────────────────────────────── */
@@ -188,9 +192,11 @@
   --color-surface-cityheading-home: #3d424d;                  /* ⚠️ Neutral 未確認ステップ */
   --color-surface-cityheading-other: #171a21;                 /* ⚠️ Neutral 未確認ステップ */
   --color-border-cityheading-other: #2a2e38;                  /* dark のみ可視 */
+  --logo-filter: brightness(0) invert(1);
 }
 
 html[lang="ja"] {
   --font-ui: "Hanken Grotesk", "Source Han Sans JP", system-ui, sans-serif;
   --font-display: "Hanken Grotesk", "Shippori Mincho", Georgia, serif;
+  --font-modal-title: var(--font-display);
 }

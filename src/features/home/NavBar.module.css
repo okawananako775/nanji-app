@@ -17,6 +17,7 @@
   width: auto;
   height: 32px;
   flex-shrink: 0;
+  filter: var(--logo-filter);
 }
 .groupArea { position: relative; }
 .groupBtn {
