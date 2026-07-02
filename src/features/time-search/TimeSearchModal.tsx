@@ -4,7 +4,7 @@ import { fromZonedTime } from "date-fns-tz";
 import { Modal } from "../../components/Modal";
 import { CalendarDatePicker } from "../../components/CalendarDatePicker";
 import { useSegmentIndicator } from "../../hooks/useSegmentIndicator";
-import { catalogToCity, CITY_CATALOG, getCityDisplayName } from "../../lib/cities";
+import { catalogToCity, CITY_CATALOG } from "../../lib/cities";
 import {
   clampDateInput,
   getTimelineDateBounds,
@@ -59,14 +59,12 @@ function ensureCityVisibleOnTimeline(
 export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProps) {
   const { t } = useTranslation();
   const { state, dispatch } = useStore();
-  const lang = state.settings.language;
   const home = selectHomeCity(state);
   const [tab, setTab] = useState<Tab>(state.ui.lastTimeSearchTab);
   const [multiView, setMultiView] = useState<"form" | "results">("form");
   const [multiResults, setMultiResults] = useState<MultiCandidateBlock[] | null>(null);
   const [baseCityId, setBaseCityId] = useState<string>("");
   const [singleCityId, setSingleCityId] = useState<string>("");
-  const [singleTargetCityId, setSingleTargetCityId] = useState<string>("");
   const [relativeCityId, setRelativeCityId] = useState<string>("");
   const [candidates, setCandidates] = useState<DateCandidate[]>([]);
   const [targetCities, setTargetCities] = useState<City[]>([]);
@@ -88,7 +86,6 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
     if (!home) return;
     setBaseCityId(home.id);
     setSingleCityId(home.id);
-    setSingleTargetCityId("");
     setRelativeCityId(home.id);
     setCandidates([createDateCandidate(home.timezone)]);
     setTargetCities(buildDefaultTargets(selectVisibleCities(state), home.id));
@@ -159,11 +156,6 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
     const base = singleBase;
     ensureCityVisibleOnTimeline(dispatch, state, base);
 
-    if (singleTargetCityId && singleTargetCityId !== base.id) {
-      const target = resolveCity(singleTargetCityId);
-      if (target) ensureCityVisibleOnTimeline(dispatch, state, target);
-    }
-
     const clampedDate = clampDateInput(date, singleDateBounds.minDate, singleDateBounds.maxDate);
     const utc = fromZonedTime(
       `${clampedDate}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00`,
@@ -199,11 +191,6 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
 
   const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
   const minutes = [0, 30];
-  const singleBaseCityId = singleCityId || home?.id || "";
-  const singleTargetTagCities = useMemo(() => {
-    if (!singleBaseCityId) return [];
-    return selectVisibleCities(state).filter((city) => city.id !== singleBaseCityId);
-  }, [state, singleBaseCityId]);
   const modalTitle =
     tab === "multi" && multiView === "results" ? t("timeSearch.resultsTitle") : t("timeSearch.title");
 
@@ -264,38 +251,7 @@ export function TimeSearchModal({ open, onClose, onCopied }: TimeSearchModalProp
             <div className={styles.label}>{t("timeSearch.baseCity")}</div>
             <CityCombo
               selectedId={singleCityId || home.id}
-              onSelect={(city) => {
-                setSingleCityId(city.id);
-                if (singleTargetCityId === city.id) setSingleTargetCityId("");
-              }}
-            />
-          </div>
-          <div className={styles.field}>
-            <div className={styles.label}>{t("timeSearch.targetCity")}</div>
-            {singleTargetTagCities.length > 0 && (
-              <div className={styles.displayCityTags}>
-                {singleTargetTagCities.map((city) => {
-                  const selected = singleTargetCityId === city.id;
-                  return (
-                    <button
-                      key={city.id}
-                      type="button"
-                      className={`${styles.displayCityTag} ${selected ? styles.displayCityTagSelected : ""} ${city.isHome ? styles.displayCityTagHome : ""}`}
-                      aria-pressed={selected}
-                      onClick={() => setSingleTargetCityId(selected ? "" : city.id)}
-                    >
-                      {city.isHome && "🏠 "}
-                      {city.countryFlag} {getCityDisplayName(city, lang)}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-            <CityCombo
-              selectedId={singleTargetCityId || null}
-              excludeIds={new Set([singleBaseCityId])}
-              placeholder={t("timeSearch.addTargetPlaceholder")}
-              onSelect={(city) => setSingleTargetCityId(city.id)}
+              onSelect={(city) => setSingleCityId(city.id)}
             />
           </div>
           <div className={styles.field}>

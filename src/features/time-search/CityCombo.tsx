@@ -35,22 +35,52 @@ export function CityCombo({ selectedId, onSelect, excludeIds, disabled, resetAft
     );
   }, [selectedId, activeCities]);
 
-  useEffect(() => {
-    if (selected && !open) {
-      setQuery(formatCityLabel(selected, lang));
-    }
-  }, [selected, open, lang]);
+  const prevSelectedIdRef = useRef<string | null | undefined>(undefined);
+  const prevLangRef = useRef(lang);
 
   useEffect(() => {
-    const onDocClick = (e: MouseEvent) => {
-      if (!wrapRef.current?.contains(e.target as Node)) {
-        setOpen(false);
-        if (selected) setQuery(formatCityLabel(selected, lang));
+    if (prevSelectedIdRef.current === selectedId) return;
+    prevSelectedIdRef.current = selectedId;
+
+    if (selectedId) {
+      const entry =
+        activeCities.find((city) => city.id === selectedId) ??
+        CITY_CATALOG.find((item) => item.id === selectedId);
+      if (entry) {
+        setQuery(formatCityLabel(entry, lang));
+      }
+    } else if (resetAfterSelect) {
+      setQuery("");
+    }
+    setOpen(false);
+    // activeCities is read only when selectedId changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync on selectedId change only
+  }, [selectedId, lang, resetAfterSelect]);
+
+  useEffect(() => {
+    if (prevLangRef.current === lang) return;
+    prevLangRef.current = lang;
+    if (!selectedId) return;
+    const entry =
+      activeCities.find((city) => city.id === selectedId) ??
+      CITY_CATALOG.find((item) => item.id === selectedId);
+    if (entry) {
+      setQuery(formatCityLabel(entry, lang));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync on language change only
+  }, [lang, selectedId]);
+
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      if (wrapRef.current?.contains(event.target as Node)) return;
+      setOpen(false);
+      if (selected && !resetAfterSelect) {
+        setQuery(formatCityLabel(selected, lang));
       }
     };
-    document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
-  }, [selected, lang]);
+    document.addEventListener("pointerdown", onPointerDown, true);
+    return () => document.removeEventListener("pointerdown", onPointerDown, true);
+  }, [selected, lang, resetAfterSelect]);
 
   const pool = useMemo(() => {
     const trimmed = query.trim();
