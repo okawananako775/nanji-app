@@ -1,17 +1,15 @@
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "../../store/StoreContext";
 import { selectHomeCity, selectVisibleCities } from "../../store/selectors";
 import type { City } from "../../store/types";
 import {
   SLOT_HEIGHT,
-  TIMELINE_HALF_DAYS,
   TIMELINE_TOTAL_ROWS,
-  normalizeSlotRange,
-  slotFromPointerY,
   timelineRowIndex,
   timelineSlotFromRowIndex,
-  type SlotRange,
+  type SelectedTimeRange,
 } from "../../lib/timeGrid";
 import { getCityDisplayName } from "../../lib/cities";
 import {
@@ -32,18 +30,13 @@ import styles from "./TimeTable.module.css";
 const HEADING_H = 118;
 const HEADING_OVERLAP = 16;
 const TAP_MOVE_THRESHOLD_PX = 10;
-const LONG_PRESS_MS = 400;
 
-interface SlotGestureState {
+interface SlotTapGestureState {
   pointerId: number;
-  pointerType: string;
   startX: number;
   startY: number;
-  anchor: { dayOffset: number; hour: number };
+  slot: { dayOffset: number; hour: number };
   cancelled: boolean;
-  selectionActive: boolean;
-  longPressTimer: ReturnType<typeof setTimeout> | null;
-  captureTarget: HTMLButtonElement | null;
 }
 
 function HeadingClockTime({
@@ -72,10 +65,12 @@ export interface SlotSelection {
 }
 
 interface TimeTableProps {
-  onSlotRangeSelect: (range: SlotRange) => void;
+  onSlotTap: (slot: { dayOffset: number; hour: number }) => void;
   scrollToNowToken?: number;
   onNowLineVisibleChange?: (visible: boolean) => void;
-  rangeHighlight: SlotRange | null;
+  selectedRanges: SelectedTimeRange[];
+  pendingRangeStart: { dayOffset: number; hour: number } | null;
+  selectionPanelOpen?: boolean;
 }
 
 function syncFollowerScroll(
@@ -143,22 +138,129 @@ function scrollToRow(
   requestAnimationFrame(step);
 }
 
-function getRangeClass(
-  dayOffset: number,
-  hour: number,
-  rangeHighlight: SlotRange | null,
-): string {
-  if (!rangeHighlight) return "";
+function isLocalMidnightRow(
+  rowIndex: number,
+  homeTz: string,
+  cityTimezone: string,
+): boolean {
+  const { dayOffset, hour } = timelineSlotFromRowIndex(rowIndex);
+  const utc = homeSlotToUtc(homeTz, dayOffset, hour);
+  const localHour = getZonedParts(utc, cityTimezone).hour;
+  return localHour === 0;
+}
 
-  const flat = timelineRowIndex(dayOffset, hour);
-  const startFlat = timelineRowIndex(rangeHighlight.startDay, rangeHighlight.startHour);
-  const endFlat = timelineRowIndex(rangeHighlight.endDay, rangeHighlight.endHour);
-  const [lo, hi] = startFlat <= endFlat ? [startFlat, endFlat] : [endFlat, startFlat];
-  if (flat < lo || flat > hi) return "";
-  if (flat === lo && flat === hi) return styles.slotRangeStart;
-  if (flat === lo) return styles.slotRangeStart;
-  if (flat === hi) return styles.slotRangeEnd;
-  return styles.slotRangeMid;
+function findNextLocalMidnightRow(
+  fromRow: number,
+  homeTz: string,
+  cityTimezone: string,
+): number {
+  for (let rowIndex = fromRow + 1; rowIndex < TIMELINE_TOTAL_ROWS; rowIndex += 1) {
+    if (isLocalMidnightRow(rowIndex, homeTz, cityTimezone)) {
+      return rowIndex;
+    }
+  }
+  return TIMELINE_TOTAL_ROWS;
+}
+
+interface DateSentinel {
+  rowIndex: number;
+  start: number;
+  height: number;
+  label: string;
+}
+
+function buildDateSentinels(
+  virtualItems: VirtualItem[],
+  scrollTop: number,
+  viewportHeight: number,
+  homeTz: string,
+  cityTimezone: string,
+  lang: "ja" | "en",
+): DateSentinel[] {
+  const topRow = Math.max(0, Math.floor(scrollTop / SLOT_HEIGHT));
+  const bottomRow = Math.min(
+    TIMELINE_TOTAL_ROWS - 1,
+    Math.ceil((scrollTop + viewportHeight) / SLOT_HEIGHT),
+  );
+  const midnightRows = new Set<number>();
+
+  for (let rowIndex = topRow - 1; rowIndex >= 0; rowIndex -= 1) {
+    if (isLocalMidnightRow(rowIndex, homeTz, cityTimezone)) {
+      midnightRows.add(rowIndex);
+      break;
+    }
+  }
+
+  for (let rowIndex = topRow; rowIndex <= bottomRow; rowIndex += 1) {
+    if (isLocalMidnightRow(rowIndex, homeTz, cityTimezone)) {
+      midnightRows.add(rowIndex);
+    }
+  }
+
+  for (const row of virtualItems) {
+    if (isLocalMidnightRow(row.index, homeTz, cityTimezone)) {
+      midnightRows.add(row.index);
+    }
+  }
+
+  return [...midnightRows]
+    .sort((a, b) => a - b)
+    .map((rowIndex) => {
+      const { dayOffset, hour } = timelineSlotFromRowIndex(rowIndex);
+      const utc = homeSlotToUtc(homeTz, dayOffset, hour);
+      const nextMidnightRow = findNextLocalMidnightRow(rowIndex, homeTz, cityTimezone);
+      return {
+        rowIndex,
+        start: rowIndex * SLOT_HEIGHT,
+        height: (nextMidnightRow - rowIndex) * SLOT_HEIGHT,
+        label: formatDateTag(utc, cityTimezone, lang),
+      };
+    });
+}
+
+interface RangeOverlay {
+  id: string;
+  top: number;
+  height: number;
+  label: string | null;
+  pending: boolean;
+  zIndex: number;
+}
+
+function buildRangeOverlays(
+  selectedRanges: SelectedTimeRange[],
+  pendingRangeStart: { dayOffset: number; hour: number } | null,
+  formatCandidateLabel: (index: number) => string,
+): RangeOverlay[] {
+  const overlays: RangeOverlay[] = selectedRanges.map((selected, arrayIndex) => {
+    const startFlat = timelineRowIndex(selected.range.startDay, selected.range.startHour);
+    const endFlat = timelineRowIndex(selected.range.endDay, selected.range.endHour);
+    const lo = Math.min(startFlat, endFlat);
+    const hi = Math.max(startFlat, endFlat);
+
+    return {
+      id: selected.id,
+      top: lo * SLOT_HEIGHT,
+      height: (hi - lo + 1) * SLOT_HEIGHT,
+      label: formatCandidateLabel(selected.index),
+      pending: false,
+      zIndex: arrayIndex + 1,
+    };
+  });
+
+  if (pendingRangeStart) {
+    const pendingFlat = timelineRowIndex(pendingRangeStart.dayOffset, pendingRangeStart.hour);
+    overlays.push({
+      id: "pending",
+      top: pendingFlat * SLOT_HEIGHT,
+      height: SLOT_HEIGHT,
+      label: null,
+      pending: true,
+      zIndex: selectedRanges.length + 2,
+    });
+  }
+
+  return overlays;
 }
 
 function CityColumn({
@@ -169,13 +271,16 @@ function CityColumn({
   lang,
   now,
   highlight,
-  selectionHighlight,
+  selectedRanges,
+  pendingRangeStart,
+  formatCandidateLabel,
   virtualItems,
   totalSize,
+  frameScrollTop,
+  scrollViewportHeight,
   onSlotPointerDown,
   frameScrollRef,
   isMaster,
-  isSelecting,
 }: {
   city: City;
   homeTz: string;
@@ -184,16 +289,32 @@ function CityColumn({
   lang: "ja" | "en";
   now: Date;
   highlight: { day: number | null; hour: number | null };
-  selectionHighlight: SlotRange | null;
+  selectedRanges: SelectedTimeRange[];
+  pendingRangeStart: { dayOffset: number; hour: number } | null;
+  formatCandidateLabel: (index: number) => string;
   virtualItems: VirtualItem[];
   totalSize: number;
+  frameScrollTop: number;
+  scrollViewportHeight: number;
   onSlotPointerDown?: (event: ReactPointerEvent<HTMLButtonElement>, slot: SlotSelection) => void;
   frameScrollRef: (el: HTMLDivElement | null) => void;
   isMaster: boolean;
-  isSelecting: boolean;
 }) {
   const isHome = city.isHome;
   const cityName = getCityDisplayName(city, lang);
+  const dateSentinels = buildDateSentinels(
+    virtualItems,
+    frameScrollTop,
+    scrollViewportHeight,
+    homeTz,
+    city.timezone,
+    lang,
+  );
+  const rangeOverlays = buildRangeOverlays(
+    selectedRanges,
+    pendingRangeStart,
+    formatCandidateLabel,
+  );
 
   return (
     <div className={styles.column}>
@@ -211,27 +332,28 @@ function CityColumn({
       </div>
       <div className={styles.frame}>
         <div className={styles.frameClip}>
-          <div className={styles.fadeTop} />
           <div className={styles.fadeBottom} />
           <div
             ref={frameScrollRef}
             className={`${styles.frameScroll} ${isMaster ? "" : styles.frameScrollFollower}`}
           >
             <div className={styles.slots} style={{ height: totalSize }}>
+              {dateSentinels.map((sentinel) => (
+                <div
+                  key={`sentinel-${sentinel.rowIndex}`}
+                  className={styles.dateSentinel}
+                  style={{ top: `${sentinel.start}px`, height: `${sentinel.height}px` }}
+                  aria-hidden="true"
+                >
+                  <span className={styles.dateTag}>{sentinel.label}</span>
+                </div>
+              ))}
               {virtualItems.map((virtualRow) => {
                 const { dayOffset, hour } = timelineSlotFromRowIndex(virtualRow.index);
                 const utc = homeSlotToUtc(homeTz, dayOffset, hour);
                 const rawLocalHour = getZonedParts(utc, city.timezone).hour;
                 const localHour = Number.isFinite(rawLocalHour) ? rawLocalHour : hour;
                 const displayHour = cityHourFromHomeSlot(homeTz, city.timezone, dayOffset, hour);
-
-                let showDateTag = false;
-                if (virtualRow.index > 0) {
-                  const prev = timelineSlotFromRowIndex(virtualRow.index - 1);
-                  const prevUtc = homeSlotToUtc(homeTz, prev.dayOffset, prev.hour);
-                  const prevLocalHour = getZonedParts(prevUtc, city.timezone).hour;
-                  showDateTag = prevLocalHour !== null && localHour === 0;
-                }
 
                 const biz = businessSlotState(
                   localHour,
@@ -245,12 +367,10 @@ function CityColumn({
                   : defaultSlotTextColor(localHour);
 
                 const highlighted = highlight.day === dayOffset && highlight.hour === hour;
-                const rangeClass = getRangeClass(dayOffset, hour, selectionHighlight);
 
                 const slotClass = [
                   styles.slot,
                   !business ? styles.slotDefault : "",
-                  showDateTag ? styles.slotWithDate : "",
                   biz === "active"
                     ? styles.slotBizActive
                     : biz === "inactive"
@@ -261,7 +381,6 @@ function CityColumn({
                           ? styles.slotLight
                           : styles.slotDark,
                   highlighted ? styles.slotHighlighted : "",
-                  rangeClass,
                 ]
                   .filter(Boolean)
                   .join(" ");
@@ -274,25 +393,35 @@ function CityColumn({
                     onPointerDown={(event) => onSlotPointerDown?.(event, { dayOffset, hour, utc })}
                     style={{
                       position: "absolute",
-                      top: 0,
+                      top: `${virtualRow.start}px`,
                       left: 0,
                       width: "100%",
                       height: `${virtualRow.size}px`,
-                      transform: `translateY(${virtualRow.start}px)`,
-                      touchAction: isSelecting ? "none" : "pan-y",
+                      touchAction: "pan-y",
                       ...(!business
                         ? ({ "--slot-local-hour": localHour } as CSSProperties)
                         : {}),
                     }}
                     aria-label={`${cityName} ${formatHour(displayHour, timeFormat)}`}
                   >
-                    {showDateTag && (
-                      <span className={styles.dateTag}>{formatDateTag(utc, city.timezone, lang)}</span>
-                    )}
                     <span className={styles.slotTime}>{formatHour(displayHour, timeFormat)}</span>
                   </button>
                 );
               })}
+              {rangeOverlays.map((overlay) => (
+                <div
+                  key={overlay.id}
+                  className={`${styles.rangeOverlay} ${overlay.pending ? styles.rangeOverlayPending : ""}`}
+                  style={{
+                    top: `${overlay.top}px`,
+                    height: `${overlay.height}px`,
+                    zIndex: overlay.zIndex,
+                  }}
+                  aria-hidden="true"
+                >
+                  {overlay.label && <span className={styles.rangeOverlayBadge}>{overlay.label}</span>}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -302,12 +431,15 @@ function CityColumn({
 }
 
 export function TimeTable({
-  onSlotRangeSelect,
+  onSlotTap,
   scrollToNowToken,
   onNowLineVisibleChange,
-  rangeHighlight,
+  selectedRanges,
+  pendingRangeStart,
+  selectionPanelOpen = false,
 }: TimeTableProps) {
   const { state } = useStore();
+  const { t } = useTranslation();
   const cities = selectVisibleCities(state);
   const home = selectHomeCity(state);
   const homeTz = home?.timezone ?? "UTC";
@@ -317,176 +449,71 @@ export function TimeTable({
   const scrollTopRafRef = useRef<number | null>(null);
   const didInitialScroll = useRef(false);
   const lastHomeScrollKeyRef = useRef<string | null>(null);
-  const dragAnchorRef = useRef<{ dayOffset: number; hour: number } | null>(null);
-  const dragRangeRef = useRef<SlotRange | null>(null);
-  const selectingRef = useRef(false);
-  const gestureRef = useRef<SlotGestureState | null>(null);
+  const gestureRef = useRef<SlotTapGestureState | null>(null);
   const [now, setNow] = useState(() => new Date());
   const [frameScrollTop, setFrameScrollTop] = useState(0);
   const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null);
+  const [scrollViewportHeight, setScrollViewportHeight] = useState(0);
   const [headingH, setHeadingH] = useState(HEADING_H);
   const [, setHolidayDataVersion] = useState(0);
-  const [dragRange, setDragRange] = useState<SlotRange | null>(null);
   const businessHoursEnabled = state.settings.businessHoursEnabled;
-  const selectionHighlight = dragRange ?? rangeHighlight;
-  const isSelecting = dragRange !== null;
 
-  const updateDragRange = useCallback((range: SlotRange | null) => {
-    dragRangeRef.current = range;
-    setDragRange(range);
-  }, []);
-
-  const finishSelection = useCallback(() => {
-    if (!selectingRef.current) return;
-    const range = dragRangeRef.current;
-    selectingRef.current = false;
-    dragAnchorRef.current = null;
-    updateDragRange(null);
-    if (range) onSlotRangeSelect(range);
-  }, [onSlotRangeSelect, updateDragRange]);
-
-  const clearGesture = useCallback(
-    (releaseCapture = true) => {
-      const gesture = gestureRef.current;
-      if (gesture?.longPressTimer) clearTimeout(gesture.longPressTimer);
-      if (releaseCapture && gesture?.captureTarget?.hasPointerCapture(gesture.pointerId)) {
-        gesture.captureTarget.releasePointerCapture(gesture.pointerId);
-      }
-      gestureRef.current = null;
-    },
-    [],
-  );
-
-  const activateSlotSelection = useCallback(
-    (anchor: { dayOffset: number; hour: number }) => {
-      const gesture = gestureRef.current;
-      if (!gesture || gesture.cancelled || gesture.selectionActive) return;
-
-      gesture.selectionActive = true;
-      selectingRef.current = true;
-      dragAnchorRef.current = anchor;
-      updateDragRange(
-        normalizeSlotRange(
-          { dayOffset: anchor.dayOffset, hour: anchor.hour },
-          { dayOffset: anchor.dayOffset, hour: anchor.hour },
-        ),
-      );
-
-      if (gesture.captureTarget) {
-        try {
-          gesture.captureTarget.setPointerCapture(gesture.pointerId);
-        } catch {
-          // Ignore if capture fails on unsupported browsers.
-        }
-      }
-    },
-    [updateDragRange],
+  const formatCandidateLabel = useCallback(
+    (index: number) => t("rangeSelection.candidate", { n: index }),
+    [t],
   );
 
   const onSlotPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLButtonElement>, slot: SlotSelection) => {
       if (event.button !== 0) return;
 
-      const scrollEl = frameScrollRefs.current[0];
-      if (!scrollEl) return;
-
-      clearGesture();
-
-      const anchor = { dayOffset: slot.dayOffset, hour: slot.hour };
-      const gesture: SlotGestureState = {
+      gestureRef.current = {
         pointerId: event.pointerId,
-        pointerType: event.pointerType,
         startX: event.clientX,
         startY: event.clientY,
-        anchor,
+        slot: { dayOffset: slot.dayOffset, hour: slot.hour },
         cancelled: false,
-        selectionActive: false,
-        longPressTimer: null,
-        captureTarget: event.currentTarget,
       };
-      gestureRef.current = gesture;
-
-      if (event.pointerType === "touch") {
-        gesture.longPressTimer = window.setTimeout(() => {
-          activateSlotSelection(anchor);
-        }, LONG_PRESS_MS);
-      }
 
       const onMove = (moveEvent: PointerEvent) => {
-        const activeGesture = gestureRef.current;
-        if (!activeGesture || activeGesture.cancelled || moveEvent.pointerId !== activeGesture.pointerId) {
-          return;
+        const gesture = gestureRef.current;
+        if (!gesture || moveEvent.pointerId !== gesture.pointerId || gesture.cancelled) return;
+
+        const distance = Math.hypot(
+          moveEvent.clientX - gesture.startX,
+          moveEvent.clientY - gesture.startY,
+        );
+        if (distance > TAP_MOVE_THRESHOLD_PX) {
+          gesture.cancelled = true;
         }
-
-        const deltaX = moveEvent.clientX - activeGesture.startX;
-        const deltaY = moveEvent.clientY - activeGesture.startY;
-        const distance = Math.hypot(deltaX, deltaY);
-
-        if (!activeGesture.selectionActive) {
-          if (distance <= TAP_MOVE_THRESHOLD_PX) return;
-
-          if (activeGesture.longPressTimer) {
-            clearTimeout(activeGesture.longPressTimer);
-            activeGesture.longPressTimer = null;
-          }
-
-          if (activeGesture.pointerType === "touch") {
-            activeGesture.cancelled = true;
-            updateDragRange(null);
-            return;
-          }
-
-          activateSlotSelection(activeGesture.anchor);
-        }
-
-        if (!gestureRef.current?.selectionActive) return;
-
-        moveEvent.preventDefault();
-        const activeScrollEl = frameScrollRefs.current[0];
-        if (!activeScrollEl) return;
-        const slotAt = slotFromPointerY(activeScrollEl, moveEvent.clientY);
-        const dragAnchor = dragAnchorRef.current;
-        if (!slotAt || !dragAnchor) return;
-        updateDragRange(normalizeSlotRange(dragAnchor, slotAt));
       };
 
       const onEnd = (endEvent: PointerEvent) => {
-        const activeGesture = gestureRef.current;
-        if (!activeGesture || endEvent.pointerId !== activeGesture.pointerId) return;
+        const gesture = gestureRef.current;
+        if (!gesture || endEvent.pointerId !== gesture.pointerId) return;
 
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("pointerup", onEnd);
         window.removeEventListener("pointercancel", onEnd);
 
-        if (activeGesture.longPressTimer) {
-          clearTimeout(activeGesture.longPressTimer);
-          activeGesture.longPressTimer = null;
-        }
-
-        const distance = Math.hypot(
-          endEvent.clientX - activeGesture.startX,
-          endEvent.clientY - activeGesture.startY,
-        );
-
-        if (activeGesture.cancelled || distance > TAP_MOVE_THRESHOLD_PX) {
-          if (activeGesture.selectionActive) {
-            finishSelection();
+        if (!gesture.cancelled) {
+          const distance = Math.hypot(
+            endEvent.clientX - gesture.startX,
+            endEvent.clientY - gesture.startY,
+          );
+          if (distance <= TAP_MOVE_THRESHOLD_PX) {
+            onSlotTap(gesture.slot);
           }
-          clearGesture();
-          return;
         }
 
-        onSlotRangeSelect(
-          normalizeSlotRange(activeGesture.anchor, activeGesture.anchor),
-        );
-        clearGesture();
+        gestureRef.current = null;
       };
 
       window.addEventListener("pointermove", onMove);
       window.addEventListener("pointerup", onEnd);
       window.addEventListener("pointercancel", onEnd);
     },
-    [activateSlotSelection, clearGesture, finishSelection, onSlotRangeSelect, updateDragRange],
+    [onSlotTap],
   );
 
   useEffect(() => {
@@ -711,6 +738,15 @@ export function TimeTable({
 
   useLayoutEffect(() => {
     if (!scrollElement) return;
+    const syncViewportHeight = () => setScrollViewportHeight(scrollElement.clientHeight);
+    syncViewportHeight();
+    const observer = new ResizeObserver(syncViewportHeight);
+    observer.observe(scrollElement);
+    return () => observer.disconnect();
+  }, [scrollElement]);
+
+  useLayoutEffect(() => {
+    if (!scrollElement) return;
     measureRows();
     syncAllFollowers();
   }, [scrollElement, homeScrollKey, measureRows, syncAllFollowers, virtualItems.length]);
@@ -789,7 +825,7 @@ export function TimeTable({
       : null;
 
   return (
-    <div className={styles.wrap}>
+    <div className={`${styles.wrap} ${selectionPanelOpen ? styles.wrapWithPanel : ""}`}>
       <div ref={xScrollRef} className={styles.xScroll}>
         <div className={styles.columns}>
           {cities.map((city, index) => (
@@ -802,11 +838,14 @@ export function TimeTable({
               lang={state.settings.language}
               now={now}
               highlight={{ day: state.ui.highlightDay, hour: state.ui.highlightHour }}
-              selectionHighlight={selectionHighlight}
+              selectedRanges={selectedRanges}
+              pendingRangeStart={pendingRangeStart}
+              formatCandidateLabel={formatCandidateLabel}
               virtualItems={virtualItems}
               totalSize={totalSize}
+              frameScrollTop={frameScrollTop}
+              scrollViewportHeight={scrollViewportHeight}
               onSlotPointerDown={onSlotPointerDown}
-              isSelecting={isSelecting}
               isMaster={index === 0}
               frameScrollRef={(el) => {
                 frameScrollRefs.current[index] = el;

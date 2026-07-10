@@ -44,6 +44,10 @@
   margin-bottom: var(--space-inset-md);
 }
 
+.fieldRelaxed {
+  margin-bottom: calc(var(--space-inset-md) + 16px);
+}
+
 .label {
   font-size: 12px;
   font-weight: 600;

@@ -1,0 +1,124 @@
+.rail {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: calc(var(--z-range-panel) + 1);
+  pointer-events: none;
+}
+
+.railWithPanel {
+  right: var(--range-selection-panel-width);
+}
+
+.tab {
+  pointer-events: auto;
+  position: relative;
+  width: auto;
+  height: auto;
+  min-width: 49px;
+  padding: 12px 10px;
+  border-right: none;
+  border-radius: var(--radius-button) 0 0 var(--radius-button);
+  color: var(--color-text-primary);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tabInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tabIcon,
+.tab svg {
+  flex-shrink: 0;
+  color: var(--color-icon-default);
+}
+
+.tabLabel {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.tabActive {
+  background: var(--color-surface-control-primary);
+  border-color: var(--color-surface-control-primary);
+  color: var(--color-text-on-primary);
+}
+
+.tabActive .tabIcon,
+.tabActive svg {
+  color: var(--color-icon-on-primary);
+}
+
+.tabActive .tabLabel {
+  color: var(--color-text-on-primary);
+}
+
+.tabBadge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-date-badge);
+  background: var(--color-accent-current-time);
+  color: var(--color-text-timeslot-inverse);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  writing-mode: horizontal-tb;
+}
+
+.tabActive .tabBadge {
+  background: var(--color-text-on-primary);
+  color: var(--color-surface-control-primary);
+}
+
+@media (max-width: 640px) {
+  .rail {
+    position: fixed;
+    top: auto;
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    transform: none;
+    flex-direction: row;
+    gap: 8px;
+    z-index: var(--z-floating);
+  }
+
+  .railWithPanel {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .tab {
+    width: 49px;
+    height: 49px;
+    min-width: 0;
+    padding: 0;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-button);
+  }
+
+  .tabInner {
+    display: contents;
+  }
+
+  .tabLabel {
+    display: none;
+  }
+}

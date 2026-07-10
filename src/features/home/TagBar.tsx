@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useEffect, useState } from "react";
+import { type KeyboardEvent, useEffect, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { getCityDisplayName } from "../../lib/cities";
 import { useStore } from "../../store/StoreContext";
@@ -19,7 +19,6 @@ import {
   IconSave,
   IconShow,
 } from "../../components/icons/Icons";
-import iconBtn from "../../components/IconActionButton.module.css";
 import styles from "./TagBar.module.css";
 
 const MOBILE_MQ = "(max-width: 640px)";
@@ -29,11 +28,15 @@ export function TagBar({
   onAddCity,
   onSaveAsGroup,
   onEditGroup,
+  saveGroupBtnRef,
+  forceExpanded,
 }: {
   onEditHomeCity?: () => void;
   onAddCity?: () => void;
   onSaveAsGroup?: () => void;
   onEditGroup?: (groupId: string) => void;
+  saveGroupBtnRef?: RefObject<HTMLButtonElement | null>;
+  forceExpanded?: boolean;
 }) {
   const { t } = useTranslation();
   const { state, dispatch } = useStore();
@@ -57,6 +60,10 @@ export function TagBar({
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
+
+  useEffect(() => {
+    if (forceExpanded) setCollapsed(false);
+  }, [forceExpanded]);
 
   return (
     <div className={styles.wrap}>
@@ -193,13 +200,14 @@ export function TagBar({
       <div className={styles.right}>
         {showSave && (
           <button
+            ref={saveGroupBtnRef}
             type="button"
-            className={iconBtn.primary}
+            className={styles.saveGroupBtn}
             aria-label={t("tag.saveAsGroup")}
-            title={t("tag.saveAsGroup")}
             onClick={() => onSaveAsGroup?.()}
           >
             <IconSave width={18} height={18} />
+            <span className={styles.saveGroupBtnLabel}>{t("tag.saveAsGroup")}</span>
           </button>
         )}
       </div>

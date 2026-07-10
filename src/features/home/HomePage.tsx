@@ -1,24 +1,28 @@
-import { addHours } from "date-fns";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CopySheet } from "../../components/CopySheet";
 import { Snackbar } from "../../components/Snackbar";
-import { getCityDisplayName } from "../../lib/cities";
-import { formatCopyLinesRange } from "../../lib/copyFormat";
+import type { DateCandidate } from "../../lib/multiCandidateSearch";
 import { applyLocationSync, type LocationSyncCallbacks } from "../../lib/locationSync";
-import { timelineRowIndex, type SlotRange } from "../../lib/timeGrid";
-import { formatHour, homeSlotToUtc } from "../../lib/timezone";
+import {
+  dateCandidateToSlotRange,
+  slotRangeToDateCandidate,
+} from "../../lib/rangeSelectionSync";
+import { normalizeSlotRange, type SelectedTimeRange } from "../../lib/timeGrid";
 import { useStore } from "../../store/StoreContext";
-import { selectHomeCity, selectVisibleCities } from "../../store/selectors";
+import { selectDisplayCities, selectHomeCity } from "../../store/selectors";
+import type { City } from "../../store/types";
+import { ContextualGuide } from "./ContextualGuide";
+import { JumpPanel } from "./JumpPanel";
 import { SettingsModal } from "../settings/SettingsModal";
 import { HomeCityModal } from "../settings/HomeCityModal";
-import { TimeSearchModal } from "../time-search/TimeSearchModal";
 import { CitySearchModal } from "../city-search/CitySearchModal";
 import { GroupEditorModal } from "../groups/GroupEditorModal";
 import { BottomBar } from "./BottomBar";
 import { NavBar } from "./NavBar";
+import { RangeSelectionModal } from "./RangeSelectionModal";
 import { TagBar } from "./TagBar";
+import { TimelineSideTabs } from "./TimelineSideTabs";
 import { TimeTable } from "./TimeTable";
 import styles from "./HomePage.module.css";
 
@@ -26,17 +30,24 @@ interface HomeLocationState {
   openSettings?: boolean;
 }
 
+function candidatesToSelectedRanges(
+  baseTimezone: string,
+  candidates: DateCandidate[],
+): SelectedTimeRange[] {
+  return candidates.flatMap((candidate, index) => {
+    const range = dateCandidateToSlotRange(baseTimezone, candidate);
+    if (!range) return [];
+    return [{ id: candidate.id, index: index + 1, range }];
+  });
+}
+
 export function HomePage() {
   const { state, dispatch, storageReset, clearStorageReset } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const [copyOpen, setCopyOpen] = useState(false);
-  const [copyHeading, setCopyHeading] = useState<string | undefined>();
-  const [copyJa, setCopyJa] = useState("");
-  const [copyEn, setCopyEn] = useState("");
   const [snack, setSnack] = useState<string | null>(null);
-  const [timeSearchOpen, setTimeSearchOpen] = useState(false);
+  const [jumpOpen, setJumpOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [homeCityOpen, setHomeCityOpen] = useState(false);
   const [citySearchOpen, setCitySearchOpen] = useState(false);
@@ -44,11 +55,50 @@ export function HomePage() {
   const [groupEditId, setGroupEditId] = useState<string | null>(null);
   const [scrollToNowToken, setScrollToNowToken] = useState(0);
   const [showBackToNow, setShowBackToNow] = useState(false);
-  const [rangeHighlight, setRangeHighlight] = useState<SlotRange | null>(null);
+  const [pendingRangeStart, setPendingRangeStart] = useState<{ dayOffset: number; hour: number } | null>(
+    null,
+  );
+  const [candidates, setCandidates] = useState<DateCandidate[]>([]);
+  const [rangeSelectionOpen, setRangeSelectionOpen] = useState(false);
+  const [rangeBaseTimezone, setRangeBaseTimezone] = useState("UTC");
+  const [isMobileGuide, setIsMobileGuide] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
+  const saveGroupBtnRef = useRef<HTMLButtonElement>(null);
+  const convertTabRef = useRef<HTMLButtonElement>(null);
+  const jumpTabRef = useRef<HTMLButtonElement>(null);
 
-  const resetRange = useCallback(() => {
-    setRangeHighlight(null);
+  const home = selectHomeCity(state);
+  const homeTimezone = home?.timezone ?? "UTC";
+  const displayCities = selectDisplayCities(state);
+  const guideStep = state.settings.contextualGuideStep;
+  const sidePanelOpen = rangeSelectionOpen || jumpOpen;
+
+  useEffect(() => {
+    if (home) {
+      setRangeBaseTimezone(home.timezone);
+    }
+  }, [home?.id, home?.timezone]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const sync = () => setIsMobileGuide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
   }, []);
+
+  useEffect(() => {
+    if (!state.settings.onboardingCompleted) return;
+    if (guideStep !== 0) return;
+    if (displayCities.length >= 2) {
+      dispatch({ type: "UPDATE_SETTINGS", payload: { contextualGuideStep: 1 } });
+    }
+  }, [state.settings.onboardingCompleted, guideStep, displayCities.length, dispatch]);
+
+  const selectedRanges = useMemo(
+    () => candidatesToSelectedRanges(rangeBaseTimezone, candidates),
+    [rangeBaseTimezone, candidates],
+  );
 
   const locationSyncEnabledRef = useRef(state.settings.locationSyncEnabled);
   locationSyncEnabledRef.current = state.settings.locationSyncEnabled;
@@ -118,36 +168,53 @@ export function HomePage() {
     }
   }, [location.state, navigate]);
 
-  const onSlotRangeSelect = useCallback(
-    (range: SlotRange) => {
-      const cities = selectVisibleCities(state);
-      const currentHome = selectHomeCity(state);
-      if (!currentHome) return;
+  const handleRangeBaseCityChange = useCallback((city: City) => {
+    setRangeBaseTimezone(city.timezone);
+  }, []);
 
-      const { startDay, startHour, endDay, endHour } = range;
-      const orderedStartUtc = homeSlotToUtc(currentHome.timezone, startDay, startHour);
-      const rangeEndUtc = addHours(
-        homeSlotToUtc(currentHome.timezone, endDay, endHour),
-        1,
-      );
+  const closeRangeSelection = useCallback(() => {
+    setRangeSelectionOpen(false);
+    setPendingRangeStart(null);
+    setCandidates([]);
+    if (home) {
+      setRangeBaseTimezone(home.timezone);
+    }
+  }, [home]);
 
-      setRangeHighlight(range);
-      setCopyHeading(
-        t("copy.rangeHeading", {
-          start: formatHour(startHour, state.settings.timeFormat),
-          end: formatHour((endHour + 1) % 24, state.settings.timeFormat),
-          city: getCityDisplayName(currentHome, state.settings.language),
-        }),
-      );
-      setCopyJa(
-        formatCopyLinesRange(cities, orderedStartUtc, rangeEndUtc, "ja", state.settings.timeFormat),
-      );
-      setCopyEn(
-        formatCopyLinesRange(cities, orderedStartUtc, rangeEndUtc, "en", state.settings.timeFormat),
-      );
-      setCopyOpen(true);
+  const toggleRangeSelection = useCallback(() => {
+    if (rangeSelectionOpen) {
+      closeRangeSelection();
+      return;
+    }
+    setJumpOpen(false);
+    setRangeSelectionOpen(true);
+  }, [rangeSelectionOpen, closeRangeSelection]);
+
+  const toggleJump = useCallback(() => {
+    if (jumpOpen) {
+      setJumpOpen(false);
+      return;
+    }
+    setRangeSelectionOpen(false);
+    setJumpOpen(true);
+  }, [jumpOpen]);
+
+  const onSlotTap = useCallback(
+    (slot: { dayOffset: number; hour: number }) => {
+      if (!pendingRangeStart) {
+        setPendingRangeStart(slot);
+        setJumpOpen(false);
+        setRangeSelectionOpen(true);
+        return;
+      }
+
+      const range = normalizeSlotRange(pendingRangeStart, slot);
+      setCandidates((prev) => [...prev, slotRangeToDateCandidate(homeTimezone, range)]);
+      setPendingRangeStart(null);
+      setJumpOpen(false);
+      setRangeSelectionOpen(true);
     },
-    [state, t],
+    [pendingRangeStart, homeTimezone],
   );
 
   const openHomeCitySettings = useCallback(() => {
@@ -162,10 +229,57 @@ export function HomePage() {
     [t],
   );
 
-  const closeCopySheet = useCallback(() => {
-    setCopyOpen(false);
-    resetRange();
-  }, [resetRange]);
+  const dismissGuide = useCallback(() => {
+    if (guideStep === 1) {
+      dispatch({ type: "UPDATE_SETTINGS", payload: { contextualGuideStep: 2 } });
+      return;
+    }
+    if (guideStep === 2) {
+      dispatch({ type: "UPDATE_SETTINGS", payload: { contextualGuideStep: 3 } });
+      return;
+    }
+    if (guideStep === 3) {
+      dispatch({ type: "UPDATE_SETTINGS", payload: { contextualGuideStep: 4 } });
+    }
+  }, [guideStep, dispatch]);
+
+  const guideConfig = useMemo(() => {
+    if (!state.settings.onboardingCompleted) return null;
+    if (guideStep < 1 || guideStep > 3) return null;
+    if (sidePanelOpen) return null;
+
+    if (guideStep === 1) {
+      const showSave = displayCities.length >= 2 && !state.ui.activeGroupId;
+      if (!showSave) return null;
+      return {
+        targetRef: saveGroupBtnRef,
+        message: t("guide.saveGroup"),
+        placement: "bottom-right" as const,
+      };
+    }
+
+    if (guideStep === 2) {
+      return {
+        targetRef: jumpTabRef,
+        message: t("guide.jump"),
+        placement: (isMobileGuide ? "top" : "left") as "top" | "left",
+      };
+    }
+
+    return {
+      targetRef: convertTabRef,
+      message: t("guide.convert"),
+      placement: (isMobileGuide ? "top" : "left") as "top" | "left",
+    };
+  }, [
+    state.settings.onboardingCompleted,
+    guideStep,
+    sidePanelOpen,
+    displayCities.length,
+    state.ui.activeGroupId,
+    isMobileGuide,
+    t,
+  ]);
 
   return (
     <>
@@ -182,33 +296,62 @@ export function HomePage() {
             setGroupEditId(groupId);
             setGroupEditorOpen(true);
           }}
+          saveGroupBtnRef={saveGroupBtnRef}
+          forceExpanded={guideStep === 1}
         />
-        <main className={styles.main}>
+        <main ref={mainRef} className={styles.main}>
           <TimeTable
-            onSlotRangeSelect={onSlotRangeSelect}
+            onSlotTap={onSlotTap}
             scrollToNowToken={scrollToNowToken}
             onNowLineVisibleChange={(visible) => setShowBackToNow(!visible)}
-            rangeHighlight={rangeHighlight}
+            selectedRanges={selectedRanges}
+            pendingRangeStart={pendingRangeStart}
+            selectionPanelOpen={rangeSelectionOpen || jumpOpen}
           />
         </main>
+        <div className={styles.bottomFade} aria-hidden />
         <BottomBar
-          onOpenTimeSearch={() => setTimeSearchOpen(true)}
           onScrollToNow={() => setScrollToNowToken((token) => token + 1)}
           showBackToNow={showBackToNow}
         />
+        <TimelineSideTabs
+          anchorRef={mainRef}
+          rangeActive={rangeSelectionOpen}
+          jumpActive={jumpOpen}
+          sidePanelOpen={sidePanelOpen}
+          candidateCount={candidates.length}
+          onToggleRange={toggleRangeSelection}
+          onToggleJump={toggleJump}
+          convertTabRef={convertTabRef}
+          jumpTabRef={jumpTabRef}
+        />
+        {guideConfig && (
+          <ContextualGuide
+            targetRef={guideConfig.targetRef}
+            message={guideConfig.message}
+            placement={guideConfig.placement}
+            active
+            onDismiss={dismissGuide}
+          />
+        )}
+        {home && (
+          <>
+            <RangeSelectionModal
+              open={rangeSelectionOpen}
+              onClose={closeRangeSelection}
+              anchorRef={mainRef}
+              home={home}
+              timeFormat={state.settings.timeFormat}
+              candidates={candidates}
+              onCandidatesChange={setCandidates}
+              pendingRangeStart={pendingRangeStart}
+              onBaseCityChange={handleRangeBaseCityChange}
+              onCopied={setSnack}
+            />
+            <JumpPanel open={jumpOpen} onClose={() => setJumpOpen(false)} anchorRef={mainRef} />
+          </>
+        )}
       </div>
-      <CopySheet
-        open={copyOpen}
-        heading={copyHeading}
-        textJa={copyJa}
-        textEn={copyEn}
-        onClose={closeCopySheet}
-      />
-      <TimeSearchModal
-        open={timeSearchOpen}
-        onClose={() => setTimeSearchOpen(false)}
-        onCopied={setSnack}
-      />
       <SettingsModal
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}

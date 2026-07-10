@@ -24,6 +24,13 @@ export interface SlotRange {
   endHour: number;
 }
 
+/** A user-selected time range with stable id and 1-based display index (候補1, …). */
+export interface SelectedTimeRange {
+  id: string;
+  index: number;
+  range: SlotRange;
+}
+
 export function normalizeSlotRange(
   a: { dayOffset: number; hour: number },
   b: { dayOffset: number; hour: number },

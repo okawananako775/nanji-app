@@ -180,6 +180,39 @@
   border: 1px solid var(--color-border-default);
 }
 
+.saveGroupBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 49px;
+  padding: 0 16px 0 14px;
+  border-radius: var(--radius-button);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-on-primary);
+  background: var(--color-surface-control-primary);
+  border: none;
+  box-shadow: var(--shadow-floating);
+  flex-shrink: 0;
+}
+
+.saveGroupBtn svg {
+  color: var(--color-icon-on-primary);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .saveGroupBtn {
+    width: 49px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .saveGroupBtnLabel {
+    display: none;
+  }
+}
+
 .addBtnBlink {
   animation: blink 1.8s var(--easing-standard) infinite;
 }

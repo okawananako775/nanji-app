@@ -10,7 +10,6 @@ export type Action =
   | { type: "SET_HIGHLIGHT"; payload: { day: number | null; hour: number | null } }
   | { type: "SET_PULSE_CITY"; payload: { cityId: string | null } }
   | { type: "SET_ACTIVE_GROUP"; payload: { groupId: string | null } }
-  | { type: "SET_TIME_SEARCH_TAB"; payload: { tab: AppState["ui"]["lastTimeSearchTab"] } }
   | { type: "TOGGLE_HIDDEN"; payload: { cityId: string; hidden?: boolean } }
   | { type: "REORDER"; payload: { cityIds: string[] } }
   | { type: "ADD_TEMP_CITY"; payload: { city: City } }
@@ -342,9 +341,6 @@ export function reducer(state: AppState, action: Action): AppState {
           hiddenCityIds: {},
         },
       };
-
-    case "SET_TIME_SEARCH_TAB":
-      return { ...state, ui: { ...state.ui, lastTimeSearchTab: action.payload.tab } };
 
     case "TOGGLE_HIDDEN": {
       const { cityId, hidden } = action.payload;

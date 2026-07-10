@@ -1,9 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { catalogToCity, CITY_CATALOG, getCityDisplayName } from "../../lib/cities";
-import { generateId } from "../../lib/id";
 import {
   buildMultiCandidateResults,
-  createDateCandidate,
   type DateCandidate,
   type MultiCandidateBlock,
 } from "../../lib/multiCandidateSearch";
@@ -12,11 +10,10 @@ import { useStore } from "../../store/StoreContext";
 import { selectDisplayCities, selectHomeCity, selectVisibleCities } from "../../store/selectors";
 import type { City } from "../../store/types";
 import { CityCombo } from "./CityCombo";
-import { CalendarDatePicker } from "../../components/CalendarDatePicker";
+import { DateCandidateListEditor } from "./DateCandidateListEditor";
 import { IconClear } from "../../components/icons/Icons";
 import styles from "./TimeSearchModal.module.css";
 
-const MAX_CANDIDATES = 10;
 const MAX_TARGETS = 10;
 
 interface MultiCandidatePanelProps {
@@ -27,6 +24,9 @@ interface MultiCandidatePanelProps {
   targetCities: City[];
   onTargetCitiesChange: (cities: City[]) => void;
   onSearch: (results: MultiCandidateBlock[]) => void;
+  submitLabel?: string;
+  candidatesAllowEmpty?: boolean;
+  relaxedFieldSpacing?: boolean;
 }
 
 function cityDisplayName(city: City, lang: "ja" | "en"): string {
@@ -41,6 +41,9 @@ export function MultiCandidatePanel({
   targetCities,
   onTargetCitiesChange,
   onSearch,
+  submitLabel,
+  candidatesAllowEmpty = false,
+  relaxedFieldSpacing = false,
 }: MultiCandidatePanelProps) {
   const { t } = useTranslation();
   const { state } = useStore();
@@ -50,6 +53,7 @@ export function MultiCandidatePanel({
   const visibleCities = selectVisibleCities(state);
   const groups = state.groups.allIds.map((id) => state.groups.byId[id]).filter(Boolean);
   const atMaxTargets = targetCities.length >= MAX_TARGETS;
+  const fieldClass = relaxedFieldSpacing ? styles.fieldRelaxed : styles.field;
 
   const resolveBaseCity = (): City | null => {
     const fromDisplay = activeCities.find((city) => city.id === baseCityId);
@@ -61,7 +65,6 @@ export function MultiCandidatePanel({
 
   const baseCity = resolveBaseCity();
   const baseTimezone = baseCity?.timezone ?? home?.timezone ?? "UTC";
-  const { minDate, maxDate } = getTimelineDateBounds(baseTimezone);
   const targetExclude = new Set([...targetCities.map((city) => city.id), baseCityId]);
   const visibleTargets = targetCities;
 
@@ -76,23 +79,6 @@ export function MultiCandidatePanel({
   const handleBaseChange = (city: City) => {
     onBaseCityChange(city);
     onTargetCitiesChange(targetCities.filter((entry) => entry.id !== city.id));
-  };
-
-  const updateCandidate = (index: number, patch: Partial<DateCandidate>) => {
-    onCandidatesChange(
-      candidates.map((candidate, i) => (i === index ? { ...candidate, ...patch } : candidate)),
-    );
-  };
-
-  const addCandidate = () => {
-    if (candidates.length >= MAX_CANDIDATES) return;
-    const last = candidates[candidates.length - 1];
-    onCandidatesChange([...candidates, createDateCandidate(baseTimezone, { ...last, id: generateId() })]);
-  };
-
-  const removeCandidate = (index: number) => {
-    if (candidates.length <= 1) return;
-    onCandidatesChange(candidates.filter((_, i) => i !== index));
   };
 
   const addTarget = (city: City) => {
@@ -128,6 +114,7 @@ export function MultiCandidatePanel({
 
   const runSearch = () => {
     if (!home || !baseCity || targetCities.length === 0) return;
+    const { minDate, maxDate } = getTimelineDateBounds(baseTimezone);
     const clampedCandidates = candidates.map((candidate) => ({
       ...candidate,
       date: clampDateInput(candidate.date, minDate, maxDate),
@@ -146,7 +133,7 @@ export function MultiCandidatePanel({
 
   return (
     <>
-      <div className={styles.field}>
+      <div className={fieldClass}>
         <div className={styles.label}>{t("timeSearch.multiBase")}</div>
         <p className={styles.fieldHint}>{t("timeSearch.multiBaseHint")}</p>
         {visibleCities.length > 0 && (
@@ -171,100 +158,15 @@ export function MultiCandidatePanel({
         <CityCombo selectedId={baseCityId} onSelect={handleBaseChange} />
       </div>
 
-      <div className={styles.field}>
-        <div className={styles.label}>{t("timeSearch.multiCandidates")}</div>
-        <div className={styles.candidateList}>
-          {candidates.map((candidate, index) => (
-            <div key={candidate.id} className={styles.candidateRow}>
-              <div className={styles.candidateHead}>
-                <span className={styles.candidateNum}>{index + 1}</span>
-                <CalendarDatePicker
-                  className={styles.candidateDate}
-                  compact
-                  value={candidate.date}
-                  min={minDate}
-                  max={maxDate}
-                  onChange={(nextDate) =>
-                    updateCandidate(index, { date: clampDateInput(nextDate, minDate, maxDate) })
-                  }
-                />
-              </div>
-              <div className={styles.candidateTimeRange}>
-                <div className={styles.candidateTimeGroup}>
-                  <select
-                    className={`${styles.select} ${styles.candidateHour}`}
-                    value={candidate.startHour}
-                    onChange={(e) => updateCandidate(index, { startHour: Number(e.target.value) })}
-                  >
-                    {Array.from({ length: 24 }, (_, hour) => (
-                      <option key={hour} value={hour}>
-                        {String(hour).padStart(2, "0")}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    className={`${styles.select} ${styles.candidateMin}`}
-                    value={candidate.startMinute}
-                    onChange={(e) =>
-                      updateCandidate(index, { startMinute: Number(e.target.value) as 0 | 30 })
-                    }
-                  >
-                    <option value={0}>00</option>
-                    <option value={30}>30</option>
-                  </select>
-                </div>
-                <span className={styles.candidateSep}>〜</span>
-                <div className={styles.candidateTimeGroup}>
-                  <select
-                    className={`${styles.select} ${styles.candidateHour}`}
-                    value={candidate.endHour}
-                    onChange={(e) => updateCandidate(index, { endHour: Number(e.target.value) })}
-                  >
-                    {Array.from({ length: 24 }, (_, hour) => (
-                      <option key={hour} value={hour}>
-                        {String(hour).padStart(2, "0")}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    className={`${styles.select} ${styles.candidateMin}`}
-                    value={candidate.endMinute}
-                    onChange={(e) =>
-                      updateCandidate(index, { endMinute: Number(e.target.value) as 0 | 30 })
-                    }
-                  >
-                    <option value={0}>00</option>
-                    <option value={30}>30</option>
-                  </select>
-                </div>
-              </div>
-              {candidates.length > 1 && (
-                <button
-                  type="button"
-                  className={styles.removeBtn}
-                  aria-label={t("timeSearch.removeCandidate")}
-                  onClick={() => removeCandidate(index)}
-                >
-                  <IconClear width={14} height={14} />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-        <button
-          type="button"
-          className={styles.addCandidateBtn}
-          disabled={candidates.length >= MAX_CANDIDATES}
-          onClick={addCandidate}
-        >
-          {t("timeSearch.addCandidate")}
-        </button>
-        {candidates.length >= MAX_CANDIDATES && (
-          <p className={styles.hint}>{t("timeSearch.maxCandidates")}</p>
-        )}
-      </div>
+      <DateCandidateListEditor
+        baseTimezone={baseTimezone}
+        candidates={candidates}
+        onCandidatesChange={onCandidatesChange}
+        allowEmpty={candidatesAllowEmpty}
+        relaxedFieldSpacing={relaxedFieldSpacing}
+      />
 
-      <div className={styles.field}>
+      <div className={fieldClass}>
         <div className={styles.label}>{t("timeSearch.multiTargets")}</div>
         <p className={styles.fieldHint}>{t("timeSearch.multiTargetsHint")}</p>
 
@@ -347,8 +249,13 @@ export function MultiCandidatePanel({
         {atMaxTargets && <p className={styles.error}>{t("timeSearch.maxTargets")}</p>}
       </div>
 
-      <button type="button" className={styles.apply} onClick={runSearch} disabled={!home || targetCities.length === 0}>
-        {t("timeSearch.search")}
+      <button
+        type="button"
+        className={styles.apply}
+        onClick={runSearch}
+        disabled={!home || !baseCity || targetCities.length === 0 || candidates.length === 0}
+      >
+        {submitLabel ?? t("timeSearch.search")}
       </button>
     </>
   );

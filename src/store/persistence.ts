@@ -8,7 +8,6 @@ function normalizeLoadedState(parsed: AppState): AppState {
     ...createInitialState().ui,
     ...parsed.ui,
     pulseCityId: parsed.ui?.pulseCityId ?? null,
-    lastTimeSearchTab: parsed.ui?.lastTimeSearchTab ?? "single",
     tempCities: parsed.ui?.tempCities ?? [],
     hiddenCityIds: parsed.ui?.hiddenCityIds ?? {},
   };
@@ -32,6 +31,7 @@ function normalizeLoadedState(parsed: AppState): AppState {
     language: (parsed.settings?.language === "ja" ? "ja" : "en") as "ja" | "en",
     onboardingCompleted: parsed.settings?.onboardingCompleted ?? true,
     tourCompleted: parsed.settings?.tourCompleted ?? true,
+    contextualGuideStep: (parsed.settings?.contextualGuideStep ?? 4) as 0 | 1 | 2 | 3 | 4,
     replayTour: false,
   };
 

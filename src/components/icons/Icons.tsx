@@ -1,4 +1,7 @@
 import type { SVGProps } from "react";
+import IconConvertAsset from "../../assets/icons/icon-convert.svg?react";
+import IconJumpAsset from "../../assets/icons/icon-jump.svg?react";
+import IconOnboardingAsset from "../../assets/icons/icon_onboarding.svg?react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -146,4 +149,24 @@ export function IconBusiness(props: IconProps) {
       <path d="M1.98291 7.23352H12.0162" stroke="currentColor" strokeWidth="0.99" />
     </svg>
   );
+}
+
+export function IconConvert(props: IconProps) {
+  return <IconConvertAsset width={18} height={18} aria-hidden {...props} />;
+}
+
+export function IconJump({ style, ...props }: IconProps) {
+  return (
+    <IconJumpAsset
+      width={18}
+      height={18}
+      aria-hidden
+      style={{ transform: "rotate(90deg)", ...style }}
+      {...props}
+    />
+  );
+}
+
+export function IconOnboarding(props: IconProps) {
+  return <IconOnboardingAsset aria-hidden {...props} />;
 }

@@ -26,7 +26,6 @@ export interface UIState {
   pulseCityId: string | null;
   hiddenCityIds: Record<string, boolean>;
   tempCities: City[];
-  lastTimeSearchTab: "single" | "relative" | "multi";
 }
 
 export interface UserSettings {
@@ -37,6 +36,8 @@ export interface UserSettings {
   businessHoursEnabled: boolean;
   onboardingCompleted: boolean;
   tourCompleted: boolean;
+  /** 0=未開始, 1=グループ保存, 2=Jump, 3=Convert, 4=完了 */
+  contextualGuideStep: 0 | 1 | 2 | 3 | 4;
   replayTour?: boolean;
 }
 

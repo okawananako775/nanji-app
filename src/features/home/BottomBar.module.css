@@ -5,16 +5,39 @@
   bottom: 0;
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
-  pointer-events: auto;
+  pointer-events: none;
   z-index: var(--z-floating);
   transform: translateZ(0);
   background: transparent;
 }
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.backToNowBtn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .toggleWrap {
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
+
+@media (min-width: 641px) {
+  .toggleWrap {
+    z-index: calc(var(--z-range-panel) + 1);
+  }
+}
+
 .toggle {
   position: relative;
   display: inline-flex; align-items: center; gap: 8px;
@@ -62,26 +85,4 @@
 }
 .segActive svg {
   color: var(--color-icon-segment-active);
-}
-.actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  z-index: 1;
-}
-.actionBtn {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-@media (max-width: 640px) {
-  .bar {
-    background: linear-gradient(
-      to bottom,
-      var(--color-surface-fade-0) 0%,
-      var(--color-surface-fade-100) 55%
-    );
-  }
 }

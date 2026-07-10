@@ -11,6 +11,7 @@
   --neutral-250: #cfd1d6;
   --neutral-300: #c3c5ca;
   --neutral-500: #909297;
+  --neutral-525: #83858a;
   --neutral-600: #5d5f64;
   --neutral-900: #101217;
 
@@ -21,7 +22,8 @@
   --color-surface-cityheading-home: var(--color-surface-inverse);
   --color-surface-cityheading-other: var(--color-surface-elevated);
   --color-border-cityheading-other: transparent;
-  --color-surface-subtle: #ffffff26;                          /* Neutral/40 at 15% opacity */
+  --color-surface-subtle-light: #ffffff26;                    /* Neutral/50 × 15% opacity */
+  --color-surface-subtle-dark: #83858a80;                     /* Neutral/525 × 50% opacity */
   --color-surface-fade-100: #fdffff;                          /* = --color-surface-default */
   --color-surface-fade-0: #fdffff00;
   --color-surface-control-tag: var(--neutral-100);            /* #f6f8fd */
@@ -56,10 +58,10 @@
   /* ── Semantic: timeline aliases ──────────────────────────────────────────── */
   --color-timeline-fade-solid: #fdffff;                       /* = color-surface-default */
   --color-timeline-fade-transparent: #fdffff00;
-  --color-timeline-slot-text: var(--color-text-primary);      /* = neutral-900 */
+  --color-timeline-slot-text: var(--neutral-900);               /* 明るいスロット背景用 #101217（dark mode でも不変） */
 
   /* ── Semantic: icon ──────────────────────────────────────────────────────── */
-  --color-icon-default: #83858a;                              /* ⚠️ Neutral 未確認ステップ */
+  --color-icon-default: var(--neutral-525);
   --color-icon-inverse: var(--neutral-40);                    /* #ffffff */
 
   /* ── Brand: logo ─────────────────────────────────────────────────────────── */
@@ -86,9 +88,11 @@
   --time-cycle-height: 1008px; /* 24 × 42px */
   --city-heading-height: 118px;
   --city-heading-overlap: 16px;
+  --timeline-date-tag-sticky-top: calc(var(--city-heading-overlap) + 11px);
   --navbar-height: 97px;
   --tagbar-height: 85px;
   --bottom-bar-height: 122px; /* toggle/actions + 8px padding × 2 */
+  --range-selection-panel-width: 580px;
   --shadow-card-bleed: 24px;  /* 0 8px 16px shadow offset + blur */
 
   /* ── Shape ───────────────────────────────────────────────────────────────── */
@@ -100,11 +104,13 @@
 
   /* ── Elevation ───────────────────────────────────────────────────────────── */
   --shadow-card: 0 8px 16px 0 var(--neutral-300);            /* #c3c5ca */
-  --shadow-floating: 0 4px 4px 0 var(--neutral-250);         /* #cfd1d6 */
+  --shadow-floating: 0 4px 8px 0 var(--neutral-250);         /* Elevation/S #cfd1d6 */
   --z-base: 0;
   --z-raised: 10;
   --z-sticky: 100;
   --z-floating: 150;
+  --z-bottom-fade: 140;
+  --z-range-panel: calc(var(--z-floating) + 10);
   --z-popover: calc(var(--z-floating) + 20);
   --z-toast: 9999;
 
@@ -188,7 +194,7 @@
   --color-timeline-fade-solid: var(--neutral-900);
   --color-timeline-fade-transparent: #10121700;
   --shadow-card: 0 8px 16px rgba(0, 0, 0, 0.45);
-  --shadow-floating: 0 4px 4px rgba(0, 0, 0, 0.35);
+  --shadow-floating: 0 4px 8px rgba(0, 0, 0, 0.35);
   --color-surface-cityheading-home: #3d424d;                  /* ⚠️ Neutral 未確認ステップ */
   --color-surface-cityheading-other: #171a21;                 /* ⚠️ Neutral 未確認ステップ */
   --color-border-cityheading-other: #2a2e38;                  /* dark のみ可視 */

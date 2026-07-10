@@ -1,6 +1,10 @@
+import { addHours } from "date-fns";
 import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 import type { City } from "../store/types";
-import { formatClockTime } from "./timezone";
+import type { DateCandidate } from "./multiCandidateSearch";
+import type { SlotRange } from "./timeGrid";
+import { dateCandidateToUtcRange } from "./rangeSelectionSync";
+import { formatClockTime, homeSlotToUtc } from "./timezone";
 
 function weekdayJa(date: Date, timezone: string): string {
   return ["日", "月", "火", "水", "木", "金", "土"][toZonedTime(date, timezone).getDay()];
@@ -77,4 +81,41 @@ export function formatCopyLinesRange(
   timeFormat: "24h" | "12h",
 ): string {
   return cities.map((city) => formatCityRange(city, startUtc, endUtc, lang, timeFormat)).join("\n");
+}
+
+export function formatCopyLinesMultipleRanges(
+  cities: City[],
+  ranges: SlotRange[],
+  homeTimezone: string,
+  lang: "ja" | "en",
+  timeFormat: "24h" | "12h",
+  formatCandidateHeading: (index: number) => string,
+): string {
+  return ranges
+    .map((range, rangeIndex) => {
+      const startUtc = homeSlotToUtc(homeTimezone, range.startDay, range.startHour);
+      const endUtc = addHours(homeSlotToUtc(homeTimezone, range.endDay, range.endHour), 1);
+      const heading = formatCandidateHeading(rangeIndex + 1);
+      const body = formatCopyLinesRange(cities, startUtc, endUtc, lang, timeFormat);
+      return `${heading}\n${body}`;
+    })
+    .join("\n\n");
+}
+
+export function formatCopyFromDateCandidates(
+  cities: City[],
+  candidates: DateCandidate[],
+  homeTimezone: string,
+  lang: "ja" | "en",
+  timeFormat: "24h" | "12h",
+  formatCandidateHeading: (index: number) => string,
+): string {
+  return candidates
+    .map((candidate, rangeIndex) => {
+      const { startUtc, endUtc } = dateCandidateToUtcRange(homeTimezone, candidate);
+      const heading = formatCandidateHeading(rangeIndex + 1);
+      const body = formatCopyLinesRange(cities, startUtc, endUtc, lang, timeFormat);
+      return `${heading}\n${body}`;
+    })
+    .join("\n\n");
 }

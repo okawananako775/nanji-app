@@ -47,7 +47,7 @@ export function OnboardingPage() {
   const finish = () => {
     dispatch({
       type: "UPDATE_SETTINGS",
-      payload: { onboardingCompleted: true, tourCompleted: true },
+      payload: { onboardingCompleted: true, tourCompleted: true, contextualGuideStep: 0 },
     });
   };
 

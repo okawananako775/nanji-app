@@ -21,7 +21,6 @@ export function createInitialState(): AppState {
       pulseCityId: null,
       hiddenCityIds: {},
       tempCities: [],
-      lastTimeSearchTab: "single",
     },
     settings: {
       language: getInitialLanguage(),
@@ -31,6 +30,7 @@ export function createInitialState(): AppState {
       businessHoursEnabled: false,
       onboardingCompleted: false,
       tourCompleted: false,
+      contextualGuideStep: 0,
     },
   };
 }

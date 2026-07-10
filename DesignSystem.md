@@ -70,6 +70,7 @@ Figmaのカラーパレットは `/50`〜`/950` の19ステップ構成。CSS変
 | `Neutral/400` | ⚠️ 未確認 | — |
 | `Neutral/450` | ⚠️ 未確認 | — |
 | `Neutral/500` | `--neutral-500` | `#909297` |
+| `Neutral/525` | `--neutral-525` | `#83858a` |
 | `Neutral/550` | ⚠️ 未確認 | — |
 | `Neutral/600` | `--neutral-600` | `#5d5f64` |
 | `Neutral/650` | ⚠️ 未確認 | — |
@@ -128,7 +129,8 @@ Figmaのカラーパレットは `/50`〜`/950` の19ステップ構成。CSS変
 | `--color-surface-default` | 固有値 | `#fdffff` | ページ背景（わずかに青みがかった白） | ページ背景・NavBar・TagBar |
 | `--color-surface-elevated` | `Neutral/50` | `#ffffff` | 浮いているカード・モーダル背景 | City heading（Other）・Modal dialog・Popover |
 | `--color-surface-inverse` | ⚠️ 未確認 | `#2a2c31` | ダーク背景 | City heading（Home） |
-| `--color-surface-subtle` | Neutral/40 × 15%α | `#ffffff26` | 半透明白オーバーレイ | Date tag背景 |
+| `--color-surface-subtle-light` | `Neutral/50` × 15%α | `#ffffff26` | 半透明白オーバーレイ | — |
+| `--color-surface-subtle-dark` | `Neutral/525` × 50%α | `#83858a80` | 半透明グレーオーバーレイ | Date tag背景 |
 
 > `color.surface.default`（`#fdffff`）は純白（`#ffffff`）とは異なる。実装では値をそのまま使うこと。
 
@@ -850,7 +852,7 @@ padding-left: `16px`、padding-right: `14px`（アイコン右）、gap: `4px`
 |---|---|
 | 高さ | `20px`（固定） |
 | 幅 | **hug（コンテンツ幅）** — `inline-flex`、`width` 指定なし |
-| BG | `--color-surface-subtle`（`#ffffff26`） |
+| BG | `--color-surface-subtle-dark`（`#83858a80` / `Neutral/525` × 50%α） |
 | テキスト色 | `--color-text-date-tag`（`#e9ebf0`） |
 | Typography | Hanken Grotesk 12px 600 |
 | Radius | `--radius-date-badge`（8px） |
