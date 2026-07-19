@@ -42,6 +42,82 @@ function getBubbleMaxWidth(rect: DOMRect): number {
   );
 }
 
+function clampHorizontalCenter(left: number, bubbleWidth: number): number {
+  const half = bubbleWidth / 2;
+  const min = VIEWPORT_EDGE + half;
+  const max = window.innerWidth - VIEWPORT_EDGE - half;
+  return Math.min(Math.max(left, min), max);
+}
+
+function clampBubbleStyle(
+  style: CSSProperties,
+  bubbleRect: DOMRect,
+  placement: GuidePlacement,
+): CSSProperties {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const next: CSSProperties = { ...style };
+
+  if (typeof next.left === "number") {
+    let left = next.left;
+    if (next.transform?.includes("translateX(-50%)")) {
+      left = clampHorizontalCenter(left, bubbleRect.width);
+    } else if (bubbleRect.left < VIEWPORT_EDGE) {
+      left += VIEWPORT_EDGE - bubbleRect.left;
+    } else if (bubbleRect.right > viewportWidth - VIEWPORT_EDGE) {
+      left -= bubbleRect.right - (viewportWidth - VIEWPORT_EDGE);
+    }
+    next.left = left;
+  }
+
+  if (typeof next.right === "number") {
+    let right = next.right;
+    if (bubbleRect.left < VIEWPORT_EDGE) {
+      right += VIEWPORT_EDGE - bubbleRect.left;
+    } else if (bubbleRect.right > viewportWidth - VIEWPORT_EDGE) {
+      right -= bubbleRect.right - (viewportWidth - VIEWPORT_EDGE);
+    }
+    next.right = right;
+  }
+
+  if (typeof next.top === "number") {
+    let top = next.top;
+    if (next.transform?.includes("translateY(-50%)")) {
+      const half = bubbleRect.height / 2;
+      top = Math.min(
+        Math.max(top, VIEWPORT_EDGE + half),
+        viewportHeight - VIEWPORT_EDGE - half,
+      );
+    } else if (bubbleRect.bottom > viewportHeight - VIEWPORT_EDGE) {
+      top -= bubbleRect.bottom - (viewportHeight - VIEWPORT_EDGE);
+    } else if (bubbleRect.top < VIEWPORT_EDGE) {
+      top += VIEWPORT_EDGE - bubbleRect.top;
+    }
+    next.top = top;
+  }
+
+  if (typeof next.bottom === "number") {
+    let bottom = next.bottom;
+    if (bubbleRect.top < VIEWPORT_EDGE) {
+      bottom += VIEWPORT_EDGE - bubbleRect.top;
+    } else if (bubbleRect.bottom > viewportHeight - VIEWPORT_EDGE) {
+      bottom -= bubbleRect.bottom - (viewportHeight - VIEWPORT_EDGE);
+    }
+    next.bottom = bottom;
+  }
+
+  if (
+    (placement === "top" || placement === "bottom" || placement === "bottom-right") &&
+    bubbleRect.top < VIEWPORT_EDGE &&
+    typeof next.top === "number"
+  ) {
+    next.top = VIEWPORT_EDGE;
+    delete next.bottom;
+  }
+
+  return next;
+}
+
 function getBubbleStyle(rect: DOMRect, placement: GuidePlacement): CSSProperties {
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
@@ -51,7 +127,7 @@ function getBubbleStyle(rect: DOMRect, placement: GuidePlacement): CSSProperties
   if (placement === "bottom-right") {
     const ringBottom = centerY + ringRadius;
     return {
-      right: window.innerWidth - rect.right,
+      right: Math.max(VIEWPORT_EDGE, window.innerWidth - rect.right),
       top: ringBottom + TAIL_GAP + TAIL_TIP_EXTENT,
       maxWidth,
     };
@@ -61,16 +137,22 @@ function getBubbleStyle(rect: DOMRect, placement: GuidePlacement): CSSProperties
     const ringTop = centerY - ringRadius;
     return {
       left: centerX,
-      bottom: window.innerHeight - (ringTop - TAIL_GAP - TAIL_TIP_EXTENT),
+      bottom: Math.max(
+        VIEWPORT_EDGE,
+        window.innerHeight - (ringTop - TAIL_GAP - TAIL_TIP_EXTENT),
+      ),
       transform: "translateX(-50%)",
-      maxWidth,
+      maxWidth: Math.min(maxWidth, window.innerWidth - VIEWPORT_EDGE * 2),
     };
   }
 
   if (placement === "left") {
     const ringLeft = centerX - ringRadius;
     return {
-      right: window.innerWidth - (ringLeft - TAIL_GAP - TAIL_TIP_EXTENT),
+      right: Math.max(
+        VIEWPORT_EDGE,
+        window.innerWidth - (ringLeft - TAIL_GAP - TAIL_TIP_EXTENT),
+      ),
       top: centerY,
       transform: "translateY(-50%)",
       maxWidth,
@@ -82,7 +164,7 @@ function getBubbleStyle(rect: DOMRect, placement: GuidePlacement): CSSProperties
     left: centerX,
     top: ringBottom + TAIL_GAP + TAIL_TIP_EXTENT,
     transform: "translateX(-50%)",
-    maxWidth,
+    maxWidth: Math.min(maxWidth, window.innerWidth - VIEWPORT_EDGE * 2),
   };
 }
 
@@ -99,10 +181,14 @@ export function ContextualGuide({
   const [bubbleRect, setBubbleRect] = useState<DOMRect | null>(null);
 
   const ringStyle = useMemo(() => (rect ? getRingStyle(rect) : undefined), [rect]);
-  const bubbleStyle = useMemo(
+  const baseBubbleStyle = useMemo(
     () => (rect ? getBubbleStyle(rect, placement) : undefined),
     [rect, placement],
   );
+  const bubbleStyle = useMemo(() => {
+    if (!baseBubbleStyle || !bubbleRect) return baseBubbleStyle;
+    return clampBubbleStyle(baseBubbleStyle, bubbleRect, placement);
+  }, [baseBubbleStyle, bubbleRect, placement]);
 
   useLayoutEffect(() => {
     if (!active || !bubbleRef.current) {
@@ -125,7 +211,7 @@ export function ContextualGuide({
       observer.disconnect();
       window.removeEventListener("resize", sync);
     };
-  }, [active, message, placement, rect, bubbleStyle]);
+  }, [active, message, placement, rect, baseBubbleStyle]);
 
   const tailLeft = useMemo(() => {
     if (!rect || !bubbleRect) return undefined;

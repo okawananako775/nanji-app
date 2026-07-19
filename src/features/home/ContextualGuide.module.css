@@ -82,13 +82,13 @@
   top: 50%;
   transform: translateY(-50%);
   flex-shrink: 0;
-  width: 40px;
-  height: 36px;
+  width: 36px;
+  height: 32px;
 }
 
 .eyeIcon {
   display: block;
-  width: 40px;
+  width: 36px;
   height: auto;
   margin-top: 8px;
 }

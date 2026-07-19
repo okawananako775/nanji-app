@@ -203,6 +203,6 @@
 
 html[lang="ja"] {
   --font-ui: "Hanken Grotesk", "Source Han Sans JP", system-ui, sans-serif;
-  --font-display: "Hanken Grotesk", "Shippori Mincho", Georgia, serif;
+  --font-display: "Hanken Grotesk", "Source Han Sans JP", Georgia, serif;
   --font-modal-title: var(--font-display);
 }

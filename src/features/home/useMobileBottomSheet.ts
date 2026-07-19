@@ -52,7 +52,7 @@ export function useMobileBottomSheet(open: boolean) {
 
   useEffect(() => {
     if (!open) return;
-    setSnap("full");
+    setSnap("half");
     setDragHeight(null);
     setIsDragging(false);
     dragStart.current = null;
