@@ -16,6 +16,7 @@ interface JumpPanelProps {
   open: boolean;
   onClose: () => void;
   anchorRef: RefObject<HTMLElement | null>;
+  embedded?: boolean;
 }
 
 function ensureCityVisibleOnTimeline(
@@ -38,7 +39,7 @@ function ensureCityVisibleOnTimeline(
   }
 }
 
-export function JumpPanel({ open, onClose, anchorRef }: JumpPanelProps) {
+export function JumpPanel({ open, onClose, anchorRef, embedded = false }: JumpPanelProps) {
   const { t } = useTranslation();
   const { state, dispatch } = useStore();
   const home = selectHomeCity(state);
@@ -85,8 +86,8 @@ export function JumpPanel({ open, onClose, anchorRef }: JumpPanelProps) {
 
   if (!home) return null;
 
-  return (
-    <SidePanel open={open} onClose={onClose} anchorRef={anchorRef} title={t("jump.title")}>
+  const content = (
+    <>
       <div className={formStyles.fieldRelaxed}>
         <div className={formStyles.label}>{t("timeSearch.baseCity")}</div>
         <CityCombo selectedId={cityId || home.id} onSelect={(city) => setCityId(city.id)} />
@@ -126,6 +127,14 @@ export function JumpPanel({ open, onClose, anchorRef }: JumpPanelProps) {
       <button type="button" className={formStyles.apply} onClick={apply}>
         {t("jump.apply")}
       </button>
+    </>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <SidePanel open={open} onClose={onClose} anchorRef={anchorRef} title={t("jump.title")}>
+      {content}
     </SidePanel>
   );
 }

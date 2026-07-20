@@ -79,7 +79,8 @@ export function TagBar({
           <span className={styles.cityCount}>{cities.length}</span>
         </button>
       </div>
-      <div className={`${styles.bar} ${collapsed ? styles.barCollapsed : ""}`}>
+      <div className={`${styles.barOuter} ${collapsed ? styles.barOuterCollapsed : ""}`}>
+      <div className={styles.bar}>
       {cities.map((city) => {
         const isTemp = selectIsTempCity(state, city.id);
         const isInGroup = selectIsCityInActiveGroup(state, city.id);
@@ -210,6 +211,7 @@ export function TagBar({
             <span className={styles.saveGroupBtnLabel}>{t("tag.saveAsGroup")}</span>
           </button>
         )}
+      </div>
       </div>
       </div>
     </div>

@@ -14,10 +14,10 @@
   backdrop-filter: blur(0);
   -webkit-backdrop-filter: blur(0);
   transition:
-    opacity var(--duration-modal) var(--easing-modal),
-    background-color var(--duration-modal) var(--easing-modal),
-    backdrop-filter var(--duration-modal) var(--easing-modal),
-    -webkit-backdrop-filter var(--duration-modal) var(--easing-modal);
+    opacity var(--duration-surface) var(--easing-surface),
+    background-color var(--duration-surface) var(--easing-surface),
+    backdrop-filter var(--duration-surface) var(--easing-surface),
+    -webkit-backdrop-filter var(--duration-surface) var(--easing-surface);
 }
 
 .overlayShown {
@@ -41,9 +41,9 @@
   filter: blur(12px);
   transform: scale(0.988);
   transition:
-    opacity var(--duration-modal) var(--easing-modal),
-    filter var(--duration-modal) var(--easing-modal),
-    transform var(--duration-modal) var(--easing-modal);
+    opacity var(--duration-surface) var(--easing-surface),
+    filter var(--duration-surface) var(--easing-surface),
+    transform var(--duration-surface) var(--easing-surface);
 }
 
 .dialogShown {

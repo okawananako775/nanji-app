@@ -13,15 +13,14 @@ import { useStore } from "../../store/StoreContext";
 import { selectDisplayCities, selectHomeCity } from "../../store/selectors";
 import type { City } from "../../store/types";
 import { ContextualGuide } from "./ContextualGuide";
-import { JumpPanel } from "./JumpPanel";
 import { SettingsModal } from "../settings/SettingsModal";
 import { HomeCityModal } from "../settings/HomeCityModal";
 import { CitySearchModal } from "../city-search/CitySearchModal";
 import { GroupEditorModal } from "../groups/GroupEditorModal";
 import { BottomBar } from "./BottomBar";
 import { NavBar } from "./NavBar";
-import { RangeSelectionModal } from "./RangeSelectionModal";
 import { TagBar } from "./TagBar";
+import { TimelineSidePanel } from "./TimelineSidePanel";
 import { TimelineSideTabs } from "./TimelineSideTabs";
 import { TimeTable } from "./TimeTable";
 import styles from "./HomePage.module.css";
@@ -72,6 +71,7 @@ export function HomePage() {
   const displayCities = selectDisplayCities(state);
   const guideStep = state.settings.contextualGuideStep;
   const sidePanelOpen = rangeSelectionOpen || jumpOpen;
+  const sidePanelTab = rangeSelectionOpen ? "convert" : jumpOpen ? "jump" : null;
 
   useEffect(() => {
     if (home) {
@@ -180,6 +180,11 @@ export function HomePage() {
       setRangeBaseTimezone(home.timezone);
     }
   }, [home]);
+
+  const closeSidePanel = useCallback(() => {
+    setJumpOpen(false);
+    closeRangeSelection();
+  }, [closeRangeSelection]);
 
   const toggleRangeSelection = useCallback(() => {
     if (rangeSelectionOpen) {
@@ -335,21 +340,19 @@ export function HomePage() {
           />
         )}
         {home && (
-          <>
-            <RangeSelectionModal
-              open={rangeSelectionOpen}
-              onClose={closeRangeSelection}
-              anchorRef={mainRef}
-              home={home}
-              timeFormat={state.settings.timeFormat}
-              candidates={candidates}
-              onCandidatesChange={setCandidates}
-              pendingRangeStart={pendingRangeStart}
-              onBaseCityChange={handleRangeBaseCityChange}
-              onCopied={setSnack}
-            />
-            <JumpPanel open={jumpOpen} onClose={() => setJumpOpen(false)} anchorRef={mainRef} />
-          </>
+          <TimelineSidePanel
+            open={sidePanelOpen}
+            tab={sidePanelTab}
+            onClose={closeSidePanel}
+            anchorRef={mainRef}
+            home={home}
+            timeFormat={state.settings.timeFormat}
+            candidates={candidates}
+            onCandidatesChange={setCandidates}
+            pendingRangeStart={pendingRangeStart}
+            onBaseCityChange={handleRangeBaseCityChange}
+            onCopied={setSnack}
+          />
         )}
       </div>
       <SettingsModal

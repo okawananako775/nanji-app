@@ -53,8 +53,8 @@
   border-radius: var(--radius-control);
   background: var(--color-surface-segment-active);
   transition:
-    transform var(--duration-base) var(--easing-standard),
-    width var(--duration-base) var(--easing-standard);
+    transform var(--duration-surface) var(--easing-surface),
+    width var(--duration-surface) var(--easing-surface);
   pointer-events: none;
 }
 .seg {
@@ -66,7 +66,7 @@
   background: transparent;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  transition: color var(--duration-base) var(--easing-standard);
+  transition: color var(--duration-surface) var(--easing-surface);
 }
 .segOffLeft {
   padding: 8px 0 8px 16px;
@@ -77,7 +77,7 @@
 .seg svg {
   flex-shrink: 0;
   color: var(--color-icon-default);
-  transition: color var(--duration-base) var(--easing-standard);
+  transition: color var(--duration-surface) var(--easing-surface);
 }
 .segActive {
   padding: 8px 16px;

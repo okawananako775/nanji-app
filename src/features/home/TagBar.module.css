@@ -30,6 +30,7 @@
 .collapseToggle svg {
   color: var(--color-icon-default);
   flex-shrink: 0;
+  transition: transform var(--duration-surface) var(--easing-surface);
 }
 
 .chevronUp {
@@ -50,6 +51,16 @@
   font-weight: 600;
 }
 
+.barOuter {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--duration-surface) var(--easing-surface);
+}
+
+.barOuterCollapsed {
+  grid-template-rows: 0fr;
+}
+
 .bar {
   height: fit-content;
   display: flex;
@@ -57,10 +68,32 @@
   flex-wrap: wrap;
   gap: 8px;
   padding: 6px var(--space-page-edge);
+  overflow: hidden;
+  min-height: 0;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-surface) var(--easing-surface),
+    transform var(--duration-surface) var(--easing-surface);
 }
 
-.barCollapsed {
-  display: none;
+.barOuterCollapsed .bar {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barOuter,
+  .bar,
+  .collapseToggle svg {
+    transition: none;
+  }
+
+  .barOuterCollapsed .bar {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .right {

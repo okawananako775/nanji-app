@@ -457,6 +457,16 @@ export function TimeTable({
   const [headingH, setHeadingH] = useState(HEADING_H);
   const [, setHolidayDataVersion] = useState(0);
   const businessHoursEnabled = state.settings.businessHoursEnabled;
+  const [modeSwitchAnim, setModeSwitchAnim] = useState(false);
+  const skipModeSwitchAnim = useRef(true);
+
+  useEffect(() => {
+    if (skipModeSwitchAnim.current) {
+      skipModeSwitchAnim.current = false;
+      return;
+    }
+    setModeSwitchAnim(true);
+  }, [businessHoursEnabled]);
 
   const formatCandidateLabel = useCallback(
     (index: number) => t("rangeSelection.candidate", { n: index }),
@@ -827,7 +837,10 @@ export function TimeTable({
   return (
     <div className={`${styles.wrap} ${selectionPanelOpen ? styles.wrapWithPanel : ""}`}>
       <div ref={xScrollRef} className={styles.xScroll}>
-        <div className={styles.columns}>
+        <div
+          className={`${styles.columns} ${modeSwitchAnim ? styles.columnsModeSwitch : ""}`}
+          onAnimationEnd={() => setModeSwitchAnim(false)}
+        >
           {cities.map((city, index) => (
             <CityColumn
               key={`${city.id}:${index === 0 ? "master" : "follower"}`}

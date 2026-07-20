@@ -25,6 +25,8 @@ interface RangeSelectionModalProps {
   pendingRangeStart: { dayOffset: number; hour: number } | null;
   onBaseCityChange: (city: City) => void;
   onCopied: (message: string) => void;
+  embedded?: boolean;
+  onTitleChange?: (title: string) => void;
 }
 
 export function RangeSelectionModal({
@@ -38,6 +40,8 @@ export function RangeSelectionModal({
   pendingRangeStart,
   onBaseCityChange,
   onCopied,
+  embedded = false,
+  onTitleChange,
 }: RangeSelectionModalProps) {
   const { t } = useTranslation();
   const { state } = useStore();
@@ -76,8 +80,12 @@ export function RangeSelectionModal({
 
   const title = view === "results" ? t("timeSearch.resultsTitle") : t("rangeSelection.title");
 
-  return (
-    <SidePanel open={open} onClose={onClose} anchorRef={anchorRef} title={title}>
+  useEffect(() => {
+    onTitleChange?.(title);
+  }, [title, onTitleChange]);
+
+  const content = (
+    <>
       {view === "form" && (
         <>
           {pendingTimeLabel && (
@@ -100,6 +108,14 @@ export function RangeSelectionModal({
       {view === "results" && results && (
         <MultiCandidateResults results={results} onBack={() => setView("form")} onCopied={onCopied} />
       )}
+    </>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <SidePanel open={open} onClose={onClose} anchorRef={anchorRef} title={title}>
+      {content}
     </SidePanel>
   );
 }

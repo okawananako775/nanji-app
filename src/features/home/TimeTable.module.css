@@ -47,6 +47,32 @@
   position: relative;
 }
 
+.columnsModeSwitch {
+  animation: timelineModeFade var(--duration-surface) var(--easing-surface);
+}
+
+@keyframes timelineModeFade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.76;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .columns,
+  .slot {
+    transition: none;
+  }
+
+  .columnsModeSwitch {
+    animation: none;
+  }
+}
+
 .column {
   width: var(--column-width);
   flex-shrink: 0;
@@ -250,6 +276,10 @@
   background-color: transparent;
   cursor: pointer;
   text-align: right;
+  transition:
+    background-color var(--duration-surface) var(--easing-surface),
+    color var(--duration-surface) var(--easing-surface),
+    border-bottom-color var(--duration-surface) var(--easing-surface);
 }
 
 .slotDefault {

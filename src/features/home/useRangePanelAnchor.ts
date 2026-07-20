@@ -2,15 +2,12 @@ import { useLayoutEffect, useState, type CSSProperties, type RefObject } from "r
 
 export function useRangePanelAnchor(
   anchorRef: RefObject<HTMLElement | null>,
-  open: boolean,
+  mounted: boolean,
 ): CSSProperties {
   const [style, setStyle] = useState<CSSProperties>({});
 
   useLayoutEffect(() => {
-    if (!open) {
-      setStyle({});
-      return;
-    }
+    if (!mounted) return;
 
     const anchor = anchorRef.current;
     if (!anchor) return;
@@ -42,7 +39,7 @@ export function useRangePanelAnchor(
       window.removeEventListener("resize", sync);
       mq.removeEventListener("change", sync);
     };
-  }, [open, anchorRef]);
+  }, [mounted, anchorRef]);
 
   return style;
 }

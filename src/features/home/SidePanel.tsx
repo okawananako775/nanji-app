@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode, RefObject } from "react";
 import { useTranslation } from "react-i18next";
+import { useSurfaceTransition } from "../../hooks/useSurfaceTransition";
 import { IconClear } from "../../components/icons/Icons";
 import styles from "./RangeSelectionModal.module.css";
 import { useMobileBottomSheet } from "./useMobileBottomSheet";
@@ -15,10 +16,11 @@ interface SidePanelProps {
 
 export function SidePanel({ open, onClose, anchorRef, title, children }: SidePanelProps) {
   const { t } = useTranslation();
-  const anchorStyle = useRangePanelAnchor(anchorRef, open);
+  const transition = useSurfaceTransition(open);
+  const anchorStyle = useRangePanelAnchor(anchorRef, transition.render);
   const sheet = useMobileBottomSheet(open);
 
-  if (!open) return null;
+  if (!transition.render) return null;
 
   const mobileStyle: CSSProperties =
     sheet.isMobile && sheet.height !== null ? { height: sheet.height } : {};
@@ -27,7 +29,8 @@ export function SidePanel({ open, onClose, anchorRef, title, children }: SidePan
     <aside
       className={[
         styles.panel,
-        sheet.isMobile ? styles.panelMobile : "",
+        sheet.isMobile ? styles.panelMobile : styles.panelDesktop,
+        transition.shown ? styles.panelShown : "",
         sheet.snap === "peek" ? styles.panelPeek : "",
         sheet.isDragging ? styles.panelDragging : "",
       ]
@@ -35,6 +38,7 @@ export function SidePanel({ open, onClose, anchorRef, title, children }: SidePan
         .join(" ")}
       style={{ ...anchorStyle, ...mobileStyle }}
       aria-label={title}
+      aria-hidden={!open}
     >
       <div
         className={styles.header}

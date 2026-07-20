@@ -1,7 +1,7 @@
 # nanji? Design System
 
-**Version**: 6.0
-**Last updated**: 2026-07-11
+**Version**: 6.1（モバイルRange panel初期スナップをhalfに変更）
+**Last updated**: 2026-07-18
 **Product**: nanji? — World timezone comparison web application
 
 ---
@@ -901,7 +901,7 @@ Typography（text-only）: Hanken Grotesk 16px 600
 | z-index | `--z-range-panel` | `--z-range-panel` |
 | タイトル | `--font-modal-title`, 24px/500 | 同左 |
 
-モバイルは開くたびに`full`にリセット。ヘッダーをドラッグして高さ変更、タップで`peek`⇔`half`をトグル。
+モバイルは開くたびに`half`にリセット。ヘッダーをドラッグして高さ変更、タップで`peek`⇔`half`をトグル。
 
 **Jump Panel フィールド構成**（タイトル: `jump.title` = 「ジャンプ」）
 

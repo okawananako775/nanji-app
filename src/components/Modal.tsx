@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSurfaceTransition } from "../hooks/useSurfaceTransition";
+import { SURFACE_TRANSITION_MS } from "../lib/surfaceTransition";
 import { IconClear } from "./icons/Icons";
 import styles from "./Modal.module.css";
-
-const CLOSE_ANIMATION_MS = 250;
 
 interface ModalProps {
   open: boolean;
@@ -16,33 +15,12 @@ interface ModalProps {
 
 export function Modal({ open, title, onClose, children, dialogClassName }: ModalProps) {
   const { t } = useTranslation();
-  const openedAtRef = useRef(0);
-  const [render, setRender] = useState(open);
-  const [shown, setShown] = useState(false);
-
-  useEffect(() => {
-    if (open) {
-      setRender(true);
-      openedAtRef.current = performance.now();
-      const frame = requestAnimationFrame(() => {
-        requestAnimationFrame(() => setShown(true));
-      });
-      return () => cancelAnimationFrame(frame);
-    }
-    setShown(false);
-  }, [open]);
-
-  useEffect(() => {
-    if (!shown && !open && render) {
-      const timer = window.setTimeout(() => setRender(false), CLOSE_ANIMATION_MS);
-      return () => window.clearTimeout(timer);
-    }
-  }, [shown, open, render]);
+  const { render, shown, openedAtRef } = useSurfaceTransition(open);
 
   if (!render) return null;
 
   const handleOverlayClick = () => {
-    if (performance.now() - openedAtRef.current < CLOSE_ANIMATION_MS) return;
+    if (performance.now() - openedAtRef.current < SURFACE_TRANSITION_MS) return;
     onClose();
   };
 
