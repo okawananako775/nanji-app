@@ -54,6 +54,7 @@
 .barOuter {
   display: grid;
   grid-template-rows: 1fr;
+  overflow: hidden;
   transition: grid-template-rows var(--duration-surface) var(--easing-surface);
 }
 
@@ -62,7 +63,6 @@
 }
 
 .bar {
-  height: fit-content;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -74,13 +74,22 @@
   transform: translateY(0);
   transition:
     opacity var(--duration-surface) var(--easing-surface),
-    transform var(--duration-surface) var(--easing-surface);
+    transform var(--duration-surface) var(--easing-surface),
+    padding var(--duration-surface) var(--easing-surface);
 }
 
 .barOuterCollapsed .bar {
+  height: 0;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
   opacity: 0;
   transform: translateY(-6px);
   pointer-events: none;
+}
+
+.wrapCollapsed .toolbar {
+  border-bottom: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -91,6 +100,9 @@
   }
 
   .barOuterCollapsed .bar {
+    height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
     opacity: 1;
     transform: none;
   }

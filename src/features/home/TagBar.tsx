@@ -66,7 +66,7 @@ export function TagBar({
   }, [forceExpanded]);
 
   return (
-    <div className={styles.wrap}>
+    <div className={`${styles.wrap} ${collapsed ? styles.wrapCollapsed : ""}`}>
       <div className={styles.toolbar}>
         <button
           type="button"
