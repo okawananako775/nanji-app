@@ -111,7 +111,8 @@
   --z-floating: 150;
   --z-bottom-fade: 140;
   --z-range-panel: calc(var(--z-floating) + 10);
-  --z-popover: calc(var(--z-floating) + 20);
+  --z-modal: calc(var(--z-range-panel) + 30);
+  --z-popover: calc(var(--z-modal) + 10);
   --z-toast: 9999;
 
   /* ── Motion ──────────────────────────────────────────────────────────────── */
