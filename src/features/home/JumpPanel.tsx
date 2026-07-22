@@ -81,7 +81,6 @@ export function JumpPanel({ open, onClose, anchorRef, embedded = false }: JumpPa
     );
     const jump = jumpTargetFromUtc(home.timezone, utc);
     dispatch({ type: "SET_HIGHLIGHT", payload: { day: jump.day, hour: jump.hour } });
-    onClose();
   };
 
   if (!home) return null;

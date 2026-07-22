@@ -181,10 +181,14 @@ export function HomePage() {
     }
   }, [home]);
 
+  // Convert を閉じたときだけ候補をリセット。Jump の閉じる／Apply では消さない（統合前と同じ）。
   const closeSidePanel = useCallback(() => {
+    if (rangeSelectionOpen) {
+      closeRangeSelection();
+      return;
+    }
     setJumpOpen(false);
-    closeRangeSelection();
-  }, [closeRangeSelection]);
+  }, [rangeSelectionOpen, closeRangeSelection]);
 
   const toggleRangeSelection = useCallback(() => {
     if (rangeSelectionOpen) {
