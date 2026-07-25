@@ -28,6 +28,8 @@ export interface UIState {
   tempCities: City[];
 }
 
+export type SurveyStatus = "pending" | "submitted" | "dismissed";
+
 export interface UserSettings {
   language: "ja" | "en";
   timeFormat: "24h" | "12h";
@@ -39,6 +41,11 @@ export interface UserSettings {
   /** 0=未開始, 1=グループ保存, 2=Jump, 3=Convert, 4=完了 */
   contextualGuideStep: 0 | 1 | 2 | 3 | 4;
   replayTour?: boolean;
+  /** ISO timestamp of first app open (survey eligibility) */
+  firstOpenedAt: string;
+  /** Count of meaningful actions: add city / Convert / Jump */
+  usageActionCount: number;
+  surveyStatus: SurveyStatus;
 }
 
 export interface NormalizedSlice<T> {

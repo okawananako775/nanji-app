@@ -44,7 +44,7 @@ export function RangeSelectionModal({
   onTitleChange,
 }: RangeSelectionModalProps) {
   const { t } = useTranslation();
-  const { state } = useStore();
+  const { state, dispatch } = useStore();
   const [view, setView] = useState<"form" | "results">("form");
   const [results, setResults] = useState<MultiCandidateBlock[] | null>(null);
   const [baseCityId, setBaseCityId] = useState(home.id);
@@ -76,6 +76,7 @@ export function RangeSelectionModal({
   const handleConvert = (converted: MultiCandidateBlock[]) => {
     setResults(converted);
     setView("results");
+    dispatch({ type: "INCREMENT_USAGE_ACTION" });
   };
 
   const title = view === "results" ? t("timeSearch.resultsTitle") : t("rangeSelection.title");

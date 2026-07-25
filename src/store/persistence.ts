@@ -1,4 +1,4 @@
-import type { AppState } from "./types";
+import type { AppState, SurveyStatus } from "./types";
 import { createInitialState } from "./initialState";
 
 const STORAGE_KEY = "nanji_v2";
@@ -25,6 +25,12 @@ function normalizeLoadedState(parsed: AppState): AppState {
     ui.activeGroupId = defaultGroupId;
   }
 
+  const parsedSettings = parsed.settings as Partial<AppState["settings"]> | undefined;
+  const surveyStatus: SurveyStatus =
+    parsedSettings?.surveyStatus === "submitted" || parsedSettings?.surveyStatus === "dismissed"
+      ? parsedSettings.surveyStatus
+      : "pending";
+
   const settings = {
     ...createInitialState().settings,
     ...parsed.settings,
@@ -33,6 +39,15 @@ function normalizeLoadedState(parsed: AppState): AppState {
     tourCompleted: parsed.settings?.tourCompleted ?? true,
     contextualGuideStep: (parsed.settings?.contextualGuideStep ?? 4) as 0 | 1 | 2 | 3 | 4,
     replayTour: false,
+    firstOpenedAt:
+      typeof parsedSettings?.firstOpenedAt === "string" && parsedSettings.firstOpenedAt
+        ? parsedSettings.firstOpenedAt
+        : new Date().toISOString(),
+    usageActionCount:
+      typeof parsedSettings?.usageActionCount === "number" && parsedSettings.usageActionCount >= 0
+        ? Math.floor(parsedSettings.usageActionCount)
+        : 0,
+    surveyStatus,
   };
 
   return {

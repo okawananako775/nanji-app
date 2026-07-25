@@ -12,9 +12,10 @@ interface SettingsModalProps {
   open: boolean;
   onClose: () => void;
   onOpenHomeCity: () => void;
+  onOpenFeedback: () => void;
 }
 
-export function SettingsModal({ open, onClose, onOpenHomeCity }: SettingsModalProps) {
+export function SettingsModal({ open, onClose, onOpenHomeCity, onOpenFeedback }: SettingsModalProps) {
   const { t } = useTranslation();
   const { state, dispatch } = useStore();
   const home = selectHomeCity(state);
@@ -116,6 +117,17 @@ export function SettingsModal({ open, onClose, onOpenHomeCity }: SettingsModalPr
       </section>
       <section className={styles.section}>
         <div className={styles.sectionTitle}>{t("settings.appInfo")}</div>
+        <button
+          type="button"
+          className={styles.linkRow}
+          onClick={() => {
+            onClose();
+            onOpenFeedback();
+          }}
+        >
+          <span className={styles.rowLabel}>{t("settings.feedback")}</span>
+          <IconArrow className={styles.linkArrow} width={15} height={15} />
+        </button>
         <button type="button" className={styles.linkRow} onClick={onReplayTour}>
           <span className={styles.rowLabel}>{t("settings.replayTour")}</span>
           <IconArrow className={styles.linkArrow} width={15} height={15} />

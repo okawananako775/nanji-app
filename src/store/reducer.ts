@@ -7,6 +7,7 @@ export type Action =
   | { type: "SET_HOME_CITY"; payload: { city: City } }
   | { type: "CLEAR_ALL_CITIES" }
   | { type: "UPDATE_SETTINGS"; payload: Partial<AppState["settings"]> }
+  | { type: "INCREMENT_USAGE_ACTION" }
   | { type: "SET_HIGHLIGHT"; payload: { day: number | null; hour: number | null } }
   | { type: "SET_PULSE_CITY"; payload: { cityId: string | null } }
   | { type: "SET_ACTIVE_GROUP"; payload: { groupId: string | null } }
@@ -316,6 +317,15 @@ export function reducer(state: AppState, action: Action): AppState {
 
     case "UPDATE_SETTINGS":
       return { ...state, settings: { ...state.settings, ...action.payload } };
+
+    case "INCREMENT_USAGE_ACTION":
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          usageActionCount: state.settings.usageActionCount + 1,
+        },
+      };
 
     case "SET_HIGHLIGHT":
       return {

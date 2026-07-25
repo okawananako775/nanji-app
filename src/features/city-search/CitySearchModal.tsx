@@ -50,6 +50,7 @@ export function CitySearchModal({
 
     if (atMax) return;
     dispatch({ type: "ADD_CITY", payload: { city: catalogToCity(entry, false, state.cities.allIds.length) } });
+    dispatch({ type: "INCREMENT_USAGE_ACTION" });
     onClose();
   };
 

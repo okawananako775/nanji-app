@@ -31,6 +31,9 @@ export function createInitialState(): AppState {
       onboardingCompleted: false,
       tourCompleted: false,
       contextualGuideStep: 0,
+      firstOpenedAt: new Date().toISOString(),
+      usageActionCount: 0,
+      surveyStatus: "pending",
     },
   };
 }

@@ -378,6 +378,7 @@ Figma Variables `Numbers/*` のT-shirtサイズ数値スケール。Semanticなs
 | `--z-floating` | 150 | Bottom bar |
 | `--z-range-panel` | 160（`floating + 10`） | Convert / Jump SidePanel |
 | Convert / Jump tabs | 161（`range-panel + 1`） | TimelineSideTabs |
+| `--z-survey` | 165（`range-panel + 5`） | フィードバックカード（非ブロッキング） |
 | `--z-modal` | 190（`range-panel + 30`） | Modal overlay（設定など） |
 | `--z-popover` | 200（`modal + 10`） | CalendarDatePicker popover |
 | `--z-toast` | 9999 | Snackbar |

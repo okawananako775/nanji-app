@@ -12,11 +12,13 @@ import { normalizeSlotRange, type SelectedTimeRange } from "../../lib/timeGrid";
 import { useStore } from "../../store/StoreContext";
 import { selectDisplayCities, selectHomeCity } from "../../store/selectors";
 import type { City } from "../../store/types";
+import { canAutoShowSurvey } from "../../lib/surveyEligibility";
 import { ContextualGuide } from "./ContextualGuide";
 import { SettingsModal } from "../settings/SettingsModal";
 import { HomeCityModal } from "../settings/HomeCityModal";
 import { CitySearchModal } from "../city-search/CitySearchModal";
 import { GroupEditorModal } from "../groups/GroupEditorModal";
+import { SurveyCard } from "../survey/SurveyCard";
 import { BottomBar } from "./BottomBar";
 import { NavBar } from "./NavBar";
 import { TagBar } from "./TagBar";
@@ -61,6 +63,9 @@ export function HomePage() {
   const [rangeSelectionOpen, setRangeSelectionOpen] = useState(false);
   const [rangeBaseTimezone, setRangeBaseTimezone] = useState("UTC");
   const [isMobileGuide, setIsMobileGuide] = useState(false);
+  const [surveyOpen, setSurveyOpen] = useState(false);
+  const [surveyDismissOnClose, setSurveyDismissOnClose] = useState(true);
+  const surveyAutoPromptedRef = useRef(false);
   const mainRef = useRef<HTMLElement>(null);
   const saveGroupBtnRef = useRef<HTMLButtonElement>(null);
   const convertTabRef = useRef<HTMLButtonElement>(null);
@@ -167,6 +172,34 @@ export function HomePage() {
       navigate("/", { replace: true, state: null });
     }
   }, [location.state, navigate]);
+
+  const blockingUiOpen =
+    settingsOpen ||
+    homeCityOpen ||
+    citySearchOpen ||
+    groupEditorOpen ||
+    sidePanelOpen ||
+    Boolean(guideStep > 0 && guideStep < 4);
+
+  useEffect(() => {
+    if (surveyAutoPromptedRef.current) return;
+    if (surveyOpen || blockingUiOpen) return;
+    if (!canAutoShowSurvey(state.settings)) return;
+
+    const id = window.setTimeout(() => {
+      if (surveyAutoPromptedRef.current) return;
+      surveyAutoPromptedRef.current = true;
+      setSurveyDismissOnClose(true);
+      setSurveyOpen(true);
+    }, 1200);
+
+    return () => window.clearTimeout(id);
+  }, [state.settings, surveyOpen, blockingUiOpen]);
+
+  const openSurveyFromSettings = useCallback(() => {
+    setSurveyDismissOnClose(false);
+    setSurveyOpen(true);
+  }, []);
 
   const handleRangeBaseCityChange = useCallback((city: City) => {
     setRangeBaseTimezone(city.timezone);
@@ -363,6 +396,7 @@ export function HomePage() {
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         onOpenHomeCity={openHomeCitySettings}
+        onOpenFeedback={openSurveyFromSettings}
       />
       <HomeCityModal
         open={homeCityOpen}
@@ -374,6 +408,12 @@ export function HomePage() {
         open={groupEditorOpen}
         editId={groupEditId}
         onClose={() => setGroupEditorOpen(false)}
+      />
+      <SurveyCard
+        open={surveyOpen}
+        dismissOnClose={surveyDismissOnClose}
+        onClose={() => setSurveyOpen(false)}
+        onSubmitted={() => setSnack(t("survey.thanks"))}
       />
       <Snackbar message={snack} onDone={() => setSnack(null)} />
     </>
