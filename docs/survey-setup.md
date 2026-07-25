@@ -50,18 +50,24 @@ function doPost(e) {
 
 ## 4. Configure the app
 
-Local:
+Local (direct to GAS; Vite has no CSP):
 
 ```bash
 # .env.local
 VITE_SURVEY_ENDPOINT=https://script.google.com/macros/s/XXXX/exec
 ```
 
-Vercel: Project Settings → Environment Variables → add `VITE_SURVEY_ENDPOINT` for Production (and Preview if needed), then redeploy.
+Vercel (read by the `/api/survey` serverless proxy):
+
+1. Project Settings → Environment Variables
+2. Add `VITE_SURVEY_ENDPOINT` (or server-only `SURVEY_ENDPOINT`) = the Web app URL
+3. Environment: Production (and Preview if needed)
+4. Save → Redeploy
+
+Production submits to same-origin `/api/survey`, which forwards to GAS. This avoids the site CSP blocking `script.google.com`.
 
 ## Notes
 
-- Without `VITE_SURVEY_ENDPOINT`, submit still marks the survey complete locally (dev-friendly) and logs a console warning.
-- Browsers often hit a CORS error on Apps Script’s 302 redirect. The app falls back to `no-cors` POST so `doPost` still runs; prefer checking the spreadsheet over the network tab alone.
+- Without an endpoint env var, local submit completes without network (console warning); production `/api/survey` returns 500.
 - No personal data is sent (no email, city names, or location).
 - Auto-show rules: ContextualGuide done + 3+ days since first open + 3+ usage actions (add city / Convert / Jump). Auto prompt is once only; Settings → Feedback can be submitted anytime, repeatedly.
