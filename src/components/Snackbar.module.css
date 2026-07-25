@@ -16,6 +16,18 @@
   z-index: var(--z-toast);
 }
 
+@media (max-width: 640px) {
+  .snackbar {
+    width: max-content;
+    max-width: 50vw;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    line-height: 1.35;
+  }
+}
+
 .snackbarInline {
   position: static;
   margin-top: var(--space-inset-md);
