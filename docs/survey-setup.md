@@ -62,5 +62,6 @@ Vercel: Project Settings → Environment Variables → add `VITE_SURVEY_ENDPOINT
 ## Notes
 
 - Without `VITE_SURVEY_ENDPOINT`, submit still marks the survey complete locally (dev-friendly) and logs a console warning.
+- Browsers often hit a CORS error on Apps Script’s 302 redirect. The app falls back to `no-cors` POST so `doPost` still runs; prefer checking the spreadsheet over the network tab alone.
 - No personal data is sent (no email, city names, or location).
 - Auto-show rules: ContextualGuide done + 3+ days since first open + 3+ usage actions (add city / Convert / Jump). Auto prompt is once only; Settings → Feedback can be submitted anytime, repeatedly.
