@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import { StoreProvider, useStore } from "./store/StoreContext";
 import { HomePage } from "./features/home/HomePage";
 import { OnboardingPage } from "./features/onboarding/OnboardingPage";
@@ -32,6 +33,7 @@ export default function App() {
         <div className="appShell">
           <AppRoutes />
         </div>
+        <Analytics />
       </BrowserRouter>
     </StoreProvider>
   );
