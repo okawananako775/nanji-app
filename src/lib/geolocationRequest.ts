@@ -88,6 +88,23 @@ function cancelInflightRequest(reason: GeolocationErrorReason): void {
   });
 }
 
+/** Stop any in-flight geolocation attempt without delivering success/error callbacks. */
+export function cancelGeolocationRequest(): void {
+  if (!inflightListeners) return;
+
+  if (inflightCleanup) {
+    inflightCleanup();
+    inflightCleanup = null;
+  }
+
+  attemptSerial++;
+  const listeners = inflightListeners;
+  resetInflightMeta();
+  listeners.forEach((listener) => {
+    listener.settled = true;
+  });
+}
+
 export function requestGeolocationPosition(
   onSuccess: PositionCallback,
   onError: (reason: GeolocationErrorReason) => void,

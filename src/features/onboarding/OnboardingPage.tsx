@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getCityDisplayName } from "../../lib/cities";
 import { applyHomeCityFromPosition } from "../../lib/applyHomeCityFromPosition";
 import {
+  cancelGeolocationRequest,
   queryGeolocationPermission,
   requestGeolocationPosition,
   type GeolocationErrorReason,
@@ -26,6 +27,8 @@ export function OnboardingPage() {
   const [locationError, setLocationError] = useState<GeolocationErrorReason | null>(null);
   const [locationDetected, setLocationDetected] = useState<string | null>(null);
   const [permissionHint, setPermissionHint] = useState<PermissionState | "unknown">("unknown");
+  /** Bumped on skip (and each new request) so late geolocation callbacks are ignored. */
+  const locationRequestIdRef = useRef(0);
 
   useEffect(() => {
     void queryGeolocationPermission().then(setPermissionHint);
@@ -72,15 +75,15 @@ export function OnboardingPage() {
     setLocationError(null);
     setLocationDetected(null);
     setLocationRequesting(true);
+    const requestId = ++locationRequestIdRef.current;
 
-    let resolved = false;
     requestGeolocationPosition(
       (pos) => {
-        resolved = true;
+        if (requestId !== locationRequestIdRef.current) return;
         applyDetectedLocation(pos);
       },
       (reason) => {
-        if (resolved) return;
+        if (requestId !== locationRequestIdRef.current) return;
         setLocationRequesting(false);
         setLocationError(reason);
         dispatch({ type: "UPDATE_SETTINGS", payload: { locationSyncEnabled: false } });
@@ -91,6 +94,9 @@ export function OnboardingPage() {
   };
 
   const skipLocation = () => {
+    // Invalidate in-flight callbacks first, then stop geolocation watchers/timers.
+    locationRequestIdRef.current += 1;
+    cancelGeolocationRequest();
     dispatch({ type: "UPDATE_SETTINGS", payload: { locationSyncEnabled: false } });
     setLocationRequesting(false);
     setLocationError(null);
@@ -158,7 +164,8 @@ export function OnboardingPage() {
             >
               {locationRequesting ? t("onboarding.locationRequesting") : t("onboarding.allowLocation")}
             </button>
-            <button type="button" className={styles.secondaryBtn} onClick={skipLocation} disabled={locationRequesting}>
+            {/* Skip must never use disabled — global.css sets pointer-events:none on button:disabled */}
+            <button type="button" className={styles.secondaryBtn} onClick={skipLocation}>
               {t("onboarding.skipLocation")}
             </button>
           </div>
